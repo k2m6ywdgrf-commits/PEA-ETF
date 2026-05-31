@@ -31,7 +31,7 @@ button{width:100%;padding:13px;border:none;border-radius:8px;font-weight:bold;fo
 .tag-eu{background:#1a3a2a;color:#34d399;}
 .tag-em{background:#3a2a00;color:#fbbf24;}
 .bar-container{background:#1e293b;border-radius:8px;height:16px;overflow:hidden;display:flex;margin:6px 0;}
-.bar(height:100%;transition:width 0.4s;}
+.bar{height:100%;transition:width 0.4s;}
 .prix-card{background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
 .prix-val{font-size:19px;font-weight:bold;}
 .alert-box{border-left:3px solid #fbbf24;background:#2a1e00;padding:10px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;}
@@ -62,7 +62,6 @@ h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
   <button class="tab" onclick="showTab('config')">Config</button>
 </div>
 
-<!-- MARCHÉ -->
 <div id="tab-marche" class="section active">
   <button class="btn-orange" id="btn-refresh" onclick="fetchLivePrices()">🔄 Actualiser les cours internet</button>
   
@@ -73,20 +72,19 @@ h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
     <div class="small" style="margin-bottom:12px;">Mettre à jour les cours actuels :</div>
     
     <div class="row"><label><span class="tag tag-usa">Amundi S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-usa">Estimation live : Chargement...</div>
+    <div class="info-live" id="live-usa">Cours live : Chargement...</div>
     
     <div class="row"><label><span class="tag tag-eu">BNP Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-eu">Estimation live : Chargement...</div>
+    <div class="info-live" id="live-eu">Cours live : Chargement...</div>
     
     <div class="row"><label><span class="tag tag-em">Amundi Emergents</span></label><input id="p_em" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-em">Estimation live : Chargement...</div>
+    <div class="info-live" id="live-em">Cours live : Chargement...</div>
     
     <button class="btn-blue" onclick="validerPrix()">✅ Enregistrer et valider ces prix</button>
   </div>
   <div id="alertes-marche"></div>
 </div>
 
-<!-- ANALYSE -->
 <div id="tab-analyse" class="section">
   <div class="card">
     <h2>Portefeuille actuel</h2>
@@ -95,24 +93,21 @@ h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
     <div class="row"><label><span class="tag tag-em">Emergents</span> parts</label><input id="em_q" type="number" inputmode="decimal" placeholder="0"></div>
     <hr class="divider">
     <div class="row"><label>Budget (€)</label><input id="budget" type="number" inputmode="decimal" placeholder="0"></div>
-    <button class="btn-blue" onclick="calc()">Analyser</button>
+    <button class="btn-blue" onclick="calc()">Analyse</button>
   </div>
   <div id="res-analyse"></div>
 </div>
 
-<!-- STATS -->
 <div id="tab-stats" class="section">
   <div id="stats-container"></div>
 </div>
 
-<!-- HISTORIQUE -->
 <div id="tab-historique" class="section">
   <div id="hist-container"></div>
   <button class="btn-gray" onclick="exportCSV()" style="margin-bottom:6px;">📤 Exporter CSV</button>
   <button class="btn-red" onclick="clearHist()">🗑 Effacer l'historique</button>
 </div>
 
-<!-- CONFIG -->
 <div id="tab-config" class="section">
   <div class="card">
     <h2>Allocation cible</h2>
@@ -190,37 +185,56 @@ function init() {
 
 async function fetchLivePrices() {
   const btn = document.getElementById('btn-refresh');
-  btn.textContent = "⚡ Recherche des cours...";
+  btn.textContent = "⚡ Connexion aux marchés...";
   btn.disabled = true;
 
-  try {
-    // Utilisation d'une API de change ouverte non bloquée pour récupérer des données de marché fiables
-    const res = await fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).catch(() => null);
-    
-    // On base nos estimations sur des coefficients proportionnels calés sur tes vrais actifs (image_7a7d77.png)
-    // Cela permet d'avoir une tendance en Euros extrêmement proche de la réalité sans subir les blocages CORS
-    setTimeout(() => {
-      const variationAleatoire = () => (1 + (Math.random() * 0.006 - 0.003)); // Simule la micro-variation du direct (+-0.3%)
-      
-      const estimUsa = (56.34 * variationAleatoire()).toFixed(2);
-      const estimEu = (20.47 * variationAleatoire()).toFixed(2);
-      const estimEm = (7.75 * variationAleatoire()).toFixed(2);
+  // Liste des proxies CORS ouverts et hautement disponibles pour l'accès mobile sans frictions
+  const proxies = [
+    "https://api.allorigins.win/get?url=",
+    "https://corsproxy.io/?"
+  ];
+  
+  // Tickers réels correspondants sur Yahoo Finance : Amundi S&P500 (500.PA), BNP Stoxx 600 (ETZ.PA), Amundi MSCI EM (AEEM.PA)
+  const urls = {
+    usa: "https://query1.finance.yahoo.com/v8/finance/chart/500.PA?interval=1d&range=1d",
+    eu: "https://query1.finance.yahoo.com/v8/finance/chart/ETZ.PA?interval=1d&range=1d",
+    em: "https://query1.finance.yahoo.com/v8/finance/chart/AEEM.PA?interval=1d&range=1d"
+  };
 
-      document.getElementById('live-usa').innerHTML = `📈 Estimation live : ~<b>${estimUsa} €</b> (Repère basé sur le S&P 500)`;
-      document.getElementById('live-eu').innerHTML = `📈 Estimation live : ~<b>${estimEu} €</b> (Repère basé sur le Stoxx 600)`;
-      document.getElementById('live-em').innerHTML = `📈 Estimation live : ~<b>${estimEm} €</b> (Repère basé sur l'Emerging)`;
-      
-      btn.textContent = "🔄 Actualiser les cours internet";
-      btn.disabled = false;
-    }, 600);
-
-  } catch (error) {
-    document.getElementById('live-usa').textContent = "Estimation : Indisponible";
-    document.getElementById('live-eu').textContent = "Estimation : Indisponible";
-    document.getElementById('live-em').textContent = "Estimation : Indisponible";
-    btn.textContent = "❌ Erreur (Réessayer)";
-    btn.disabled = false;
+  async function getPrice(url) {
+    try {
+      // Tentative de récupération directe
+      let response = await fetch(url);
+      if(!response.ok) throw new Error();
+      let data = await response.json();
+      return data.chart.result[0].meta.regularMarketPrice;
+    } catch (e) {
+      // Secours via proxy ultra-fiable en cas de blocage navigateur
+      try {
+        let resProxy = await fetch(proxies[0] + encodeURIComponent(url)).then(r => r.json());
+        let data = JSON.parse(resProxy.contents);
+        return data.chart.result[0].meta.regularMarketPrice;
+      } catch(err) {
+        return null;
+      }
+    }
   }
+
+  const pUsa = await getPrice(urls.usa);
+  const pEu = await getPrice(urls.eu);
+  const pEm = await getPrice(urls.em);
+
+  if (pUsa) document.getElementById('live-usa').innerHTML = `📈 En direct de la bourse : <b>${pUsa.toFixed(2)} €</b>`;
+  else document.getElementById('live-usa').textContent = "Cours live : Actuellement indisponible";
+
+  if (pEu) document.getElementById('live-eu').innerHTML = `📈 En direct de la bourse : <b>${pEu.toFixed(2)} €</b>`;
+  else document.getElementById('live-eu').textContent = "Cours live : Actuellement indisponible";
+
+  if (pEm) document.getElementById('live-em').innerHTML = `📈 En direct de la bourse : <b>${pEm.toFixed(2)} €</b>`;
+  else document.getElementById('live-em').textContent = "Cours live : Actuellement indisponible";
+
+  btn.textContent = "🔄 Actualiser les cours internet";
+  btn.disabled = false;
 }
 
 function showTab(name) {
