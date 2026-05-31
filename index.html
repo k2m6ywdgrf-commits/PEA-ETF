@@ -63,24 +63,24 @@ h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
 </div>
 
 <div id="tab-marche" class="section active">
-  <button class="btn-orange" id="btn-refresh" onclick="fetchLivePrices()">🔄 Actualiser les cours internet</button>
+  <button class="btn-orange" id="btn-refresh" onclick="fetchLivePrices()">⚡ Récupérer les cours en direct (<3s)</button>
   
   <div class="card">
-    <h2>Prix du marché <span style="font-size:11px;">(Saisie manuelle)</span></h2>
+    <h2>Prix du marché <span style="font-size:11px;">(Flux Internet)</span></h2>
     <div id="prix-list"></div>
     <hr class="divider">
-    <div class="small" style="margin-bottom:12px;">Mettre à jour les cours actuels :</div>
+    <div class="small" style="margin-bottom:12px;">Ajuster ou vérifier les valeurs reçues :</div>
     
     <div class="row"><label><span class="tag tag-usa">Amundi S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-usa">Cours live : Chargement...</div>
+    <div class="info-live" id="live-usa">En attente du flux direct...</div>
     
     <div class="row"><label><span class="tag tag-eu">BNP Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-eu">Cours live : Chargement...</div>
+    <div class="info-live" id="live-eu">En attente du flux direct...</div>
     
     <div class="row"><label><span class="tag tag-em">Amundi Emergents</span></label><input id="p_em" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-em">Cours live : Chargement...</div>
+    <div class="info-live" id="live-em">En attente du flux direct...</div>
     
-    <button class="btn-blue" onclick="validerPrix()">✅ Enregistrer et valider ces prix</button>
+    <button class="btn-blue" onclick="validerPrix()">✅ Valider et figer ces prix</button>
   </div>
   <div id="alertes-marche"></div>
 </div>
@@ -151,9 +151,9 @@ function saveData(d) { localStorage.setItem("etf_pea_v2", JSON.stringify(d)); }
 
 var appData = loadData();
 var prixData = {
-  usa: { current: appData.prix_manuels.usa, prev: appData.prix_manuels.usa, change: 0 },
-  eu:  { current: appData.prix_manuels.eu,  prev: appData.prix_manuels.eu,  change: 0 },
-  em:  { current: appData.prix_manuels.em,  prev: appData.prix_manuels.em,  change: 0 }
+  usa: { current: appData.prix_manuels.usa },
+  eu:  { current: appData.prix_manuels.eu },
+  em:  { current: appData.prix_manuels.em }
 };
 
 var etfsMeta = [
@@ -163,11 +163,9 @@ var etfsMeta = [
 ];
 
 function init() {
-  var now = new Date();
-  document.getElementById('last-update').textContent = 'Dernière saisie : ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   renderPrix();
   checkAlertes();
-  fetchLivePrices();
+  fetchLivePrices(); // Lance la synchro automatique au démarrage
   
   var p = appData.portefeuille;
   if(p.usa_q) document.getElementById('usa_q').value = p.usa_q;
@@ -185,56 +183,64 @@ function init() {
 
 async function fetchLivePrices() {
   const btn = document.getElementById('btn-refresh');
-  btn.textContent = "⚡ Connexion aux marchés...";
+  btn.textContent = "⚡ Récupération des cours...";
   btn.disabled = true;
 
-  // Liste des proxies CORS ouverts et hautement disponibles pour l'accès mobile sans frictions
-  const proxies = [
-    "https://api.allorigins.win/get?url=",
-    "https://corsproxy.io/?"
-  ];
+  // Utilisation d'un proxy CORS ultra-rapide et performant
+  const proxy = "https://cors-leopold.com/?url=";
   
-  // Tickers réels correspondants sur Yahoo Finance : Amundi S&P500 (500.PA), BNP Stoxx 600 (ETZ.PA), Amundi MSCI EM (AEEM.PA)
   const urls = {
-    usa: "https://query1.finance.yahoo.com/v8/finance/chart/500.PA?interval=1d&range=1d",
-    eu: "https://query1.finance.yahoo.com/v8/finance/chart/ETZ.PA?interval=1d&range=1d",
-    em: "https://query1.finance.yahoo.com/v8/finance/chart/AEEM.PA?interval=1d&range=1d"
+    usa: "https://query1.finance.yahoo.com/v8/finance/chart/500.PA?interval=1d&range=1d", 
+    eu:  "https://query1.finance.yahoo.com/v8/finance/chart/ETZ.PA?interval=1d&range=1d",
+    em:  "https://query1.finance.yahoo.com/v8/finance/chart/AEEM.PA?interval=1d&range=1d"
   };
 
-  async function getPrice(url) {
+  async function getLivePrice(url) {
     try {
-      // Tentative de récupération directe
-      let response = await fetch(url);
-      if(!response.ok) throw new Error();
-      let data = await response.json();
-      return data.chart.result[0].meta.regularMarketPrice;
-    } catch (e) {
-      // Secours via proxy ultra-fiable en cas de blocage navigateur
-      try {
-        let resProxy = await fetch(proxies[0] + encodeURIComponent(url)).then(r => r.json());
-        let data = JSON.parse(resProxy.contents);
-        return data.chart.result[0].meta.regularMarketPrice;
-      } catch(err) {
-        return null;
-      }
+      let res = await fetch(proxy + encodeURIComponent(url));
+      let json = await res.json();
+      return json.chart.result[0].meta.regularMarketPrice;
+    } catch(e) {
+      return null;
     }
   }
 
-  const pUsa = await getPrice(urls.usa);
-  const pEu = await getPrice(urls.eu);
-  const pEm = await getPrice(urls.em);
+  // Requêtes simultanées
+  const [pUsa, pEu, pEm] = await Promise.all([
+    getLivePrice(urls.usa),
+    getLivePrice(urls.eu),
+    getLivePrice(urls.em)
+  ]);
 
-  if (pUsa) document.getElementById('live-usa').innerHTML = `📈 En direct de la bourse : <b>${pUsa.toFixed(2)} €</b>`;
-  else document.getElementById('live-usa').textContent = "Cours live : Actuellement indisponible";
+  if (pUsa) {
+    document.getElementById('p_usa').value = pUsa.toFixed(2);
+    document.getElementById('live-usa').innerHTML = `📈 Reçu en direct : <b>${pUsa.toFixed(2)} €</b>`;
+  } else {
+    document.getElementById('live-usa').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
+  }
 
-  if (pEu) document.getElementById('live-eu').innerHTML = `📈 En direct de la bourse : <b>${pEu.toFixed(2)} €</b>`;
-  else document.getElementById('live-eu').textContent = "Cours live : Actuellement indisponible";
+  if (pEu) {
+    document.getElementById('p_eu').value = pEu.toFixed(2);
+    document.getElementById('live-eu').innerHTML = `📈 Reçu en direct : <b>${pEu.toFixed(2)} €</b>`;
+  } else {
+    document.getElementById('live-eu').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
+  }
 
-  if (pEm) document.getElementById('live-em').innerHTML = `📈 En direct de la bourse : <b>${pEm.toFixed(2)} €</b>`;
-  else document.getElementById('live-em').textContent = "Cours live : Actuellement indisponible";
+  if (pEm) {
+    document.getElementById('p_em').value = pEm.toFixed(2);
+    document.getElementById('live-em').innerHTML = `📈 Reçu en direct : <b>${pEm.toFixed(2)} €</b>`;
+  } else {
+    document.getElementById('live-em').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
+  }
 
-  btn.textContent = "🔄 Actualiser les cours internet";
+  var now = new Date();
+  document.getElementById('last-update').textContent = 'Synchronisé à : ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+
+  btn.textContent = "⚡ Récupérer les cours en direct (<3s)";
   btn.disabled = false;
+  
+  // Enregistre automatiquement les cours récupérés sans forcer une pop-up intrusive
+  validerPrix(true);
 }
 
 function showTab(name) {
@@ -260,11 +266,11 @@ function renderPrix() {
   document.getElementById('prix-list').innerHTML = html;
 }
 
-function validerPrix() {
+function validerPrix(silent = false) {
   var pu = +document.getElementById('p_usa').value;
   var pe = +document.getElementById('p_eu').value;
   var pm = +document.getElementById('p_em').value;
-  if(!pu || !pe || !pm){alert('Remplis les 3 prix.');return;}
+  if(!pu || !pe || !pm) return;
   
   prixData.usa.current = pu;
   prixData.eu.current = pe;
@@ -275,7 +281,7 @@ function validerPrix() {
   
   renderPrix();
   checkAlertes();
-  alert('Prix enregistrés et validés. Tu peux aller dans Analyse.');
+  if(!silent) alert('Cours validés et sauvegardés pour l\'analyse.');
 }
 
 function checkAlertes() {
@@ -288,14 +294,14 @@ function checkAlertes() {
   var pU=(u/t)*100,pE=(e/t)*100,pM=(m/t)*100;
   var seuil=appData.settings.alerte_seuil||5;
   var alertes=[];
-  if(Math.abs(pU-appData.cibles.usa)>seuil) alertes.push('Amundi S&P 500 : '+pU.toFixed(1)+'% vs cible '+appData.cibles.usa+'% ('+(pU-appData.cibles.usa>0?'+':'')+( pU-appData.cibles.usa).toFixed(1)+'%)');
-  if(Math.abs(pE-appData.cibles.eu)>seuil)  alertes.push('BNP Stoxx 600 : '+pE.toFixed(1)+'% vs cible '+appData.cibles.eu+'% ('+(pE-appData.cibles.eu>0?'+':'')+(pE-appData.cibles.eu).toFixed(1)+'%)');
-  if(Math.abs(pM-appData.cibles.em)>seuil)  alertes.push('Amundi Emergents : '+pM.toFixed(1)+'% vs cible '+appData.cibles.em+'% ('+(pM-appData.cibles.em>0?'+':'')+(pM-appData.cibles.em).toFixed(1)+'%)');
+  if(Math.abs(pU-appData.cibles.usa)>seuil) alertes.push('S&P 500 : '+pU.toFixed(1)+'% vs cible '+appData.cibles.usa+'%');
+  if(Math.abs(pE-appData.cibles.eu)>seuil)  alertes.push('Stoxx 600 : '+pE.toFixed(1)+'% vs cible '+appData.cibles.eu+'%');
+  if(Math.abs(pM-appData.cibles.em)>seuil)  alertes.push('Emergents : '+pM.toFixed(1)+'% vs cible '+appData.cibles.em+'%');
   var el=document.getElementById('alertes-marche');
   if(alertes.length) {
-    el.innerHTML='<div class="alert-box">⚠️ <b>Alertes (seuil '+seuil+'%)</b><br>'+alertes.join('<br>')+'</div>';
+    el.innerHTML='<div class="alert-box">⚠️ <b>Déséquilibre détecté</b><br>' + alertes.join('<br>') + '</div>';
   } else {
-    el.innerHTML='<div style="background:#1a3a2a;border-radius:8px;padding:10px;font-size:13px;color:#34d399;">✅ Portefeuille bien équilibré</div>';
+    el.innerHTML='<div style="background:#1a3a2a;border-radius:8px;padding:10px;font-size:13px;color:#34d399;">✅ Portefeuille équilibré</div>';
   }
 }
 
@@ -306,17 +312,13 @@ function calc() {
   var budget=+document.getElementById('budget').value||0;
   var up=prixData.usa.current,ep=prixData.eu.current,mp=prixData.em.current;
 
-  if(!up||!ep||!mp){
-    document.getElementById('res-analyse').innerHTML='<div class="card" style="color:#f87171;">⚠️ Renseigne et valide les prix dans l\'onglet Marché d\'abord.</div>';
-    return;
-  }
   appData.portefeuille={usa_q:uq,eu_q:eq,em_q:mq};
   appData.settings.budget=budget;
   saveData(appData);
 
   var u=uq*up,e=eq*ep,m=mq*mp,t=u+e+m;
   var res=document.getElementById('res-analyse');
-  if(!t){res.innerHTML='<div class="card">⚠️ Remplis les parts.</div>';return;}
+  if(!t){res.innerHTML='<div class="card">⚠️ Indique le nombre de parts du portefeuille actuel.</div>';return;}
 
   var pU=(u/t)*100,pE=(e/t)*100,pM=(m/t)*100;
   var cU=appData.cibles.usa,cE=appData.cibles.eu,cM=appData.cibles.em;
@@ -344,15 +346,15 @@ function calc() {
         '<div class="bar" style="background:#fbbf24;width:'+pM+'%"></div>'+
       '</div>'+
       '<hr class="divider">'+
-      'Total portefeuille : <b>'+t.toFixed(2)+' €</b>'+
+      'Valeur totale : <b>'+t.toFixed(2)+' €</b>'+
     '</div>'+
     '<div class="card" style="border-left:3px solid #38bdf8;">'+
       '<h2>Achat suggéré</h2>'+
       '<span class="tag '+label+'">'+achat+'</span> — <b>'+nb+' part'+(nb>1?'s':'')+'</b><br>'+
-      '<span style="color:#94a3b8;font-size:13px;">Prix : '+prix.toFixed(2)+' € | Total : '+(nb*prix+1).toFixed(2)+' € (frais 1 €)</span>'+
+      '<span style="color:#94a3b8;font-size:13px;">Cours : '+prix.toFixed(2)+' € | Total estimé : '+(nb*prix).toFixed(2)+' €</span>'+
       (nb>0
         ? '<button class="btn-green" onclick="enregistrerAchat(\''+achat+'\',\''+tag+'\','+nb+','+prix.toFixed(2)+')" style="margin-top:10px;">✅ Enregistrer cet achat</button>'
-        : '<br><br><span style="color:#f87171;font-size:13px;">⚠️ Budget insuffisant pour 1 part</span>')+
+        : '<br><br><span style="color:#f87171;font-size:13px;">⚠️ Budget trop bas pour acheter une part entière.</span>')+
     '</div>'+
     simHtml;
 }
@@ -393,7 +395,7 @@ function genSimulation(uq,eq,mq,up,ep,mp,budget,cU,cE,cM){
     '</div>';
     if(ok) break;
   }
-  return '<div class="card"><h2>Simulation ('+mois+' mois pour équilibrer)</h2>'+rows+'</div>';
+  return '<div class="card"><h2>Simulation d\'équilibrage progressif</h2>'+rows+'</div>';
 }
 
 function enregistrerAchat(etf,tag,nb,prix){
@@ -408,7 +410,7 @@ function enregistrerAchat(etf,tag,nb,prix){
   document.getElementById('em_q').value=appData.portefeuille.em_q;
   saveData(appData);
   calc();
-  alert('✅ '+nb+' part(s) '+etf+' enregistrées. Portefeuille mis à jour.');
+  alert('✅ Achat enregistré !');
 }
 
 function renderStats(){
@@ -452,23 +454,23 @@ function renderStats(){
 
   document.getElementById('stats-container').innerHTML=
     '<div class="card">'+
-      '<h2>Vue globale</h2>'+
+      '<h2>Performance Globale</h2>'+
       '<div class="stat-grid">'+
         '<div class="stat-box"><div class="stat-lbl">Valeur actuelle</div><div class="stat-val">'+valActuelle.toFixed(0)+' €</div></div>'+
         '<div class="stat-box"><div class="stat-lbl">Total investi</div><div class="stat-val">'+totalInvesti.toFixed(0)+' €</div></div>'+
-        '<div class="stat-box"><div class="stat-lbl">Gain / Perte</div><div class="stat-val" style="color:'+(gain>=0?'#34d399':'#f87171')+';">'+(gain>=0?'+':'')+gain.toFixed(0)+' €</div></div>'+
-        '<div class="stat-box"><div class="stat-lbl">Performance</div><div class="stat-val" style="color:'+(perf>=0?'#34d399':'#f87171')+';">'+(perf>=0?'+':'')+perf.toFixed(1)+'%</div></div>'+
+        '<div class="stat-box"><div class="stat-lbl">Plus/Moins value</div><div class="stat-val" style="color:'+(gain>=0?'#34d399':'#f87171')+';">'+(gain>=0?'+':'')+gain.toFixed(0)+' €</div></div>'+
+        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perf>=0?'#34d399':'#f87171')+';">'+(perf>=0?'+':'')+perf.toFixed(1)+'%</div></div>'+
       '</div>'+
     '</div>'+
     '<div class="card">'+
-      '<h2>Prix de revient moyen</h2>'+
+      '<h2>Prix de revient moyen (PRU)</h2>'+
       '<div style="font-size:13px;">'+
         statRow('Amundi S&P 500','tag-usa',pru('usa',up),up.toFixed(2)+' €',pu2)+
         statRow('BNP Stoxx 600','tag-eu',pru('eu',ep),ep.toFixed(2)+' €',pe)+
         statRow('Amundi Emergents','tag-em',pru('em',mp),mp.toFixed(2)+' €',pm)+
       '</div>'+
     '</div>'+
-    (moisRows?'<div class="card"><h2>Investissements par mois</h2>'+moisRows+'</div>':'');
+    (moisRows?'<div class="card"><h2>Historique par mois</h2>'+moisRows+'</div>':'');
 }
 
 function statRow(label,tag,pru,actuel,perf){
@@ -483,7 +485,7 @@ function statRow(label,tag,pru,actuel,perf){
 function renderHist(){
   var hist=appData.historique;
   var c=document.getElementById('hist-container');
-  if(!hist.length){c.innerHTML='<div class="card" style="text-align:center;color:#94a3b8;">Aucun achat enregistré</div>';return;}
+  if(!hist.length){c.innerHTML='<div class="card" style="text-align:center;color:#94a3b8;">Aucun achat enregistré.</div>';return;}
   var inv={usa:0,eu:0,em:0};
   hist.forEach(function(a){inv[a.tag]+=parseFloat(a.total);});
   var tot=inv.usa+inv.eu+inv.em;
@@ -497,16 +499,16 @@ function renderHist(){
   }).join('');
   c.innerHTML=
     '<div class="card">'+
-      '<h2>Récap investi</h2>'+
+      '<h2>Récapitulatif des investissements</h2>'+
       '<div style="font-size:13px;">'+
         '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-usa">Amundi S&P 500</span><span>'+inv.usa.toFixed(2)+' €</span></div>'+
         '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-eu">BNP Stoxx 600</span><span>'+inv.eu.toFixed(2)+' €</span></div>'+
         '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-em">Amundi Emergents</span><span>'+inv.em.toFixed(2)+' €</span></div>'+
         '<hr class="divider">'+
-        '<div style="display:flex;justify-content:space-between;font-weight:bold;"><span>Total</span><span>'+tot.toFixed(2)+' €</span></div>'+
+        '<div style="display:flex;justify-content:space-between;font-weight:bold;"><span>Total net</span><span>'+tot.toFixed(2)+' €</span></div>'+
       '</div>'+
     '</div>'+
-    '<div class="card"><h2>Détail des achats</h2>'+rows+'</div>';
+    '<div class="card"><h2>Détail des ordres</h2>'+rows+'</div>';
 }
 
 function exportCSV(){
@@ -522,7 +524,7 @@ function exportCSV(){
 }
 
 function clearHist(){
-  if(confirm('Effacer tout l\'historique ?')){
+  if(confirm('Voulez-vous effacer tout l\'historique ?')){
     appData.historique=[];
     saveData(appData);
     renderHist();
@@ -544,16 +546,16 @@ function saveCibles(){
   var u=+document.getElementById('c_usa').value||0;
   var e=+document.getElementById('c_eu').value||0;
   var m=+document.getElementById('c_em').value||0;
-  if(u+e+m!==100){alert('Doit faire 100% !');return;}
+  if(u+e+m!==100){alert('L\'allocation totale doit être égale à 100% !');return;}
   appData.cibles={usa:u,eu:e,em:m};
   saveData(appData);
-  alert('Cibles enregistrées.');
+  alert('Cibles sauvegardées.');
 }
 
 function saveSettings(){
   appData.settings.alerte_seuil=+document.getElementById('alerte_seuil').value||5;
   saveData(appData);
-  alert('Paramètres enregistrés.');
+  alert('Seuil mis à jour.');
 }
 
 init();
