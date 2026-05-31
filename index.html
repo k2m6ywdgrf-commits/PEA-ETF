@@ -5,124 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ETF PEA">
+<meta name="apple-mobile-web-app-title" content="Mon PEA">
 <title>ETF Assistant PEA</title>
 <style>
+:root {
+  --bg: #090d16;
+  --card: #121826;
+  --input: #1b2336;
+  --text: #f3f4f6;
+  --text-muted: #6b7280;
+  --usa: #38bdf8;
+  --eu: #34d399;
+  --em: #fbbf24;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:-apple-system,sans-serif;background:#0b1220;color:white;margin:0;padding:12px;font-size:15px;}
-.card{background:#111c33;padding:14px;border-radius:12px;margin-bottom:12px;}
-input[type=number]{padding:10px;border-radius:6px;border:none;background:#1e293b;color:white;font-size:16px;width:100%;}
-.row{display:flex;gap:8px;margin-bottom:4px;align-items:center;}
-.row label{width:120px;min-width:120px;font-size:13px;color:#94a3b8;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:16px;font-size:15px;}
+.card{background:var(--card);padding:16px;border-radius:14px;margin-bottom:14px;border:1px solid #1e293b;}
+h2{margin:0 0 14px;font-size:15px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+input[type=number]{padding:12px;border-radius:8px;border:none;background:var(--input);color:white;font-size:16px;width:100%;transition:background 0.2s;}
+input[type=number]:focus{background:#222b40;outline:none;}
+.row{display:flex;gap:10px;margin-bottom:8px;align-items:center;}
+.row label{width:110px;min-width:110px;font-size:13px;color:var(--text-muted);}
 .row input{flex:1;}
-.info-live{font-size:12px;font-style:italic;color:#38bdf8;margin-bottom:12px;padding-left:4px;}
-button{width:100%;padding:13px;border:none;border-radius:8px;font-weight:bold;font-size:15px;margin-top:6px;cursor:pointer;}
-.btn-blue{background:#38bdf8;color:#0b1220;}
-.btn-green{background:#34d399;color:#0b1220;}
-.btn-red{background:#f87171;color:#0b1220;}
-.btn-gray{background:#1e293b;color:#94a3b8;font-size:13px;padding:9px;}
-.btn-orange{background:#f59e0b;color:#0b1220;margin-bottom:12px;font-size:14px;padding:10px;}
-.tabs{display:flex;gap:5px;margin-bottom:12px;}
-.tab{flex:1;padding:9px 4px;border:none;border-radius:8px;background:#1e293b;color:#94a3b8;font-size:12px;cursor:pointer;font-weight:500;}
-.tab.active{background:#38bdf8;color:#0b1220;font-weight:bold;}
+button{width:100%;padding:14px;border:none;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer;transition:transform 0.1s,opacity 0.2s;}
+button:active{transform:scale(0.98);opacity:0.9;}
+.btn-blue{background:var(--usa);color:#090d16;}
+.btn-green{background:var(--eu);color:#090d16;}
+.btn-red{background:#f87171;color:#090d16;}
+.btn-gray{background:var(--input);color:var(--text-muted);font-size:13px;padding:10px;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--card);padding:4px;border-radius:10px;}
+.tab{flex:1;padding:8px 2px;border:none;border-radius:6px;background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;font-weight:500;}
+.tab.active{background:var(--input);color:white;font-weight:600;}
 .section{display:none;}.section.active{display:block;}
-.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:12px;font-weight:bold;}
-.tag-usa{background:#1e3a5f;color:#38bdf8;}
-.tag-eu{background:#1a3a2a;color:#34d399;}
-.tag-em{background:#3a2a00;color:#fbbf24;}
-.bar-container{background:#1e293b;border-radius:8px;height:16px;overflow:hidden;display:flex;margin:6px 0;}
+.tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:bold;}
+.tag-usa{background:#1e3a5f;color:var(--usa);}
+.tag-eu{background:#1a3a2a;color:var(--eu);}
+.tag-em{background:#3a2a00;color:var(--em);}
+.bar-container{background:var(--input);border-radius:8px;height:14px;overflow:hidden;display:flex;margin:8px 0;}
 .bar{height:100%;transition:width 0.4s;}
-.prix-card{background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
-.prix-val{font-size:19px;font-weight:bold;}
-.alert-box{border-left:3px solid #fbbf24;background:#2a1e00;padding:10px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;}
+.prix-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.prix-box{background:var(--card);padding:10px;border-radius:10px;text-align:center;border:1px solid #1e293b;}
+.prix-box div{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.prix-box span{font-size:16px;font-weight:bold;}
+.alert-status{padding:12px;border-radius:10px;font-size:13px;margin-top:10px;font-weight:500;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.stat-box{background:#1e293b;border-radius:8px;padding:10px;text-align:center;}
+.stat-box{background:var(--input);border-radius:10px;padding:12px;text-align:center;}
 .stat-val{font-size:18px;font-weight:bold;margin-top:4px;}
-.stat-lbl{font-size:11px;color:#94a3b8;}
-.hist-item{background:#1e293b;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;}
-.sim-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e293b;font-size:13px;}
-h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
-.small{font-size:12px;color:#64748b;}
-.divider{border:none;border-top:1px solid #1e293b;margin:10px 0;}
+.stat-lbl{font-size:11px;color(--text-muted);}
+.hist-item{background:var(--input);border-radius:10px;padding:12px;margin-bottom:8px;font-size:13px;}
+.sim-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--input);font-size:13px;}
+.divider{border:none;border-top:1px solid var(--input);margin:12px 0;}
 </style>
 </head>
 <body>
-<div style="max-width:680px;margin:auto;">
+<div style="max-width:600px;margin:auto;">
 
-<div style="text-align:center;margin-bottom:14px;padding-top:4px;">
-  <span style="font-size:20px;font-weight:bold;">📊 ETF PEA</span>
-  <span id="last-update" style="display:block;font-size:11px;color:#64748b;margin-top:2px;"></span>
+<div style="text-align:center;margin-bottom:16px;font-size:18px;font-weight:700;letter-spacing:-0.5px;">
+  Mon Assistant ETF PEA
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('marche')">Marché</button>
+  <button class="tab active" onclick="showTab('portefeuille')">Saisie</button>
   <button class="tab" onclick="showTab('analyse')">Analyse</button>
-  <button class="tab" onclick="showTab('stats')">Stats</button>
-  <button class="tab" onclick="showTab('historique')">Historique</button>
-  <button class="tab" onclick="showTab('config')">Config</button>
+  <button class="tab" onclick="showTab('stats')">Suivi</button>
+  <button class="tab" onclick="showTab('historique')">Ordres</button>
+  <button class="tab" onclick="showTab('config')">Cibles</button>
 </div>
 
-<div id="tab-marche" class="section active">
-  <button class="btn-orange" id="btn-refresh" onclick="fetchLivePrices()">⚡ Récupérer les cours en direct (<3s)</button>
-  
+<!-- SECTION 1 : SAISIE -->
+<div id="tab-portefeuille" class="section active">
   <div class="card">
-    <h2>Prix du marché <span style="font-size:11px;">(Flux Internet)</span></h2>
-    <div id="prix-list"></div>
-    <hr class="divider">
-    <div class="small" style="margin-bottom:12px;">Ajuster ou vérifier les valeurs reçues :</div>
-    
-    <div class="row"><label><span class="tag tag-usa">Amundi S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-usa">En attente du flux direct...</div>
-    
-    <div class="row"><label><span class="tag tag-eu">BNP Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-eu">En attente du flux direct...</div>
-    
-    <div class="row"><label><span class="tag tag-em">Amundi Emergents</span></label><input id="p_em" type="number" inputmode="decimal"></div>
-    <div class="info-live" id="live-em">En attente du flux direct...</div>
-    
-    <button class="btn-blue" onclick="validerPrix()">✅ Valider et figer ces prix</button>
+    <h2>1. Cours actuels (€)</h2>
+    <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="updatePrixTotaux()"></div>
+    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="updatePrixTotaux()"></div>
+    <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="updatePrixTotaux()"></div>
   </div>
-  <div id="alertes-marche"></div>
+
+  <div class="card">
+    <h2>2. Vos Parts Actuelles</h2>
+    <div class="row"><label><span class="tag tag-usa">S&P 500</span> parts</label><input id="usa_q" type="number" inputmode="decimal" placeholder="0" oninput="saveInputs()"></div>
+    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span> parts</label><input id="eu_q" type="number" inputmode="decimal" placeholder="0" oninput="saveInputs()"></div>
+    <div class="row"><label><span class="tag tag-em">Emergents</span> parts</label><input id="em_q" type="number" inputmode="decimal" placeholder="0" oninput="saveInputs()"></div>
+    <hr class="divider">
+    <div class="row"><label>Budget à investir</label><input id="budget" type="number" inputmode="decimal" placeholder="En euros (€)" oninput="saveInputs()"></div>
+    <button class="btn-blue" style="margin-top:10px;" onclick="executerAnalyse()">🚀 Lancer l'analyse</button>
+  </div>
 </div>
 
+<!-- SECTION 2 : ANALYSE -->
 <div id="tab-analyse" class="section">
-  <div class="card">
-    <h2>Portefeuille actuel</h2>
-    <div class="row"><label><span class="tag tag-usa">S&P 500</span> parts</label><input id="usa_q" type="number" inputmode="decimal" placeholder="0"></div>
-    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span> parts</label><input id="eu_q" type="number" inputmode="decimal" placeholder="0"></div>
-    <div class="row"><label><span class="tag tag-em">Emergents</span> parts</label><input id="em_q" type="number" inputmode="decimal" placeholder="0"></div>
-    <hr class="divider">
-    <div class="row"><label>Budget (€)</label><input id="budget" type="number" inputmode="decimal" placeholder="0"></div>
-    <button class="btn-blue" onclick="calc()">Analyse</button>
+  <div class="prix-grid">
+    <div class="prix-box"><div>S&P 500</div><span id="v-usa">--</span></div>
+    <div class="prix-box"><div>Stoxx 600</div><span id="v-eu">--</span></div>
+    <div class="prix-box"><div>Emergents</div><span id="v-em">--</span></div>
   </div>
   <div id="res-analyse"></div>
 </div>
 
+<!-- SECTION 3 : SUIVI -->
 <div id="tab-stats" class="section">
   <div id="stats-container"></div>
 </div>
 
+<!-- SECTION 4 : ORDRES -->
 <div id="tab-historique" class="section">
   <div id="hist-container"></div>
-  <button class="btn-gray" onclick="exportCSV()" style="margin-bottom:6px;">📤 Exporter CSV</button>
-  <button class="btn-red" onclick="clearHist()">🗑 Effacer l'historique</button>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button class="btn-gray" onclick="exportCSV()">📤 Exporter CSV</button>
+    <button class="btn-red" style="padding:10px;" onclick="clearHist()">🗑️ Reset</button>
+  </div>
 </div>
 
+<!-- SECTION 5 : CIBLES -->
 <div id="tab-config" class="section">
   <div class="card">
-    <h2>Allocation cible</h2>
-    <div class="small" style="margin-bottom:10px;">Doit totaliser 100%</div>
-    <div class="row"><label>USA (%)</label><input id="c_usa" type="number" inputmode="decimal"></div>
-    <div class="row"><label>Europe (%)</label><input id="c_eu" type="number" inputmode="decimal"></div>
-    <div class="row"><label>Emergents (%)</label><input id="c_em" type="number" inputmode="decimal"></div>
-    <div id="cible-total" style="margin:8px 0;font-size:13px;"></div>
-    <button class="btn-green" onclick="saveCibles()">Enregistrer</button>
+    <h2>Allocation Cible (%)</h2>
+    <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+    <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+    <div class="row"><label>Emergents</label><input id="c_em" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+    <div id="cible-total" style="margin-top:10px;font-size:13px;font-weight:bold;"></div>
+    <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
   </div>
   <div class="card">
-    <h2>Alertes déviation</h2>
-    <div class="row"><label>Seuil (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
-    <div class="small">Ex: 5 = alerte si déviation > 5% de la cible</div>
-    <button class="btn-green" onclick="saveSettings()" style="margin-top:8px;">Enregistrer</button>
+    <h2>Seuils d'alerte</h2>
+    <div class="row"><label>Déviation (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
+    <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Appliquer le seuil</button>
   </div>
 </div>
 
@@ -130,122 +137,66 @@ h2{margin:0 0 12px;font-size:16px;color:#94a3b8;font-weight:500;}
 
 <script>
 function loadData() {
-  var local = localStorage.getItem("etf_pea_v2");
+  var local = localStorage.getItem("etf_manual_pea_v3");
   if (local) {
-    try { 
-      var parsed = JSON.parse(local); 
-      if (!parsed.prix_manuels) parsed.prix_manuels = { usa: 0, eu: 0, em: 0 };
-      return parsed;
-    } catch(e) {}
+    try { return JSON.parse(local); } catch(e) {}
   }
   return {
     cibles: { usa: 60, eu: 30, em: 10 },
-    portefeuille: { usa_q: 0, eu_q: 0, em_q: 0 },
-    prix_manuels: { usa: 0, eu: 0, em: 0 },
+    portefeuille: { usa_q: '', eu_q: '', em_q: '' },
+    prix: { usa: 56.34, eu: 20.47, em: 7.75 },
     historique: [],
-    settings: { budget: 0, alerte_seuil: 5 }
+    settings: { budget: '', alerte_seuil: 5 }
   };
 }
 
-function saveData(d) { localStorage.setItem("etf_pea_v2", JSON.stringify(d)); }
+function saveData(d) { localStorage.setItem("etf_manual_pea_v3", JSON.stringify(d)); }
 
 var appData = loadData();
-var prixData = {
-  usa: { current: appData.prix_manuels.usa },
-  eu:  { current: appData.prix_manuels.eu },
-  em:  { current: appData.prix_manuels.em }
-};
-
-var etfsMeta = [
-  {k:'usa', label:'Amundi S&P 500', tag:'tag-usa'},
-  {k:'eu',  label:'BNP Stoxx 600',  tag:'tag-eu'},
-  {k:'em',  label:'Amundi Emergents',tag:'tag-em'}
-];
 
 function init() {
-  renderPrix();
-  checkAlertes();
-  fetchLivePrices(); // Lance la synchro automatique au démarrage
+  document.getElementById('p_usa').value = appData.prix.usa;
+  document.getElementById('p_eu').value = appData.prix.eu;
+  document.getElementById('p_em').value = appData.prix.em;
   
-  var p = appData.portefeuille;
-  if(p.usa_q) document.getElementById('usa_q').value = p.usa_q;
-  if(p.eu_q)  document.getElementById('eu_q').value  = p.eu_q;
-  if(p.em_q)  document.getElementById('em_q').value  = p.em_q;
-  if(appData.settings.budget) document.getElementById('budget').value = appData.settings.budget;
+  document.getElementById('usa_q').value = appData.portefeuille.usa_q;
+  document.getElementById('eu_q').value = appData.portefeuille.eu_q;
+  document.getElementById('em_q').value = appData.portefeuille.em_q;
+  document.getElementById('budget').value = appData.settings.budget;
   
   document.getElementById('c_usa').value = appData.cibles.usa;
   document.getElementById('c_eu').value = appData.cibles.eu;
   document.getElementById('c_em').value = appData.cibles.em;
   document.getElementById('alerte_seuil').value = appData.settings.alerte_seuil;
   
-  updateCibleTotal();
+  updatePrixTotaux();
 }
 
-async function fetchLivePrices() {
-  const btn = document.getElementById('btn-refresh');
-  btn.textContent = "⚡ Récupération des cours...";
-  btn.disabled = true;
-
-  // Utilisation d'un proxy CORS ultra-rapide et performant
-  const proxy = "https://cors-leopold.com/?url=";
-  
-  const urls = {
-    usa: "https://query1.finance.yahoo.com/v8/finance/chart/500.PA?interval=1d&range=1d", 
-    eu:  "https://query1.finance.yahoo.com/v8/finance/chart/ETZ.PA?interval=1d&range=1d",
-    em:  "https://query1.finance.yahoo.com/v8/finance/chart/AEEM.PA?interval=1d&range=1d"
+function saveInputs() {
+  appData.prix = {
+    usa: +document.getElementById('p_usa').value || 0,
+    eu: +document.getElementById('p_eu').value || 0,
+    em: +document.getElementById('p_em').value || 0
   };
+  appData.portefeuille = {
+    usa_q: document.getElementById('usa_q').value,
+    eu_q: document.getElementById('eu_q').value,
+    em_q: document.getElementById('em_q').value
+  };
+  appData.settings.budget = document.getElementById('budget').value;
+  saveData(appData);
+}
 
-  async function getLivePrice(url) {
-    try {
-      let res = await fetch(proxy + encodeURIComponent(url));
-      let json = await res.json();
-      return json.chart.result[0].meta.regularMarketPrice;
-    } catch(e) {
-      return null;
-    }
-  }
-
-  // Requêtes simultanées
-  const [pUsa, pEu, pEm] = await Promise.all([
-    getLivePrice(urls.usa),
-    getLivePrice(urls.eu),
-    getLivePrice(urls.em)
-  ]);
-
-  if (pUsa) {
-    document.getElementById('p_usa').value = pUsa.toFixed(2);
-    document.getElementById('live-usa').innerHTML = `📈 Reçu en direct : <b>${pUsa.toFixed(2)} €</b>`;
-  } else {
-    document.getElementById('live-usa').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
-  }
-
-  if (pEu) {
-    document.getElementById('p_eu').value = pEu.toFixed(2);
-    document.getElementById('live-eu').innerHTML = `📈 Reçu en direct : <b>${pEu.toFixed(2)} €</b>`;
-  } else {
-    document.getElementById('live-eu').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
-  }
-
-  if (pEm) {
-    document.getElementById('p_em').value = pEm.toFixed(2);
-    document.getElementById('live-em').innerHTML = `📈 Reçu en direct : <b>${pEm.toFixed(2)} €</b>`;
-  } else {
-    document.getElementById('live-em').innerHTML = `⚠️ Échec de connexion (valeur conservée)`;
-  }
-
-  var now = new Date();
-  document.getElementById('last-update').textContent = 'Synchronisé à : ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-
-  btn.textContent = "⚡ Récupérer les cours en direct (<3s)";
-  btn.disabled = false;
-  
-  // Enregistre automatiquement les cours récupérés sans forcer une pop-up intrusive
-  validerPrix(true);
+function updatePrixTotaux() {
+  saveInputs();
+  document.getElementById('v-usa').textContent = appData.prix.usa.toFixed(2) + ' €';
+  document.getElementById('v-eu').textContent = appData.prix.eu.toFixed(2) + ' €';
+  document.getElementById('v-em').textContent = appData.prix.em.toFixed(2) + ' €';
 }
 
 function showTab(name) {
-  var names = ['marche','analyse','stats','historique','config'];
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', names[i]===name));
+  var tabs = ['portefeuille','analyse','stats','historique','config'];
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(name==='stats') renderStats();
@@ -253,309 +204,229 @@ function showTab(name) {
   if(name==='config') updateCibleTotal();
 }
 
-function renderPrix() {
-  var html = '';
-  etfsMeta.forEach(function(e) {
-    var p = prixData[e.k];
-    html += '<div class="prix-card">'+
-      '<span class="tag '+e.tag+'">'+e.label+'</span>'+
-      '<span class="prix-val">'+(p.current > 0 ? p.current.toFixed(2)+' €' : '— €')+'</span>'+
-    '</div>';
-    if(p.current > 0) document.getElementById('p_'+e.k).value = p.current.toFixed(2);
-  });
-  document.getElementById('prix-list').innerHTML = html;
-}
-
-function validerPrix(silent = false) {
-  var pu = +document.getElementById('p_usa').value;
-  var pe = +document.getElementById('p_eu').value;
-  var pm = +document.getElementById('p_em').value;
-  if(!pu || !pe || !pm) return;
-  
-  prixData.usa.current = pu;
-  prixData.eu.current = pe;
-  prixData.em.current = pm;
-  
-  appData.prix_manuels = { usa: pu, eu: pe, em: pm };
-  saveData(appData);
-  
-  renderPrix();
-  checkAlertes();
-  if(!silent) alert('Cours validés et sauvegardés pour l\'analyse.');
-}
-
-function checkAlertes() {
-  var p=appData.portefeuille;
-  var u=(p.usa_q||0)*prixData.usa.current;
-  var e=(p.eu_q||0)*prixData.eu.current;
-  var m=(p.em_q||0)*prixData.em.current;
-  var t=u+e+m;
-  if(!t){document.getElementById('alertes-marche').innerHTML='';return;}
-  var pU=(u/t)*100,pE=(e/t)*100,pM=(m/t)*100;
-  var seuil=appData.settings.alerte_seuil||5;
-  var alertes=[];
-  if(Math.abs(pU-appData.cibles.usa)>seuil) alertes.push('S&P 500 : '+pU.toFixed(1)+'% vs cible '+appData.cibles.usa+'%');
-  if(Math.abs(pE-appData.cibles.eu)>seuil)  alertes.push('Stoxx 600 : '+pE.toFixed(1)+'% vs cible '+appData.cibles.eu+'%');
-  if(Math.abs(pM-appData.cibles.em)>seuil)  alertes.push('Emergents : '+pM.toFixed(1)+'% vs cible '+appData.cibles.em+'%');
-  var el=document.getElementById('alertes-marche');
-  if(alertes.length) {
-    el.innerHTML='<div class="alert-box">⚠️ <b>Déséquilibre détecté</b><br>' + alertes.join('<br>') + '</div>';
-  } else {
-    el.innerHTML='<div style="background:#1a3a2a;border-radius:8px;padding:10px;font-size:13px;color:#34d399;">✅ Portefeuille équilibré</div>';
-  }
+function executerAnalyse() {
+  saveInputs();
+  showTab('analyse');
+  calc();
 }
 
 function calc() {
-  var uq=+document.getElementById('usa_q').value||0;
-  var eq=+document.getElementById('eu_q').value||0;
-  var mq=+document.getElementById('em_q').value||0;
-  var budget=+document.getElementById('budget').value||0;
-  var up=prixData.usa.current,ep=prixData.eu.current,mp=prixData.em.current;
+  var uq = +appData.portefeuille.usa_q || 0;
+  var eq = +appData.portefeuille.eu_q || 0;
+  var mq = +appData.portefeuille.em_q || 0;
+  var b = +appData.settings.budget || 0;
+  
+  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+  var u = uq*up, e = eq*ep, m = mq*mp, totActuel = u+e+m;
+  
+  if(!totActuel && !b) {
+    document.getElementById('res-analyse').innerHTML = '<div class="card">⚠️ Indiquez au moins vos parts ou un budget.</div>';
+    return;
+  }
 
-  appData.portefeuille={usa_q:uq,eu_q:eq,em_q:mq};
-  appData.settings.budget=budget;
-  saveData(appData);
+  var pU = totActuel ? (u/totActuel)*100 : 0;
+  var pE = totActuel ? (e/totActuel)*100 : 0;
+  var pM = totActuel ? (m/totActuel)*100 : 0;
+  
+  // ALGORITHME DE SÉLECTION D'UN SEUL ETF (ÉCONOMIE DE FRAIS DE COURTAGE)
+  var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
+  var devU = cU - pU;
+  var devE = cE - pE;
+  var devM = cM - pM;
+  
+  var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
+  
+  if (devE >= devU && devE >= devM) {
+    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
+  } else if (devM >= devU && devM >= devE) {
+    cibleNom = 'Amundi Emergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
+  } else {
+    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
+  }
 
-  var u=uq*up,e=eq*ep,m=mq*mp,t=u+e+m;
-  var res=document.getElementById('res-analyse');
-  if(!t){res.innerHTML='<div class="card">⚠️ Indique le nombre de parts du portefeuille actuel.</div>';return;}
+  // Calcul du nombre de parts max possibles sur cet ETF unique en déduisant 1€ de frais fixes
+  var nParts = 0;
+  var cashAchatNecessaire = 0;
+  if (b > 1 && ciblePrix > 0) {
+    nParts = Math.floor((b - 1) / ciblePrix);
+    cashAchatNecessaire = (nParts * ciblePrix) + 1; // Parts + 1€ de frais
+  }
+  var resteCash = b - cashAchatNecessaire;
 
-  var pU=(u/t)*100,pE=(e/t)*100,pM=(m/t)*100;
-  var cU=appData.cibles.usa,cE=appData.cibles.eu,cM=appData.cibles.em;
-  var eU=cU-pU,eE=cE-pE,eM=cM-pM;
+  var seuil = appData.settings.alerte_seuil || 5;
+  var alertHtml = '';
+  var hasAlerte = Math.abs(pU-cU)>seuil || Math.abs(pE-cE)>seuil || Math.abs(pM-cM)>seuil;
+  
+  if(hasAlerte && totActuel > 0) {
+    alertHtml = '<div class="alert-status" style="background:#2a1e00; color:var(--em); border-left:4px solid var(--em);">⚠️ Portefeuille déséquilibré (Seuil > '+seuil+'%)</div>';
+  } else if (totActuel > 0) {
+    alertHtml = '<div class="alert-status" style="background:#13271e; color:var(--eu); border-left:4px solid var(--eu);">✅ Répartition équilibrée conforme aux cibles</div>';
+  }
 
-  var achat,prix,tag,label;
-  if(eE>=eU&&eE>=eM){achat='BNP Stoxx 600';prix=ep;tag='eu';label='tag-eu';}
-  else if(eM>=eU){achat='Amundi Emergents';prix=mp;tag='em';label='tag-em';}
-  else{achat='Amundi S&P 500';prix=up;tag='usa';label='tag-usa';}
+  var html = '<div class="card">' +
+    '<h2>Allocation Actuelle</h2>' +
+    barLine('Amundi S&P 500', 'tag-usa', pU, cU) +
+    barLine('BNP Stoxx 600', 'tag-eu', pE, cE) +
+    barLine('Amundi Emergents', 'tag-em', pM, cM) +
+    '<div class="bar-container">' +
+      '<div class="bar" style="background:var(--usa);width:'+pU+'%"></div>' +
+      '<div class="bar" style="background:var(--eu);width:'+pE+'%"></div>' +
+      '<div class="bar" style="background:var(--em);width:'+pM+'%"></div>' +
+    '</div>' +
+    '<div style="font-size:13px; text-align:right; color:var(--text-muted); margin-top:6px;">Valeur : <b>'+totActuel.toFixed(2)+' €</b></div>' +
+    alertHtml +
+  '</div>';
 
-  var nb=prix>0?Math.floor((budget-1)/prix):0;
-  if(nb<0)nb=0;
-
-  var simHtml=genSimulation(uq,eq,mq,up,ep,mp,budget,cU,cE,cM);
-
-  res.innerHTML=
-    '<div class="card">'+
-      '<h2>Allocation actuelle</h2>'+
-      barLine('Amundi S&P 500','tag-usa',pU,cU)+
-      barLine('BNP Stoxx 600','tag-eu',pE,cE)+
-      barLine('Amundi Emergents','tag-em',pM,cM)+
-      '<div class="bar-container" style="margin-top:10px;">'+
-        '<div class="bar" style="background:#38bdf8;width:'+pU+'%"></div>'+
-        '<div class="bar" style="background:#34d399;width:'+pE+'%"></div>'+
-        '<div class="bar" style="background:#fbbf24;width:'+pM+'%"></div>'+
-      '</div>'+
-      '<hr class="divider">'+
-      'Valeur totale : <b>'+t.toFixed(2)+' €</b>'+
-    '</div>'+
-    '<div class="card" style="border-left:3px solid #38bdf8;">'+
-      '<h2>Achat suggéré</h2>'+
-      '<span class="tag '+label+'">'+achat+'</span> — <b>'+nb+' part'+(nb>1?'s':'')+'</b><br>'+
-      '<span style="color:#94a3b8;font-size:13px;">Cours : '+prix.toFixed(2)+' € | Total estimé : '+(nb*prix).toFixed(2)+' €</span>'+
-      (nb>0
-        ? '<button class="btn-green" onclick="enregistrerAchat(\''+achat+'\',\''+tag+'\','+nb+','+prix.toFixed(2)+')" style="margin-top:10px;">✅ Enregistrer cet achat</button>'
-        : '<br><br><span style="color:#f87171;font-size:13px;">⚠️ Budget trop bas pour acheter une part entière.</span>')+
-    '</div>'+
-    simHtml;
+  if (b > 0) {
+    html += '<div class="card" style="border-top:4px solid var(--usa);">' +
+      '<h2>Ordre Unique Suggéré (Frais optimisés)</h2>';
+      if(nParts > 0) {
+        html += '<div style="margin:8px 0; font-size:16px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+        '<div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">Prix des parts : '+(nParts * ciblePrix).toFixed(2)+' € + 1.00 € (Frais d\'ordre)</div>' +
+        '<hr class="divider">' +
+        '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px;">' +
+          '<span>Total débité du compte : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
+          '<span style="color:var(--em);">Reste : <b>'+resteCash.toFixed(2)+' €</b></span>' +
+        '</div>' +
+        '<button class="btn-green" onclick="validerAchatUnique(\''+cibleNom+'\',\''+cibleTag+'\','+nParts+','+ciblePrix+')">✅ Valider et enregistrer cet unique ordre</button>';
+      } else {
+        html += '<div style="color:#f87171; font-size:13px; padding:6px 0;">⚠️ Budget trop juste ('+b+' €) pour acquérir 1 part de '+cibleNom+' après déduction de 1 € de frais.</div>';
+      }
+    html += '</div>';
+  }
+  
+  document.getElementById('res-analyse').innerHTML = html;
 }
 
-function barLine(label,tag,val,cible){
-  var diff=val-cible;
-  var color=Math.abs(diff)<3?'#34d399':Math.abs(diff)<7?'#fbbf24':'#f87171';
-  return '<div style="display:flex;justify-content:space-between;font-size:13px;margin:5px 0;">'+
-    '<span class="tag '+tag+'">'+label+'</span>'+
-    '<span>'+val.toFixed(1)+'% <span style="color:'+color+';">'+(diff>=0?'+':'')+diff.toFixed(1)+'%</span> / cible '+cible+'%</span>'+
+function barLine(label, tag, val, cible) {
+  var diff = val - cible;
+  return '<div style="display:flex;justify-content:space-between;font-size:13px;margin:6px 0;">' +
+    '<span><span class="tag '+tag+'">'+label+'</span></span>' +
+    '<span><b>'+val.toFixed(1)+'%</b> <span style="color:'+(Math.abs(diff)<3?'var(--eu)':diff>0?'var(--em)':'#f87171')+';">('+(diff>=0?'+':'')+diff.toFixed(1)+'%)</span> / cible '+cible+'%</span>' +
   '</div>';
 }
 
-function genSimulation(uq,eq,mq,up,ep,mp,budget,cU,cE,cM){
-  if(!budget) return '';
-  var qu=uq,qe=eq,qm=mq,rows='',mois=0;
-  while(mois<24){
-    mois++;
-    var u=qu*up,e=qe*ep,m=qm*mp,t=u+e+m;
-    var pU=(u/t)*100,pE=(e/t)*100,pM=(m/t)*100;
-    var eU=cU-pU,eE=cE-pE,eM=cM-pM;
-    var etf,prix,k,tagClass;
-    if(eE>=eU&&eE>=eM){etf='BNP Stoxx 600';prix=ep;k='eu';tagClass='tag-eu';}
-    else if(eM>=eU){etf='Amundi Emergents';prix=mp;k='em';tagClass='tag-em';}
-    else{etf='Amundi S&P 500';prix=up;k='usa';tagClass='tag-usa';}
-    var nb=prix>0?Math.floor((budget-1)/prix):0;
-    if(nb<0)nb=0;
-    if(k==='usa')qu+=nb; else if(k==='eu')qe+=nb; else qm+=nb;
-    var newT=qu*up+qe*ep+qm*mp;
-    var nU=(qu*up/newT)*100,nE=(qe*ep/newT)*100,nM=(qm*mp/newT)*100;
-    var ok=Math.abs(nU-cU)<3&&Math.abs(nE-cE)<3&&Math.abs(nM-cM)<3;
-    rows+='<div class="sim-row">'+
-      '<span style="color:#64748b;min-width:36px;">M+'+mois+'</span>'+
-      '<span class="tag '+tagClass+'">'+etf+'</span>'+
-      '<span style="color:#94a3b8;">×'+nb+'</span>'+
-      '<span style="color:#64748b;">'+newT.toFixed(0)+' €</span>'+
-      (ok?'<span style="color:#34d399;font-weight:bold;">✓</span>':'<span style="color:#64748b;">→</span>')+
-    '</div>';
-    if(ok) break;
-  }
-  return '<div class="card"><h2>Simulation d\'équilibrage progressif</h2>'+rows+'</div>';
-}
+function validerAchatUnique(nom, tag, nb, prix) {
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  var netTotal = (nb * prix);
+  
+  // Enregistrement brut (hors frais pour garder un PRU exact basé sur les parts réelles)
+  appData.historique.unshift({date:dateStr, etf:nom, tag:tag, nb:nb, prix:prix, total:netTotal.toFixed(2)});
 
-function enregistrerAchat(etf,tag,nb,prix){
-  var now=new Date();
-  var dateStr=now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  appData.historique.unshift({date:dateStr,etf:etf,tag:tag,nb:nb,prix:prix,total:(nb*prix).toFixed(2)});
-  if(tag==='usa') appData.portefeuille.usa_q=(+appData.portefeuille.usa_q||0)+nb;
-  else if(tag==='eu') appData.portefeuille.eu_q=(+appData.portefeuille.eu_q||0)+nb;
-  else appData.portefeuille.em_q=(+appData.portefeuille.em_q||0)+nb;
-  document.getElementById('usa_q').value=appData.portefeuille.usa_q;
-  document.getElementById('eu_q').value=appData.portefeuille.eu_q;
-  document.getElementById('em_q').value=appData.portefeuille.em_q;
+  if(tag==='usa') appData.portefeuille.usa_q = (+appData.portefeuille.usa_q || 0) + nb;
+  if(tag==='eu') appData.portefeuille.eu_q = (+appData.portefeuille.eu_q || 0) + nb;
+  if(tag==='em') appData.portefeuille.em_q = (+appData.portefeuille.em_q || 0) + nb;
+  
+  appData.settings.budget = '';
+  document.getElementById('budget').value = '';
+  
+  document.getElementById('usa_q').value = appData.portefeuille.usa_q;
+  document.getElementById('eu_q').value = appData.portefeuille.eu_q;
+  document.getElementById('em_q').value = appData.portefeuille.em_q;
+  
   saveData(appData);
-  calc();
-  alert('✅ Achat enregistré !');
+  executerAnalyse();
+  alert('✅ Ordre unique enregistré ! Vos positions ont été incrémentées.');
 }
 
-function renderStats(){
-  var hist=appData.historique;
-  var p=appData.portefeuille;
-  var up=prixData.usa.current,ep=prixData.eu.current,mp=prixData.em.current;
-  var uq=p.usa_q||0,eq=p.eu_q||0,mq=p.em_q||0;
-  var valActuelle=uq*up+eq*ep+mq*mp;
-  var inv={usa:0,eu:0,em:0},pts={usa:0,eu:0,em:0};
+function renderStats() {
+  var hist = appData.historique;
+  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+  var uq = +appData.portefeuille.usa_q || 0;
+  var eq = +appData.portefeuille.eu_q || 0;
+  var mq = +appData.portefeuille.em_q || 0;
+  
+  var valActuelle = (uq*up) + (eq*ep) + (mq*mp);
+  var inv = {usa:0, eu:0, em:0}, parts = {usa:0, eu:0, em:0};
+  
   hist.forEach(function(a){
-    inv[a.tag]+=parseFloat(a.total);
-    pts[a.tag]+=a.nb;
+    inv[a.tag] += parseFloat(a.total);
+    parts[a.tag] += a.nb;
   });
-  var totalInvesti=inv.usa+inv.eu+inv.em;
-  var gain=valActuelle-totalInvesti;
-  var perf=totalInvesti>0?(gain/totalInvesti*100):0;
+  
+  var totalInvesti = inv.usa + inv.eu + inv.em;
+  var gain = valActuelle - totalInvesti;
+  var perf = totalInvesti > 0 ? (gain / totalInvesti * 100) : 0;
 
-  function pru(k,px){return pts[k]>0?(inv[k]/pts[k]).toFixed(2)+' €':'—';}
-  function perfETF(k,px){
-    if(!pts[k]) return {v:'—',c:'#94a3b8'};
-    var g=((px-(inv[k]/pts[k]))/(inv[k]/pts[k])*100);
-    return {v:(g>=0?'+':'')+g.toFixed(1)+'%',c:g>=0?'#34d399':'#f87171'};
-  }
+  function getPru(k) { return parts[k] > 0 ? (inv[k]/parts[k]).toFixed(2) + ' €' : '—'; }
 
-  var moisMap={};
-  hist.forEach(function(a){
-    var key=a.date.substring(3,10);
-    if(!moisMap[key]){moisMap[key]={investi:0,count:0};}
-    moisMap[key].investi+=parseFloat(a.total);
-    moisMap[key].count++;
-  });
-  var moisRows=Object.keys(moisMap).reverse().map(function(k){
-    return '<div class="sim-row">'+
-      '<span style="color:#94a3b8;">'+k+'</span>'+
-      '<span>'+moisMap[k].count+' achat'+(moisMap[k].count>1?'s':'')+'</span>'+
-      '<span style="color:#38bdf8;">'+moisMap[k].investi.toFixed(0)+' €</span>'+
+  document.getElementById('stats-container').innerHTML = 
+    '<div class="card">' +
+      '<h2>Performance Totale (via Historique)</h2>' +
+      '<div class="stat-grid">' +
+        '<div class="stat-box"><div class="stat-lbl">Actuel</div><div class="stat-val">'+valActuelle.toFixed(0)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Investi</div><div class="stat-val">'+totalInvesti.toFixed(0)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Plus/Moins value</div><div class="stat-val" style="color:'+(gain>=0?'var(--eu)':'#f87171')+';">'+(gain>=0?'+':'')+gain.toFixed(1)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perf>=0?'var(--eu)':'#f87171')+';">'+(perf>=0?'+':'')+perf.toFixed(1)+'%</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<h2>Prix de Revient Moyen (PRU)</h2>' +
+      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+getPru('usa')+'</b></span> <span style="color:var(--text-muted);">Cours : '+up+' €</span></div>' +
+      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU : <b>'+getPru('eu')+'</b></span> <span style="color:var(--text-muted);">Cours : '+ep+' €</span></div>' +
+      '<div class="sim-row"><span class="tag tag-em">Emergents</span> <span>PRU : <b>'+getPru('em')+'</b></span> <span style="color:var(--text-muted);">Cours : '+mp+' €</span></div>' +
+    '</div>';
+}
+
+function renderHist() {
+  var hist = appData.historique;
+  var c = document.getElementById('hist-container');
+  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);">Aucun ordre mémorisé.</div>'; return; }
+  
+  var rows = hist.map(function(a){
+    var cl = 'tag-' + a.tag;
+    return '<div class="hist-item">' +
+      '<span class="tag '+cl+'">'+a.etf+'</span> <b>+'+a.nb+'</b> part(s) @ '+a.prix.toFixed(2)+'€' +
+      '<span style="float:right;font-weight:600;color:var(--eu);">'+a.total+' €</span>' +
+      '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">'+a.date+'</div>' +
     '</div>';
   }).join('');
-
-  var pe=perfETF('eu',ep),pm=perfETF('em',mp),pu2=perfETF('usa',up);
-
-  document.getElementById('stats-container').innerHTML=
-    '<div class="card">'+
-      '<h2>Performance Globale</h2>'+
-      '<div class="stat-grid">'+
-        '<div class="stat-box"><div class="stat-lbl">Valeur actuelle</div><div class="stat-val">'+valActuelle.toFixed(0)+' €</div></div>'+
-        '<div class="stat-box"><div class="stat-lbl">Total investi</div><div class="stat-val">'+totalInvesti.toFixed(0)+' €</div></div>'+
-        '<div class="stat-box"><div class="stat-lbl">Plus/Moins value</div><div class="stat-val" style="color:'+(gain>=0?'#34d399':'#f87171')+';">'+(gain>=0?'+':'')+gain.toFixed(0)+' €</div></div>'+
-        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perf>=0?'#34d399':'#f87171')+';">'+(perf>=0?'+':'')+perf.toFixed(1)+'%</div></div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="card">'+
-      '<h2>Prix de revient moyen (PRU)</h2>'+
-      '<div style="font-size:13px;">'+
-        statRow('Amundi S&P 500','tag-usa',pru('usa',up),up.toFixed(2)+' €',pu2)+
-        statRow('BNP Stoxx 600','tag-eu',pru('eu',ep),ep.toFixed(2)+' €',pe)+
-        statRow('Amundi Emergents','tag-em',pru('em',mp),mp.toFixed(2)+' €',pm)+
-      '</div>'+
-    '</div>'+
-    (moisRows?'<div class="card"><h2>Historique par mois</h2>'+moisRows+'</div>':'');
+  c.innerHTML = '<div class="card"><h2>Registre d\'ordres passés</h2>' + rows + '</div>';
 }
 
-function statRow(label,tag,pru,actuel,perf){
-  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e293b;gap:4px;flex-wrap:wrap;">'+
-    '<span class="tag '+tag+'">'+label+'</span>'+
-    '<span>PRU '+pru+'</span>'+
-    '<span style="color:#94a3b8;">'+actuel+'</span>'+
-    '<span style="color:'+perf.c+';">'+perf.v+'</span>'+
-  '</div>';
-}
-
-function renderHist(){
-  var hist=appData.historique;
-  var c=document.getElementById('hist-container');
-  if(!hist.length){c.innerHTML='<div class="card" style="text-align:center;color:#94a3b8;">Aucun achat enregistré.</div>';return;}
-  var inv={usa:0,eu:0,em:0};
-  hist.forEach(function(a){inv[a.tag]+=parseFloat(a.total);});
-  var tot=inv.usa+inv.eu+inv.em;
-  var rows=hist.map(function(a){
-    var tg='tag-'+(a.tag==='eu'?'eu':a.tag==='em'?'em':'usa');
-    return '<div class="hist-item">'+
-      '<span class="tag '+tg+'">'+a.etf+'</span> <b>'+a.nb+' parts</b> à '+a.prix+' €'+
-      '<span style="float:right;color:#34d399;">'+a.total+' €</span><br>'+
-      '<span style="color:#64748b;font-size:12px;">'+a.date+'</span>'+
-    '</div>';
-  }).join('');
-  c.innerHTML=
-    '<div class="card">'+
-      '<h2>Récapitulatif des investissements</h2>'+
-      '<div style="font-size:13px;">'+
-        '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-usa">Amundi S&P 500</span><span>'+inv.usa.toFixed(2)+' €</span></div>'+
-        '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-eu">BNP Stoxx 600</span><span>'+inv.eu.toFixed(2)+' €</span></div>'+
-        '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span class="tag tag-em">Amundi Emergents</span><span>'+inv.em.toFixed(2)+' €</span></div>'+
-        '<hr class="divider">'+
-        '<div style="display:flex;justify-content:space-between;font-weight:bold;"><span>Total net</span><span>'+tot.toFixed(2)+' €</span></div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="card"><h2>Détail des ordres</h2>'+rows+'</div>';
-}
-
-function exportCSV(){
-  var lines=['Date,ETF,Parts,Prix unitaire,Total'];
-  appData.historique.forEach(function(a){lines.push([a.date,a.etf,a.nb,a.prix,a.total].join(','));});
+function exportCSV() {
+  var lines = ['Date,ETF,Parts,Prix,Total'];
+  appData.historique.forEach(function(a){ lines.push([a.date, a.etf, a.nb, a.prix, a.total].join(',')); });
   var blob = new Blob([lines.join('\n')], {type: 'text/csv;charset=utf-8;'});
   var link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "etf_pea_historique.csv";
+  link.download = "pea_historique.csv";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 }
 
-function clearHist(){
-  if(confirm('Voulez-vous effacer tout l\'historique ?')){
-    appData.historique=[];
+function clearHist() {
+  if(confirm('Supprimer l\'historique ? (Vos parts déjà saisies resteront intactes)')) {
+    appData.historique = [];
     saveData(appData);
     renderHist();
   }
 }
 
-function updateCibleTotal(){
-  var u=+document.getElementById('c_usa').value||0;
-  var e=+document.getElementById('c_eu').value||0;
-  var m=+document.getElementById('c_em').value||0;
-  var t=u+e+m;
-  document.getElementById('cible-total').innerHTML='Total : <b style="color:'+(t===100?'#34d399':'#f87171')+'">'+t+'%</b>'+(t!==100?' ⚠️':'  ✓');
-}
-document.getElementById('c_usa').oninput=updateCibleTotal;
-document.getElementById('c_eu').oninput=updateCibleTotal;
-document.getElementById('c_em').oninput=updateCibleTotal;
-
-function saveCibles(){
-  var u=+document.getElementById('c_usa').value||0;
-  var e=+document.getElementById('c_eu').value||0;
-  var m=+document.getElementById('c_em').value||0;
-  if(u+e+m!==100){alert('L\'allocation totale doit être égale à 100% !');return;}
-  appData.cibles={usa:u,eu:e,em:m};
-  saveData(appData);
-  alert('Cibles sauvegardées.');
+function updateCibleTotal() {
+  var u = +document.getElementById('c_usa').value || 0;
+  var e = +document.getElementById('c_eu').value || 0;
+  var m = +document.getElementById('c_em').value || 0;
+  var t = u + e + m;
+  document.getElementById('cible-total').innerHTML = 'Total : <b style="color:'+(t===100?'var(--eu)':'#f87171')+'">'+t+'%</b>' + (t===100?' ✓':' ⚠️');
 }
 
-function saveSettings(){
-  appData.settings.alerte_seuil=+document.getElementById('alerte_seuil').value||5;
+function saveCibles() {
+  var u = +document.getElementById('c_usa').value || 0;
+  var e = +document.getElementById('c_eu').value || 0;
+  var m = +document.getElementById('c_em').value || 0;
+  if(u+e+m !== 100) { alert('Le total doit faire précisément 100% !'); return; }
+  appData.cibles = { usa: u, eu: e, em: m };
   saveData(appData);
-  alert('Seuil mis à jour.');
+  alert('Cibles de l\'allocation enregistrées.');
+}
+
+function saveSettings() {
+  appData.settings.alerte_seuil = +document.getElementById('alerte_seuil').value || 5;
+  saveData(appData);
+  alert('Seuil appliqué.');
 }
 
 init();
