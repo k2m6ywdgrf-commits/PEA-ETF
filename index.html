@@ -88,7 +88,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;}
 
-/* Graphique en anneau CSS Pur */
+/* Graphiques */
 .donut-wrapper { display: flex; justify-content: center; align-items: center; margin: 20px 0; gap: 24px; }
 .donut { width: 110px; height: 110px; border-radius: 50%; background: conic-gradient(var(--usa) 0%, var(--usa) var(--u-deg), var(--eu) var(--u-deg), var(--eu) var(--e-deg), var(--em) var(--e-deg), var(--em) 100%); position: relative; }
 .donut::before { content: ""; position: absolute; top: 18px; left: 18px; width: 74px; height: 74px; background: #0f1322; border-radius: 50%; }
@@ -96,7 +96,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .donut-legend-item { display: flex; align-items: center; gap: 8px; }
 .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-/* Graphique Historique Temporel CSS / Flex */
 .trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; padding: 10px 5px 0; margin: 15px 0 5px; background: rgba(255,255,255,0.02); border-bottom: 2px solid rgba(255,255,255,0.1); border-radius: 6px; gap: 6px;}
 .trend-bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; position: relative; }
 .trend-bar { width: 100%; background: linear-gradient(to top, #0ea5e9, #a855f7); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; position: relative;}
@@ -123,25 +122,25 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <div id="tab-portefeuille" class="section active">
   <div class="card">
     <h2>1. Valeurs des Cours (€)</h2>
-    <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="saveInputs()"></div>
-    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="saveInputs()"></div>
-    <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="saveInputs()"></div>
+    <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+    <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
   </div>
 
   <div class="card">
-    <h2>2. Vos Positions (Calculées via Registre)</h2>
+    <h2>2. Vos Positions (Calculées)</h2>
     <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
     <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
     <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
-    <p style="font-size:11px;color:var(--text-muted);margin:8px 0 0;">💡 Les compteurs se mettent à jour automatiquement lorsque vous ajoutez des ordres d'achat ou de vente dans l'onglet Mouvements.</p>
     <hr class="divider">
     <h2>3. Nouveau versement</h2>
-    <div class="row"><label>Budget à investir</label><input id="budget" type="number" inputmode="decimal" placeholder="Montant en euros (€)" oninput="saveInputs()"></div>
-    <button class="btn-blue" style="margin-top:10px;" onclick="executerAnalyse()">🚀 Calculer l'ordre optimal</button>
+    <div class="row"><label>Budget à investir</label><input id="budget" type="number" inputmode="decimal" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+    
+    <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
   </div>
 </div>
 
-<!-- ONGLET 2 : ANALYSE, PATRIMOINE & FISCALITÉ -->
+<!-- ONGLET 2 : ANALYSE -->
 <div id="tab-analyse" class="section">
   <div class="card">
     <h2>Structure de l'allocation</h2>
@@ -166,10 +165,10 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div id="res-analyse"></div>
 </div>
 
-<!-- ONGLET 3 : ENREGISTREMENT & REGISTRE -->
+<!-- ONGLET 3 : REGISTRE DE MOUVEMENTS -->
 <div id="tab-historique" class="section">
-  <div class="card">
-    <h2>✍️ Saisir un mouvement</h2>
+  <div class="card" id="formulaire-mouvement">
+    <h2>✍️ Saisir / Ajuster un mouvement</h2>
     <div class="row">
       <label>Opération</label>
       <select id="man_type" onchange="toggleFormType()">
@@ -191,6 +190,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="form-quantite">
       <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" placeholder="Ex: 12"></div>
       <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" placeholder="Ex: 55.40"></div>
+      <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" placeholder="Ex: 1.00"></div>
     </div>
 
     <div id="form-dividende" style="display:none;">
@@ -207,7 +207,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   </div>
 </div>
 
-<!-- ONGLET 4 : CONFIGURATION & GESTION DES VARIABLES -->
+<!-- ONGLET 4 : CONFIGURATION -->
 <div id="tab-config" class="section">
   <div class="card">
     <h2>Répartition Cible (%)</h2>
@@ -218,31 +218,19 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
   </div>
 
-  <!-- SEUILS ET FISCALITÉ DYNAMIQUE -->
   <div class="card">
     <h2>Paramètres Généraux</h2>
     <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
-    <!-- AJOUT CHAMP VARIABLE SOCIALE -->
     <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" placeholder="Frais par défaut"></div>
     <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider les modifications</button>
   </div>
 
   <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
     <h2 style="color:#7dd3fc;">☁️ Sauvegarde Fichier iCloud Drive</h2>
-    <p style="font-size:12px; color:var(--text-muted); line-height:1.4; margin:0 0 14px;">Générez un fichier de sauvegarde physique et déposez-le dans vos dossiers iCloud pour sécuriser vos données.</p>
-    
     <button class="btn-blue" style="padding:12px; font-size:14px; margin-bottom:12px;" onclick="exportJSON()">📤 Exporter le fichier .json</button>
-    
-    <hr class="divider">
-    
-    <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;"><b>Restaurer :</b> Sélectionnez le fichier de sauvegarde depuis vos dossiers iCloud Drive :</p>
     <input type="file" id="json_file_input" accept=".json" style="display:none;" onchange="importJSON(this)">
     <button class="btn-gray" style="border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('json_file_input').click()">📥 Importer un fichier .json</button>
-  </div>
-  
-  <div class="card" style="border-color: rgba(244,63,94,0.2);">
-    <h2>Zone de secours graphique</h2>
-    <button class="btn-red" style="font-size:12px; padding:8px; background:transparent; border:1px solid var(--red); color:var(--red);" onclick="clearPointsHistoriques()">🗑️ Effacer l'historique du graphique</button>
   </div>
 </div>
 
@@ -255,8 +243,8 @@ function loadData() {
     try { 
       var parsed = JSON.parse(local);
       if(!parsed.points_histoire) parsed.points_histoire = [];
-      // Initialisation par défaut si la variable fiscale est absente du vieux JSON
       if(!parsed.settings.taux_fisc) parsed.settings.taux_fisc = 17.2; 
+      if(parsed.settings.frais_courtage === undefined) parsed.settings.frais_courtage = 1.00;
       return parsed;
     } catch(e) {}
   }
@@ -265,7 +253,7 @@ function loadData() {
     prix: { usa: 56.34, eu: 20.47, em: 7.75 },
     historique: [],
     points_histoire: [],
-    settings: { budget: '', alerte_seuil: 5, taux_fisc: 17.2 }
+    settings: { budget: '', alerte_seuil: 5, taux_fisc: 17.2, frais_courtage: 1.00 }
   };
 }
 
@@ -283,11 +271,9 @@ function recalculerQuantitesDepuisHistorique() {
     }
   });
   q.usa = Math.max(0, q.usa); q.eu = Math.max(0, q.eu); q.em = Math.max(0, q.em);
-  
   document.getElementById('lbl_usa_q').textContent = q.usa;
   document.getElementById('lbl_eu_q').textContent = q.eu;
   document.getElementById('lbl_em_q').textContent = q.em;
-  
   return q;
 }
 
@@ -302,8 +288,10 @@ function init() {
   document.getElementById('c_em').value = appData.cibles.em;
   document.getElementById('alerte_seuil').value = appData.settings.alerte_seuil;
   document.getElementById('taux_fisc').value = appData.settings.taux_fisc || 17.2;
+  document.getElementById('frais_courtage').value = appData.settings.frais_courtage !== undefined ? appData.settings.frais_courtage : 1.00;
   
   recalculerQuantitesDepuisHistorique();
+  calculerOrdreOptimal();
 }
 
 function saveInputs() {
@@ -314,7 +302,6 @@ function saveInputs() {
   };
   appData.settings.budget = document.getElementById('budget').value;
   saveData(appData);
-  recalculerQuantitesDepuisHistorique();
 }
 
 function showTab(name) {
@@ -324,6 +311,7 @@ function showTab(name) {
   document.getElementById('tab-'+name).classList.add('active');
   
   saveInputs();
+  if(name==='portefeuille') { recalculerQuantitesDepuisHistorique(); calculerOrdreOptimal(); }
   if(name==='analyse') { renderStats(); renderTrendChart(); calc(); }
   if(name==='historique') renderHist();
   if(name==='config') updateCibleTotal();
@@ -333,16 +321,217 @@ function toggleFormType() {
   var type = document.getElementById('man_type').value;
   document.getElementById('form-quantite').style.display = (type === 'achat' || type === 'vente') ? 'block' : 'none';
   document.getElementById('form-dividende').style.display = type === 'dividende' ? 'block' : 'none';
+  document.getElementById('row-frais-ajustable').style.display = type === 'achat' ? 'flex' : 'none';
 }
 
-function executerAnalyse() {
-  saveInputs();
-  showTab('analyse');
+function calculerOrdreOptimal() {
+  var q = recalculerQuantitesDepuisHistorique();
+  var b = +appData.settings.budget || 0;
+  var container = document.getElementById('suggestion-ordre-container');
+  
+  if (b <= 0) { container.innerHTML = ''; return; }
+
+  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
+  
+  var pU = totActuel ? (u/totActuel)*100 : 0;
+  var pE = totActuel ? (e/totActuel)*100 : 0;
+  var pM = totActuel ? (m/totActuel)*100 : 0;
+
+  var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
+  var devU = cU - pU; var devE = cE - pE; var devM = cM - pM;
+  
+  var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
+  if (devE >= devU && devE >= devM) {
+    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
+  } else if (devM >= devU && devM >= devE) {
+    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
+  } else {
+    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
+  }
+
+  var fraisBase = appData.settings.frais_courtage !== undefined ? appData.settings.frais_courtage : 1.00;
+  var nParts = 0, cashAchatNecessaire = 0;
+  
+  if (b > fraisBase && ciblePrix > 0) {
+    nParts = Math.floor((b - fraisBase) / ciblePrix);
+    cashAchatNecessaire = (nParts * ciblePrix) + fraisBase;
+  }
+  var resteCash = b - cashAchatNecessaire;
+
+  var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border); margin-top:10px;">' +
+    '<h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
+    if(nParts > 0) {
+      html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+      '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Estimation basique : '+(nParts * ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € de frais</div>' +
+      '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px;">' +
+        '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
+        '<span style="color:var(--em);">Reste : <b>'+resteCash.toFixed(2)+' €</b></span>' +
+      '</div>' +
+      '<button class="btn-blue" style="padding:10px; font-size:13px;" onclick="preparerAjustement(\''+cibleTag+'\','+nParts+','+ciblePrix+','+fraisBase+')">⚙️ Ajuster prix & frais réels</button>';
+    } else {
+      html += '<div style="color:var(--red); font-size:13px;">⚠️ Budget trop bas pour acheter au moins 1 part.</div>';
+    }
+  html += '</div>';
+  
+  container.innerHTML = html;
+}
+
+function preparerAjustement(tag, nb, prix, fraisAssocie) {
+  showTab('historique');
+  document.getElementById('man_type').value = 'achat';
+  document.getElementById('man_asset').value = tag;
+  document.getElementById('man_q').value = nb;
+  document.getElementById('man_p').value = prix.toFixed(2);
+  document.getElementById('man_frais').value = fraisAssocie.toFixed(2);
+  
+  toggleFormType();
+  
+  var form = document.getElementById('formulaire-mouvement');
+  form.style.borderColor = 'var(--usa)';
+  setTimeout(function(){ form.style.borderColor = 'var(--glass-border)'; }, 1500);
+}
+
+function ajouterEvenementManuel() {
+  var type = document.getElementById('man_type').value;
+  var asset = document.getElementById('man_asset').value;
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('fr-FR');
+  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
+  
+  if(type === 'achat' || type === 'vente') {
+    var q = +document.getElementById('man_q').value || 0;
+    var p = +document.getElementById('man_p').value || 0;
+    var f = type === 'achat' ? (+document.getElementById('man_frais').value || 0) : 0;
+    
+    if(q <= 0 || p <= 0) { alert('Quantités et prix exigés.'); return; }
+    if(type === 'vente') {
+      var dispo = recalculerQuantitesDepuisHistorique()[asset];
+      if(q > dispo) { alert('Erreur : Vous possédez seulement ' + dispo + ' parts.'); return; }
+    }
+    
+    var totalLigne = (type === 'achat') ? (q * p) + f : (q * p);
+    appData.historique.unshift({
+      type: type, 
+      date: dateStr, 
+      etf: names[asset], 
+      tag: asset, 
+      nb: q, 
+      prix: p, 
+      frais: f, 
+      total: totalLigne.toFixed(2)
+    });
+  } 
+  else if(type === 'dividende') {
+    var m = +document.getElementById('man_div_montant').value || 0;
+    if(m <= 0) { alert('Montant requis.'); return; }
+    appData.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
+  }
+  
+  appData.settings.budget = '';
+  document.getElementById('budget').value = '';
+  
+  saveData(appData);
+  renderHist();
+  alert('✅ Opération validée et inscrite au registre.');
+  
+  document.getElementById('man_q').value = '';
+  document.getElementById('man_p').value = '';
+  document.getElementById('man_frais').value = '';
+  document.getElementById('man_div_montant').value = '';
+  
+  recalculerQuantitesDepuisHistorique();
+  calculerOrdreOptimal();
+}
+
+function renderStats() {
+  var q = recalculerQuantitesDepuisHistorique();
+  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+  var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp);
+  
+  var invTotal = 0, divTotal = 0, realisedGain = 0;
+  var historiqueLignes = { usa: {cash:0, parts:0}, eu: {cash:0, parts:0}, em: {cash:0, parts:0} };
+
+  appData.historique.slice().reverse().forEach(function(m){
+    var netFrais = parseFloat(m.frais || 0);
+    if(m.type === 'achat' || !m.type) {
+      historiqueLignes[m.tag].cash += parseFloat(m.total);
+      historiqueLignes[m.tag].parts += m.nb;
+      invTotal += parseFloat(m.total);
+    } 
+    else if(m.type === 'vente') {
+      var currentPru = historiqueLignes[m.tag].parts > 0 ? (historiqueLignes[m.tag].cash / historiqueLignes[m.tag].parts) : 0;
+      historiqueLignes[m.tag].parts -= m.nb;
+      historiqueLignes[m.tag].cash -= (currentPru * m.nb);
+      invTotal -= parseFloat(m.total);
+      realisedGain += (parseFloat(m.total) - (currentPru * m.nb));
+    } 
+    else if(m.type === 'dividende') {
+      divTotal += parseFloat(m.total);
+    }
+  });
+
+  var baseDenominateur = (historiqueLignes.usa.cash + historiqueLignes.eu.cash + historiqueLignes.em.cash);
+  var netGainLatent = valActuelle - baseDenominateur;
+  var gainGlobalCumule = netGainLatent + divTotal + realisedGain;
+  var perfPourcent = baseDenominateur > 0 ? (gainGlobalCumule / baseDenominateur * 100) : 0;
+
+  var tauxFiscActuel = appData.settings.taux_fisc || 17.2;
+  var taxeEstimee = gainGlobalCumule > 0 ? (gainGlobalCumule * (tauxFiscActuel / 100)) : 0;
+  var netApresFisc = valActuelle - taxeEstimee;
+
+  function formatPru(k) {
+    var l = historiqueLignes[k];
+    return l.parts > 0 ? (l.cash / l.parts).toFixed(2) + ' €' : '—';
+  }
+
+  document.getElementById('stats-container').innerHTML = 
+    '<div class="card">' +
+      '<h2>Suivi des Performances</h2>' +
+      '<div class="stat-grid">' +
+        '<div class="stat-box"><div class="stat-lbl">Portefeuille</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Dividendes cumulés</div><div class="stat-val" style="color:var(--div)">+'+divTotal.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Gain Global (Net Frais)</div><div class="stat-val" style="color:'+(gainGlobalCumule>=0?'var(--eu)':'var(--red)')+';">'+(gainGlobalCumule>=0?'+':'')+gainGlobalCumule.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perfPourcent>=0?'var(--eu)':'var(--red)')+';">'+(perfPourcent>=0?'+':'')+perfPourcent.toFixed(2)+'%</div></div>' +
+      '</div>' +
+    '</div>' +
+    
+    '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168, 85, 247, 0.03);">' +
+      '<h2>⚖️ Estimation Fiscale (Sortie PEA à '+tauxFiscActuel+'%)</h2>' +
+      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Plus-value imposable :</span> <b>'+(gainGlobalCumule > 0 ? gainGlobalCumule.toFixed(2) : '0.00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Prélèvements Sociaux ('+tauxFiscActuel+'%) :</span> <span style="color:var(--red); font-weight:600;">- '+taxeEstimee.toFixed(2)+' €</span></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px; margin-top:4px; font-size:14px;"><span>💰 <b>Net Réel Estimé :</b></span> <b style="color:var(--eu);">'+netApresFisc.toFixed(2)+' €</b></div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<h2>Prix de Revient Moyens (PRU avec frais)</h2>' +
+      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+formatPru('usa')+'</b></span></div>' +
+      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU : <b>'+formatPru('eu')+'</b></span></div>' +
+      '<div class="sim-row"><span class="tag tag-em">Émergents</span> <span>PRU : <b>'+formatPru('em')+'</b></span></div>' +
+    '</div>';
+}
+
+function renderHist() {
+  var hist = appData.historique;
+  var c = document.getElementById('hist-container');
+  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucune écriture enregistrée.</div>'; return; }
+  
+  var htmlRows = '';
+  hist.forEach(function(a){
+    var fStr = a.frais && parseFloat(a.frais) > 0 ? ' (dont ' + parseFloat(a.frais).toFixed(2) + '€ frais)' : '';
+    if(a.type === 'achat' || !a.type) {
+      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--usa);"><span class="tag tag-usa">ACHAT</span> <b>'+a.etf+'</b> • +'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--text);">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Enregistré le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€'+fStr+'</div></div>';
+    } else if(a.type === 'vente') {
+      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.etf+'</b> • -'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Enregistré le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€</div></div>';
+    } else {
+      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">DIVIDENDE</span> <b>'+a.etf+'</b><span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Réinvesti le '+a.date+'</div></div>';
+    }
+  });
+  c.innerHTML = '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures</h2>' + htmlRows + '</div>';
 }
 
 function calc() {
   var q = recalculerQuantitesDepuisHistorique();
-  var b = +appData.settings.budget || 0;
   var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
   var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
   
@@ -361,24 +550,6 @@ function calc() {
   document.getElementById('leg-em').textContent = 'Émergents : ' + pM.toFixed(1) + '%';
 
   var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
-  var devU = cU - pU; var devE = cE - pE; var devM = cM - pM;
-  
-  var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
-  if (devE >= devU && devE >= devM) {
-    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
-  } else if (devM >= devU && devM >= devE) {
-    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
-  } else {
-    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
-  }
-
-  var nParts = 0, cashAchatNecessaire = 0;
-  if (b > 1 && ciblePrix > 0) {
-    nParts = Math.floor((b - 1) / ciblePrix);
-    cashAchatNecessaire = (nParts * ciblePrix) + 1;
-  }
-  var resteCash = b - cashAchatNecessaire;
-
   var seuil = appData.settings.alerte_seuil || 5;
   var alertHtml = '';
   var hasAlerte = Math.abs(pU-cU)>seuil || Math.abs(pE-cE)>seuil || Math.abs(pM-cM)>seuil;
@@ -402,23 +573,6 @@ function calc() {
     alertHtml +
   '</div>';
 
-  if (b > 0) {
-    html += '<div class="card" style="border-top:4px solid var(--usa); background:rgba(14,165,233,0.08);">' +
-      '<h2>🎯 Suggestion d\'ordre unique</h2>';
-      if(nParts > 0) {
-        html += '<div style="margin:8px 0; font-size:16px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
-        '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Ordre : '+(nParts * ciblePrix).toFixed(2)+' € + 1.00 € (Courtage fixe incl.)</div>' +
-        '<hr class="divider">' +
-        '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px;">' +
-          '<span>Total débité : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
-          '<span style="color:var(--em);">Solde restant : <b>'+resteCash.toFixed(2)+' €</b></span>' +
-        '</div>' +
-        '<button class="btn-green" onclick="validerAchatUnique(\''+cibleNom+'\',\''+cibleTag+'\','+nParts+','+ciblePrix+')">✅ Valider et inscrire au registre</button>';
-      } else {
-        html += '<div style="color:var(--red); font-size:13px;">⚠️ Flux de trésorerie trop bas pour couvrir 1 part + 1 € de frais.</div>';
-      }
-    html += '</div>';
-  }
   document.getElementById('res-analyse').innerHTML = html;
 }
 
@@ -428,116 +582,6 @@ function barLine(label, tag, val, cible, seuil) {
     '<span><span class="tag '+tag+'">'+label+'</span></span>' +
     '<span><b>'+val.toFixed(1)+'%</b> <span style="color:'+(Math.abs(diff)<=seuil?'var(--eu)':'var(--red)')+';">('+(diff>=0?'+':'')+diff.toFixed(1)+'%)</span> / cible '+cible+'%</span>' +
   '</div>';
-}
-
-function validerAchatUnique(nom, tag, nb, prix) {
-  var now = new Date();
-  var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  appData.historique.unshift({type:'achat', date:dateStr, etf:nom, tag:tag, nb:nb, prix:prix, total:(nb*prix).toFixed(2)});
-  appData.settings.budget = '';
-  document.getElementById('budget').value = '';
-  saveData(appData);
-  init();
-  showTab('analyse');
-  alert('✅ Ordre d\'achat injecté !');
-}
-
-function ajouterEvenementManuel() {
-  var type = document.getElementById('man_type').value;
-  var asset = document.getElementById('man_asset').value;
-  var now = new Date();
-  var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
-  
-  if(type === 'achat' || type === 'vente') {
-    var q = +document.getElementById('man_q').value || 0;
-    var p = +document.getElementById('man_p').value || 0;
-    if(q <= 0 || p <= 0) { alert('Quantités et prix exigés.'); return; }
-    if(type === 'vente') {
-      var dispo = recalculerQuantitesDepuisHistorique()[asset];
-      if(q > dispo) { alert('Erreur : Vous possédez seulement ' + dispo + ' parts.'); return; }
-    }
-    appData.historique.unshift({type:type, date:dateStr, etf:names[asset], tag:asset, nb:q, prix:p, total:(q*p).toFixed(2)});
-  } 
-  else if(type === 'dividende') {
-    var m = +document.getElementById('man_div_montant').value || 0;
-    if(m <= 0) { alert('Montant requis.'); return; }
-    appData.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
-  }
-  
-  saveData(appData);
-  renderHist();
-  alert('✅ Opération validée.');
-  document.getElementById('man_q').value = '';
-  document.getElementById('man_p').value = '';
-  document.getElementById('man_div_montant').value = '';
-}
-
-function renderStats() {
-  var q = recalculerQuantitesDepuisHistorique();
-  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
-  var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp);
-  
-  var invTotal = 0, divTotal = 0, realisedGain = 0;
-  var historiqueLignes = { usa: {cash:0, parts:0}, eu: {cash:0, parts:0}, em: {cash:0, parts:0} };
-
-  appData.historique.slice().reverse().forEach(function(m){
-    if(m.type === 'achat' || !m.type) {
-      historiqueLignes[m.tag].cash += parseFloat(m.total);
-      historiqueLignes[m.tag].parts += m.nb;
-      invTotal += parseFloat(m.total);
-    } 
-    else if(m.type === 'vente') {
-      var currentPru = historiqueLignes[m.tag].parts > 0 ? (historiqueLignes[m.tag].cash / historiqueLignes[m.tag].parts) : 0;
-      historiqueLignes[m.tag].parts -= m.nb;
-      historiqueLignes[m.tag].cash -= (currentPru * m.nb);
-      invTotal -= parseFloat(m.total);
-      realisedGain += (parseFloat(m.total) - (currentPru * m.nb));
-    } 
-    else if(m.type === 'dividende') {
-      divTotal += parseFloat(m.total);
-    }
-  });
-
-  var netGainLatent = valActuelle - (historiqueLignes.usa.cash + historiqueLignes.eu.cash + historiqueLignes.em.cash);
-  var gainGlobalCumule = netGainLatent + divTotal + realisedGain;
-  var baseDenominateur = (historiqueLignes.usa.cash + historiqueLignes.eu.cash + historiqueLignes.em.cash);
-  var perfPourcent = baseDenominateur > 0 ? (gainGlobalCumule / baseDenominateur * 100) : 0;
-
-  // UTILISATION DU TAUX DYNAMIQUE DU FORMULAIRE
-  var tauxFiscActuel = (appData.settings.taux_fisc !== undefined) ? appData.settings.taux_fisc : 17.2;
-  var taxeEstimee = gainGlobalCumule > 0 ? (gainGlobalCumule * (tauxFiscActuel / 100)) : 0;
-  var netApresFisc = valActuelle - taxeEstimee;
-
-  function formatPru(k) {
-    var l = historiqueLignes[k];
-    return l.parts > 0 ? (l.cash / l.parts).toFixed(2) + ' €' : '—';
-  }
-
-  document.getElementById('stats-container').innerHTML = 
-    '<div class="card">' +
-      '<h2>Suivi des Performances</h2>' +
-      '<div class="stat-grid">' +
-        '<div class="stat-box"><div class="stat-lbl">Portefeuille</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Dividendes cumulés</div><div class="stat-val" style="color:var(--div)">+'+divTotal.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Gain Global</div><div class="stat-val" style="color:'+(gainGlobalCumule>=0?'var(--eu)':'var(--red)')+';">'+(gainGlobalCumule>=0?'+':'')+gainGlobalCumule.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perfPourcent>=0?'var(--eu)':'var(--red)')+';">'+(perfPourcent>=0?'+':'')+perfPourcent.toFixed(2)+'%</div></div>' +
-      '</div>' +
-    '</div>' +
-    
-    '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168, 85, 247, 0.03);">' +
-      '<h2>⚖️ Estimation Fiscale (Sortie PEA à '+tauxFiscActuel+'%)</h2>' +
-      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Plus-value imposable :</span> <b>'+(gainGlobalCumule > 0 ? gainGlobalCumule.toFixed(2) : '0.00')+' €</b></div>' +
-      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Prélèvements Sociaux ('+tauxFiscActuel+'%) :</span> <span style="color:var(--red); font-weight:600;">- '+taxeEstimee.toFixed(2)+' €</span></div>' +
-      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px; margin-top:4px; font-size:14px;"><span>💰 <b>Net Réel Estimé :</b></span> <b style="color:var(--eu);">'+netApresFisc.toFixed(2)+' €</b></div>' +
-    '</div>' +
-
-    '<div class="card">' +
-      '<h2>Prix de Revient Moyens (PRU)</h2>' +
-      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+formatPru('usa')+'</b></span></div>' +
-      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU : <b>'+formatPru('eu')+'</b></span></div>' +
-      '<div class="sim-row"><span class="tag tag-em">Émergents</span> <span>PRU : <b>'+formatPru('em')+'</b></span></div>' +
-    '</div>';
 }
 
 function figerSoldeDuJour() {
@@ -551,7 +595,7 @@ function figerSoldeDuJour() {
   if(!appData.points_histoire) appData.points_histoire = [];
   
   if(appData.points_histoire.length > 0 && appData.points_histoire[appData.points_histoire.length - 1].date === dateStr) {
-    if(confirm("Un point existe déjà pour aujourd'hui. Éraser ?")) {
+    if(confirm("Un point existe déjà pour aujourd'hui. Remplacer sa valeur ?")) {
       appData.points_histoire[appData.points_histoire.length - 1].val = parseFloat(total.toFixed(2));
     } else { return; }
   } else {
@@ -559,8 +603,7 @@ function figerSoldeDuJour() {
   }
   if(appData.points_histoire.length > 10) appData.points_histoire.shift();
   
-  saveData(appData);
-  renderTrendChart();
+  saveData(appData); renderTrendChart();
   alert("📸 Snapshot enregistré (" + total.toFixed(2) + " €) !");
 }
 
@@ -582,32 +625,7 @@ function renderTrendChart() {
               '<div class="trend-date">' + pt.date + '</div>' +
             '</div>';
   });
-  html += '</div>';
-  container.innerHTML = html;
-}
-
-function clearPointsHistoriques() {
-  if(confirm("Voulez-vous vider tous les points du graphique ?")) {
-    appData.points_histoire = []; saveData(appData); renderTrendChart();
-  }
-}
-
-function renderHist() {
-  var hist = appData.historique;
-  var c = document.getElementById('hist-container');
-  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucune écriture enregistrée.</div>'; return; }
-  
-  var htmlRows = '';
-  hist.forEach(function(a){
-    if(a.type === 'achat' || !a.type) {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--usa);"><span class="tag tag-usa">ACHAT</span> <b>'+a.etf+'</b> • +'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--text);">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Exécuté le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€</div></div>';
-    } else if(a.type === 'vente') {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.etf+'</b> • -'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Exécuté le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€</div></div>';
-    } else {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">DIVIDENDE</span> <b>'+a.etf+'</b><span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Réinvesti le '+a.date+'</div></div>';
-    }
-  });
-  c.innerHTML = '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures</h2>' + htmlRows + '</div>';
+  html += '</div>'; container.innerHTML = html;
 }
 
 function exportJSON() {
@@ -622,8 +640,7 @@ function exportJSON() {
 
 function importJSON(input) {
   if (!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  var reader = new FileReader();
+  var file = input.files[0]; var reader = new FileReader();
   reader.onload = function(e) {
     try {
       var parsed = JSON.parse(e.target.result);
@@ -631,11 +648,10 @@ function importJSON(input) {
         appData = parsed;
         if(!appData.points_histoire) appData.points_histoire = [];
         if(!appData.settings.taux_fisc) appData.settings.taux_fisc = 17.2;
-        saveData(appData); init();
-        alert("✅ Succès : Fichier JSON iCloud importé et appliqué !");
-        showTab('portefeuille');
-      } else { alert("⚠️ Erreur : Structure invalide."); }
-    } catch(err) { alert("⚠️ Impossible de lire ce fichier JSON."); }
+        if(appData.settings.frais_courtage === undefined) appData.settings.frais_courtage = 1.00;
+        saveData(appData); init(); alert("✅ Importation réussie !"); showTab('portefeuille');
+      } else { alert("⚠️ Structure de fichier non reconnue."); }
+    } catch(err) { alert("⚠️ Erreur de lecture."); }
   };
   reader.readAsText(file); input.value = '';
 }
@@ -673,7 +689,8 @@ function saveCibles() {
 function saveSettings() {
   appData.settings.alerte_seuil = +document.getElementById('alerte_seuil').value || 5;
   appData.settings.taux_fisc = parseFloat(document.getElementById('taux_fisc').value) || 17.2;
-  saveData(appData); alert('Paramètres généraux mis à jour.');
+  appData.settings.frais_courtage = parseFloat(document.getElementById('frais_courtage').value) || 0;
+  saveData(appData); alert('Paramètres mis à jour.'); calculerOrdreOptimal();
 }
 
 init();
