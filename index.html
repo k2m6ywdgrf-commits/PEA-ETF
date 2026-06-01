@@ -95,6 +95,14 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .donut-legends { font-size: 12px; display: flex; flex-direction: column; gap: 6px; }
 .donut-legend-item { display: flex; align-items: center; gap: 8px; }
 .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Graphique Historique Temporel CSS / Flex */
+.trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; padding: 10px 5px 0; margin: 15px 0 5px; background: rgba(255,255,255,0.02); border-bottom: 2px solid rgba(255,255,255,0.1); border-radius: 6px; gap: 6px;}
+.trend-bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; position: relative; }
+.trend-bar { width: 100%; background: linear-gradient(to top, #0ea5e9, #a855f7); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; position: relative;}
+.trend-bar:hover .trend-tooltip { display: block; }
+.trend-tooltip { display: none; position: absolute; top: -35px; background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: bold;}
+.trend-date { font-size: 9px; color: var(--text-muted); margin-top: 4px; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -111,7 +119,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <button class="tab" onclick="showTab('config')">Paramétrages</button>
 </div>
 
-<!-- ONGLET 1 : SAISIE (AUTOMATISÉE) -->
+<!-- ONGLET 1 : SAISIE -->
 <div id="tab-portefeuille" class="section active">
   <div class="card">
     <h2>1. Valeurs des Cours (€)</h2>
@@ -133,7 +141,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   </div>
 </div>
 
-<!-- ONGLET 2 : ANALYSE & SUIVI FUSIONNÉS -->
+<!-- ONGLET 2 : ANALYSE, PATRIMOINE & FISCALITÉ -->
 <div id="tab-analyse" class="section">
   <div class="card">
     <h2>Structure de l'allocation</h2>
@@ -148,6 +156,13 @@ button:active{transform:scale(0.97);opacity:0.9;}
   </div>
 
   <div id="stats-container"></div>
+  
+  <div class="card">
+    <h2>📈 Évolution de l'Actif Net</h2>
+    <div id="trend-container"></div>
+    <button class="btn-gray" style="margin-top:10px; background:rgba(14, 165, 233, 0.15); color:var(--usa); font-weight:600;" onclick="figerSoldeDuJour()">📸 Figer et dater la valeur d'aujourd'hui</button>
+  </div>
+
   <div id="res-analyse"></div>
 </div>
 
@@ -160,7 +175,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <select id="man_type" onchange="toggleFormType()">
         <option value="achat">🛒 Achat d'ETF</option>
         <option value="vente">💰 Vente d'ETF</option>
-        <option value="dividende">💵 Dividende Reçu</option>
+        <option value="dividende">💵 Dividende Reçu (Réinvesti)</option>
       </select>
     </div>
     
@@ -192,7 +207,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   </div>
 </div>
 
-<!-- ONGLET 4 : CONFIGURATION & GESTION DES FICHIERS JSON -->
+<!-- ONGLET 4 : CONFIGURATION & GESTION DES VARIABLES -->
 <div id="tab-config" class="section">
   <div class="card">
     <h2>Répartition Cible (%)</h2>
@@ -203,13 +218,15 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
   </div>
 
+  <!-- SEUILS ET FISCALITÉ DYNAMIQUE -->
   <div class="card">
-    <h2>Seuils de tolérance</h2>
+    <h2>Paramètres Généraux</h2>
     <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
-    <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider le seuil</button>
+    <!-- AJOUT CHAMP VARIABLE SOCIALE -->
+    <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal"></div>
+    <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider les modifications</button>
   </div>
 
-  <!-- MODULE DE COMPATIBILITÉ ET STOCKAGE ICLOUD DRIVE VIA JSON -->
   <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
     <h2 style="color:#7dd3fc;">☁️ Sauvegarde Fichier iCloud Drive</h2>
     <p style="font-size:12px; color:var(--text-muted); line-height:1.4; margin:0 0 14px;">Générez un fichier de sauvegarde physique et déposez-le dans vos dossiers iCloud pour sécuriser vos données.</p>
@@ -222,6 +239,11 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <input type="file" id="json_file_input" accept=".json" style="display:none;" onchange="importJSON(this)">
     <button class="btn-gray" style="border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('json_file_input').click()">📥 Importer un fichier .json</button>
   </div>
+  
+  <div class="card" style="border-color: rgba(244,63,94,0.2);">
+    <h2>Zone de secours graphique</h2>
+    <button class="btn-red" style="font-size:12px; padding:8px; background:transparent; border:1px solid var(--red); color:var(--red);" onclick="clearPointsHistoriques()">🗑️ Effacer l'historique du graphique</button>
+  </div>
 </div>
 
 </div>
@@ -230,13 +252,20 @@ button:active{transform:scale(0.97);opacity:0.9;}
 function loadData() {
   var local = localStorage.getItem("etf_manual_pea_v5");
   if (local) {
-    try { return JSON.parse(local); } catch(e) {}
+    try { 
+      var parsed = JSON.parse(local);
+      if(!parsed.points_histoire) parsed.points_histoire = [];
+      // Initialisation par défaut si la variable fiscale est absente du vieux JSON
+      if(!parsed.settings.taux_fisc) parsed.settings.taux_fisc = 17.2; 
+      return parsed;
+    } catch(e) {}
   }
   return {
     cibles: { usa: 60, eu: 30, em: 10 },
     prix: { usa: 56.34, eu: 20.47, em: 7.75 },
     historique: [],
-    settings: { budget: '', alerte_seuil: 5 }
+    points_histoire: [],
+    settings: { budget: '', alerte_seuil: 5, taux_fisc: 17.2 }
   };
 }
 
@@ -272,6 +301,7 @@ function init() {
   document.getElementById('c_eu').value = appData.cibles.eu;
   document.getElementById('c_em').value = appData.cibles.em;
   document.getElementById('alerte_seuil').value = appData.settings.alerte_seuil;
+  document.getElementById('taux_fisc').value = appData.settings.taux_fisc || 17.2;
   
   recalculerQuantitesDepuisHistorique();
 }
@@ -294,7 +324,7 @@ function showTab(name) {
   document.getElementById('tab-'+name).classList.add('active');
   
   saveInputs();
-  if(name==='analyse') { renderStats(); calc(); }
+  if(name==='analyse') { renderStats(); renderTrendChart(); calc(); }
   if(name==='historique') renderHist();
   if(name==='config') updateCibleTotal();
 }
@@ -314,15 +344,13 @@ function calc() {
   var q = recalculerQuantitesDepuisHistorique();
   var b = +appData.settings.budget || 0;
   var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
-  
   var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
   
   var pU = totActuel ? (u/totActuel)*100 : 0;
   var pE = totActuel ? (e/totActuel)*100 : 0;
   var pM = totActuel ? (m/totActuel)*100 : 0;
   
-  var uDeg = pU;
-  var eDeg = pU + pE;
+  var uDeg = pU; var eDeg = pU + pE;
   var donut = document.getElementById('chart-donut');
   if(donut) {
     donut.style.setProperty('--u-deg', uDeg + '%');
@@ -406,10 +434,8 @@ function validerAchatUnique(nom, tag, nb, prix) {
   var now = new Date();
   var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   appData.historique.unshift({type:'achat', date:dateStr, etf:nom, tag:tag, nb:nb, prix:prix, total:(nb*prix).toFixed(2)});
-  
   appData.settings.budget = '';
   document.getElementById('budget').value = '';
-  
   saveData(appData);
   init();
   showTab('analyse');
@@ -421,19 +447,16 @@ function ajouterEvenementManuel() {
   var asset = document.getElementById('man_asset').value;
   var now = new Date();
   var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  
   var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
   
   if(type === 'achat' || type === 'vente') {
     var q = +document.getElementById('man_q').value || 0;
     var p = +document.getElementById('man_p').value || 0;
     if(q <= 0 || p <= 0) { alert('Quantités et prix exigés.'); return; }
-    
     if(type === 'vente') {
       var dispo = recalculerQuantitesDepuisHistorique()[asset];
       if(q > dispo) { alert('Erreur : Vous possédez seulement ' + dispo + ' parts.'); return; }
     }
-
     appData.historique.unshift({type:type, date:dateStr, etf:names[asset], tag:asset, nb:q, prix:p, total:(q*p).toFixed(2)});
   } 
   else if(type === 'dividende') {
@@ -445,7 +468,6 @@ function ajouterEvenementManuel() {
   saveData(appData);
   renderHist();
   alert('✅ Opération validée.');
-  
   document.getElementById('man_q').value = '';
   document.getElementById('man_p').value = '';
   document.getElementById('man_div_montant').value = '';
@@ -482,6 +504,11 @@ function renderStats() {
   var baseDenominateur = (historiqueLignes.usa.cash + historiqueLignes.eu.cash + historiqueLignes.em.cash);
   var perfPourcent = baseDenominateur > 0 ? (gainGlobalCumule / baseDenominateur * 100) : 0;
 
+  // UTILISATION DU TAUX DYNAMIQUE DU FORMULAIRE
+  var tauxFiscActuel = (appData.settings.taux_fisc !== undefined) ? appData.settings.taux_fisc : 17.2;
+  var taxeEstimee = gainGlobalCumule > 0 ? (gainGlobalCumule * (tauxFiscActuel / 100)) : 0;
+  var netApresFisc = valActuelle - taxeEstimee;
+
   function formatPru(k) {
     var l = historiqueLignes[k];
     return l.parts > 0 ? (l.cash / l.parts).toFixed(2) + ' €' : '—';
@@ -492,11 +519,19 @@ function renderStats() {
       '<h2>Suivi des Performances</h2>' +
       '<div class="stat-grid">' +
         '<div class="stat-box"><div class="stat-lbl">Portefeuille</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Dividendes reçus</div><div class="stat-val" style="color:var(--div)">+'+divTotal.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Dividendes cumulés</div><div class="stat-val" style="color:var(--div)">+'+divTotal.toFixed(2)+' €</div></div>' +
         '<div class="stat-box"><div class="stat-lbl">Gain Global</div><div class="stat-val" style="color:'+(gainGlobalCumule>=0?'var(--eu)':'var(--red)')+';">'+(gainGlobalCumule>=0?'+':'')+gainGlobalCumule.toFixed(2)+' €</div></div>' +
         '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perfPourcent>=0?'var(--eu)':'var(--red)')+';">'+(perfPourcent>=0?'+':'')+perfPourcent.toFixed(2)+'%</div></div>' +
       '</div>' +
     '</div>' +
+    
+    '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168, 85, 247, 0.03);">' +
+      '<h2>⚖️ Estimation Fiscale (Sortie PEA à '+tauxFiscActuel+'%)</h2>' +
+      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Plus-value imposable :</span> <b>'+(gainGlobalCumule > 0 ? gainGlobalCumule.toFixed(2) : '0.00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Prélèvements Sociaux ('+tauxFiscActuel+'%) :</span> <span style="color:var(--red); font-weight:600;">- '+taxeEstimee.toFixed(2)+' €</span></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px; margin-top:4px; font-size:14px;"><span>💰 <b>Net Réel Estimé :</b></span> <b style="color:var(--eu);">'+netApresFisc.toFixed(2)+' €</b></div>' +
+    '</div>' +
+
     '<div class="card">' +
       '<h2>Prix de Revient Moyens (PRU)</h2>' +
       '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+formatPru('usa')+'</b></span></div>' +
@@ -505,22 +540,63 @@ function renderStats() {
     '</div>';
 }
 
+function figerSoldeDuJour() {
+  var q = recalculerQuantitesDepuisHistorique();
+  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+  var total = (q.usa*up) + (q.eu*ep) + (q.em*mp);
+  if (total <= 0) { alert("Votre portefeuille est vide."); return; }
+  
+  var d = new Date();
+  var dateStr = ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2);
+  if(!appData.points_histoire) appData.points_histoire = [];
+  
+  if(appData.points_histoire.length > 0 && appData.points_histoire[appData.points_histoire.length - 1].date === dateStr) {
+    if(confirm("Un point existe déjà pour aujourd'hui. Éraser ?")) {
+      appData.points_histoire[appData.points_histoire.length - 1].val = parseFloat(total.toFixed(2));
+    } else { return; }
+  } else {
+    appData.points_histoire.push({ date: dateStr, val: parseFloat(total.toFixed(2)) });
+  }
+  if(appData.points_histoire.length > 10) appData.points_histoire.shift();
+  
+  saveData(appData);
+  renderTrendChart();
+  alert("📸 Snapshot enregistré (" + total.toFixed(2) + " €) !");
+}
+
+function renderTrendChart() {
+  var container = document.getElementById('trend-container');
+  var points = appData.points_histoire || [];
+  if(points.length < 2) {
+    container.innerHTML = '<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-size:12px;">Appuyez sur le bouton ci-dessous au fil des mois pour construire votre graphique.</div>';
+    return;
+  }
+  var maxVal = Math.max.apply(Math, points.map(o => o.val)) * 1.1;
+  var html = '<div class="trend-chart">';
+  points.forEach(function(pt) {
+    var heightPct = (pt.val / maxVal) * 100;
+    html += '<div class="trend-bar-wrapper">' +
+              '<div class="trend-bar" style="height:' + heightPct + '%;">' +
+                '<div class="trend-tooltip">' + pt.val.toFixed(2) + ' €</div>' +
+              '</div>' +
+              '<div class="trend-date">' + pt.date + '</div>' +
+            '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function clearPointsHistoriques() {
+  if(confirm("Voulez-vous vider tous les points du graphique ?")) {
+    appData.points_histoire = []; saveData(appData); renderTrendChart();
+  }
+}
+
 function renderHist() {
   var hist = appData.historique;
   var c = document.getElementById('hist-container');
   if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucune écriture enregistrée.</div>'; return; }
   
-  var rows = hist.map(function(a){
-    if(a.type === 'achat' || !a.type) {
-      return '<div class="hist-item" style="border-left:3px solid var(--usa);">';
-    } else if(a.type === 'vente') {
-      return '<div class="hist-item" style="border-left:3px solid var(--red);">';
-    } else {
-      return '<div class="hist-item" style="border-left:3px solid var(--div);">';
-    }
-  }).join('');
-  
-  // Re-génération simplifiée propre pour affichage fluide
   var htmlRows = '';
   hist.forEach(function(a){
     if(a.type === 'achat' || !a.type) {
@@ -528,52 +604,40 @@ function renderHist() {
     } else if(a.type === 'vente') {
       htmlRows += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.etf+'</b> • -'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Exécuté le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€</div></div>';
     } else {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">DIVIDENDE</span> <b>'+a.etf+'</b><span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Encaissé le '+a.date+'</div></div>';
+      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">DIVIDENDE</span> <b>'+a.etf+'</b><span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Réinvesti le '+a.date+'</div></div>';
     }
   });
   c.innerHTML = '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures</h2>' + htmlRows + '</div>';
 }
 
-// MODULE EXPORT / IMPORT JSON COMPATIBLE ICLOUD DRIVE
 function exportJSON() {
   saveInputs();
   var cleanData = JSON.stringify(appData, null, 2);
   var blob = new Blob([cleanData], {type: "application/json;charset=utf-8;"});
-  
   var d = new Date();
   var dateStr = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-  
-  var link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "pea_backup_" + dateStr + ".json";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "pea_backup_" + dateStr + ".json";
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
 function importJSON(input) {
   if (!input.files || !input.files[0]) return;
   var file = input.files[0];
   var reader = new FileReader();
-  
   reader.onload = function(e) {
     try {
       var parsed = JSON.parse(e.target.result);
       if (parsed.cibles && parsed.historique) {
         appData = parsed;
-        saveData(appData);
-        init();
-        alert("✅ Succès : Fichier JSON iCloud importé et appliqué avec succès !");
+        if(!appData.points_histoire) appData.points_histoire = [];
+        if(!appData.settings.taux_fisc) appData.settings.taux_fisc = 17.2;
+        saveData(appData); init();
+        alert("✅ Succès : Fichier JSON iCloud importé et appliqué !");
         showTab('portefeuille');
-      } else {
-        alert("⚠️ Erreur : Le fichier choisi ne possède pas la structure requise.");
-      }
-    } catch(err) {
-      alert("⚠️ Impossible de lire ce fichier JSON. Vérifiez qu'il n'est pas corrompu.");
-    }
+      } else { alert("⚠️ Erreur : Structure invalide."); }
+    } catch(err) { alert("⚠️ Impossible de lire ce fichier JSON."); }
   };
-  reader.readAsText(file);
-  input.value = ''; // Reset l'input file
+  reader.readAsText(file); input.value = '';
 }
 
 function exportCSV() {
@@ -585,8 +649,8 @@ function exportCSV() {
 }
 
 function clearHist() {
-  if(confirm('⚠️ Purger l\'intégralité des registres ? Tout sera effacé définitivement.')) {
-    appData.historique = []; saveData(appData); init(); renderHist();
+  if(confirm('⚠️ Purger l\'intégralité des registres ?')) {
+    appData.historique = []; appData.points_histoire = []; saveData(appData); init(); renderHist();
   }
 }
 
@@ -608,7 +672,8 @@ function saveCibles() {
 
 function saveSettings() {
   appData.settings.alerte_seuil = +document.getElementById('alerte_seuil').value || 5;
-  saveData(appData); alert('Seuils mis à jour.');
+  appData.settings.taux_fisc = parseFloat(document.getElementById('taux_fisc').value) || 17.2;
+  saveData(appData); alert('Paramètres généraux mis à jour.');
 }
 
 init();
