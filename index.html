@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mon PEA">
-<title>Mon Assistant PEA</title>
+<meta name="apple-mobile-web-app-title" content="Mon Patrimoine">
+<title>Mon Assistant PEA & CTO</title>
 <style>
 :root {
   --bg: #000000;
@@ -61,6 +61,19 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .btn-purple{background: linear-gradient(135deg, #a855f7, #7c3aed); color:white;}
 .btn-red{background: linear-gradient(135deg, #f43f5e, #e11d48); color:white;}
 .btn-gray{background: rgba(255,255,255,0.08); color:var(--text); font-size:13px; padding:10px;}
+
+/* Navigation Maîtresse (PEA vs CTO) */
+.main-nav {
+  display: flex; gap: 8px; margin-bottom: 20px;
+}
+.btn-nav-main {
+  flex: 1; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; background: rgba(255,255,255,0.03); color: var(--text-muted); border: 1px solid var(--glass-border);
+}
+.btn-nav-main.active {
+  background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; border-color: #4338ca; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Sous-onglets */
 .tabs{
   display:flex;gap:4px;margin-bottom:18px;background:rgba(255,255,255,0.04);
   padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
@@ -71,12 +84,15 @@ button:active{transform:scale(0.97);opacity:0.9;}
 }
 .tab.active{background:rgba(255,255,255,0.12);color:white;font-weight:600;backdrop-filter:blur(5px);}
 .section{display:none;}.section.active{display:block;}
-.tag{display:inline-block;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+
+/* Éléments Graphiques & Badges */
+.tag{display:inline-block;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;text-transform: uppercase;}
 .tag-usa{background:rgba(14,165,233,0.15);color:var(--usa);}
 .tag-eu{background:rgba(16,185,129,0.15);color:var(--eu);}
 .tag-em{background:rgba(245,158,11,0.15);color:var(--em);}
 .tag-div{background:rgba(168,85,247,0.15);color:var(--div);}
 .tag-red{background:rgba(244,63,94,0.15);color:var(--red);}
+.tag-cto{background:rgba(255,255,255,0.1);color:#fff;}
 .bar-container{background:rgba(255,255,255,0.05);border-radius:9px;height:12px;overflow:hidden;display:flex;margin:10px 0;}
 .bar{height:100%;transition:width 0.5s ease-out;}
 .alert-status{padding:12px;border-radius:10px;font-size:13px;margin-top:12px;font-weight:600;}
@@ -88,7 +104,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;}
 
-/* Graphiques & Légende optimisés */
+/* Donut */
 .donut-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; gap: 16px; }
 @media(min-width: 420px) { .donut-wrapper { flex-direction: row; justify-content: center; gap: 24px; } }
 .donut { width: 100px; height: 100px; min-width: 100px; border-radius: 50%; background: conic-gradient(var(--usa) 0%, var(--usa) var(--u-deg), var(--eu) var(--u-deg), var(--eu) var(--e-deg), var(--em) var(--e-deg), var(--em) 100%); position: relative; }
@@ -100,6 +116,12 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .donut-legend-right b { color: var(--text); font-size: 12px; }
 .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
 
+/* Tableaux CTO */
+.cto-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+.cto-table th { text-align: left; color: var(--text-muted); font-size: 11px; padding: 8px; text-transform: uppercase; }
+.cto-table td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+/* Courbe de tendance */
 .trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; padding: 10px 5px 0; margin: 15px 0 5px; background: rgba(255,255,255,0.02); border-bottom: 2px solid rgba(255,255,255,0.1); border-radius: 6px; gap: 6px;}
 .trend-bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; position: relative; }
 .trend-bar { width: 100%; background: linear-gradient(to top, #0ea5e9, #a855f7); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; position: relative;}
@@ -111,178 +133,302 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <body>
 <div style="max-width:600px;margin:auto;padding-bottom:40px;">
 
-<div style="text-align:center;margin:12px 0 20px;font-size:19px;font-weight:800;letter-spacing:-0.5px;color:#fff;">
-   Mon Portefeuille ETF
+<!-- DOUBLE NAVIGATION MAÎTRESSE -->
+<div class="main-nav">
+  <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')"> Gestion Libre PEA</button>
+  <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Stock-Picking CTO</button>
 </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="showTab('portefeuille')">Saisie</button>
-  <button class="tab" onclick="showTab('analyse')">Tableau de Bord</button>
-  <button class="tab" onclick="showTab('historique')">Mouvements</button>
-  <button class="tab" onclick="showTab('config')">Paramétrages</button>
-</div>
-
-<!-- ONGLET 1 : SAISIE -->
-<div id="tab-portefeuille" class="section active">
-  <div class="card">
-    <h2>1. Valeurs des Cours (€)</h2>
-    <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-    <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+<!-- ========================================================= -->
+<!--                      UNIVERS PEA                          -->
+<!-- ========================================================= -->
+<div id="univers-pea">
+  <div class="tabs">
+    <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
+    <button class="tab" id="subtab-pea-a" onclick="showSubTab('pea', 'analyse')">Tableau de Bord</button>
+    <button class="tab" id="subtab-pea-h" onclick="showSubTab('pea', 'historique')">Mouvements</button>
+    <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramétrages</button>
   </div>
 
-  <div class="card">
-    <h2>2. Vos Positions (Calculées)</h2>
-    <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
-    <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
-    <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
-    <hr class="divider">
-    <h2>3. Nouveau versement</h2>
-    <div class="row"><label>Budget à investir</label><input id="budget" type="number" inputmode="decimal" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+  <!-- PEA SUB-TAB 1: SAISIE -->
+  <div id="pea-portefeuille" class="section active">
+    <div class="card">
+      <h2>1. Valeurs des Cours (€)</h2>
+      <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+    </div>
+    <div class="card">
+      <h2>2. Vos Positions (Calculées)</h2>
+      <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
+      <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
+      <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
+      <hr class="divider">
+      <h2>3. Nouveau versement</h2>
+      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- PEA SUB-TAB 2: ANALYSE -->
+  <div id="pea-analyse" class="section">
+    <div class="card">
+      <h2>Structure de l'allocation</h2>
+      <div class="donut-wrapper">
+        <div class="donut" id="chart-donut"></div>
+        <div class="donut-legends">
+          <div class="donut-legend-item">
+            <div class="donut-legend-left"><div class="donut-dot" style="background:var(--usa)"></div>S&P 500</div>
+            <div class="donut-legend-right"><b id="leg-usa-pct">0%</b><span id="leg-usa-details">0 € • 0 part</span></div>
+          </div>
+          <div class="donut-legend-item">
+            <div class="donut-legend-left"><div class="donut-dot" style="background:var(--eu)"></div>Stoxx 600</div>
+            <div class="donut-legend-right"><b id="leg-eu-pct">0%</b><span id="leg-eu-details">0 € • 0 part</span></div>
+          </div>
+          <div class="donut-legend-item">
+            <div class="donut-legend-left"><div class="donut-dot" style="background:var(--em)"></div>Émergents</div>
+            <div class="donut-legend-right"><b id="leg-em-pct">0%</b><span id="leg-em-details">0 € • 0 part</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="stats-container"></div>
+    <div class="card">
+      <h2>📈 Évolution de l'Actif Net PEA</h2>
+      <div id="trend-container"></div>
+      <button class="btn-gray" style="margin-top:10px; background:rgba(14, 165, 233, 0.15); color:var(--usa); font-weight:600;" onclick="figerSoldeDuJour()">📸 Figer la valeur PEA d'aujourd'hui</button>
+    </div>
+    <div id="res-analyse"></div>
+  </div>
+
+  <!-- PEA SUB-TAB 3: HISTORIQUE -->
+  <div id="pea-historique" class="section">
+    <div class="card" id="formulaire-mouvement">
+      <h2>✍️ Enregistrer un mouvement PEA</h2>
+      <div class="row">
+        <label>Opération</label>
+        <select id="man_type" onchange="toggleFormType()">
+          <option value="achat">🛒 Achat d'ETF</option>
+          <option value="vente">💰 Vente d'ETF</option>
+          <option value="dividende">💵 Dividende Reçu (Réinvesti)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Support</label>
+        <select id="man_asset">
+          <option value="usa">Amundi S&P 500</option>
+          <option value="eu">BNP Stoxx 600</option>
+          <option value="em">Amundi Émergents</option>
+        </select>
+      </div>
+      <div id="form-quantite">
+        <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" placeholder="Ex: 12"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" placeholder="Ex: 55.40"></div>
+        <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" placeholder="Ex: 1.00"></div>
+      </div>
+      <div id="form-dividende" style="display:none;">
+        <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" placeholder="Ex: 45.50"></div>
+      </div>
+      <button class="btn-purple" style="margin-top:8px;" onclick="ajouterEvenementManuel()">Enregistrer au registre</button>
+    </div>
+    <div id="hist-container"></div>
+  </div>
+
+  <!-- PEA SUB-TAB 4: CONFIG -->
+  <div id="pea-config" class="section">
+    <div class="card">
+      <h2>Répartition Cible (%)</h2>
+      <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>Émergents</label><input id="c_em" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+      <div id="cible-total" style="margin-top:10px;font-size:13px;font-weight:bold;"></div>
+      <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
+    </div>
+    <div class="card">
+      <h2>Paramètres Généraux PEA</h2>
+      <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
+      <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal"></div>
+      <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================================= -->
+<!--                      UNIVERS CTO                          -->
+<!-- ========================================================= -->
+<div id="univers-cto" style="display:none;">
+  <div class="tabs">
+    <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
+    <button class="tab" id="subtab-cto-h" onclick="showSubTab('cto', 'historique')">Mouvements / Div</button>
+  </div>
+
+  <!-- CTO SUB-TAB 1: POSITIONS ACTUELLES -->
+  <div id="cto-portefeuille" class="section active">
+    <div id="cto-dashboard-container"></div>
     
-    <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
-  </div>
-</div>
-
-<!-- ONGLET 2 : ANALYSE -->
-<div id="tab-analyse" class="section">
-  <div class="card">
-    <h2>Structure de l'allocation</h2>
-    <div class="donut-wrapper">
-      <div class="donut" id="chart-donut"></div>
-      <div class="donut-legends">
-        <!-- Légende enrichie en %, € et Parts -->
-        <div class="donut-legend-item">
-          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--usa)"></div>S&P 500</div>
-          <div class="donut-legend-right"><b id="leg-usa-pct">0%</b><span id="leg-usa-details">0 € • 0 part</span></div>
-        </div>
-        <div class="donut-legend-item">
-          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--eu)"></div>Stoxx 600</div>
-          <div class="donut-legend-right"><b id="leg-eu-pct">0%</b><span id="leg-eu-details">0 € • 0 part</span></div>
-        </div>
-        <div class="donut-legend-item">
-          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--em)"></div>Émergents</div>
-          <div class="donut-legend-right"><b id="leg-em-pct">0%</b><span id="leg-em-details">0 € • 0 part</span></div>
-        </div>
+    <div class="card">
+      <h2>Positions Actuelles (Stock-Picking)</h2>
+      <div style="overflow-x:auto;">
+        <table class="cto-table">
+          <thead>
+            <tr>
+              <th>Actif</th>
+              <th>Parts</th>
+              <th>PRU</th>
+              <th>Cours Actuel</th>
+              <th>Valeur</th>
+              <th>Plus-Value Latente</th>
+            </tr>
+          </thead>
+          <tbody id="cto-positions-body">
+            <!-- Injecté par JS -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div id="stats-container"></div>
-  
-  <div class="card">
-    <h2>📈 Évolution de l'Actif Net</h2>
-    <div id="trend-container"></div>
-    <button class="btn-gray" style="margin-top:10px; background:rgba(14, 165, 233, 0.15); color:var(--usa); font-weight:600;" onclick="figerSoldeDuJour()">📸 Figer et dater la valeur d'aujourd'hui</button>
-  </div>
+  <!-- CTO SUB-TAB 2: AJOUT TRANSACTION -->
+  <div id="cto-historique" class="section">
+    <div class="card">
+      <h2>✍️ Enregistrer une opération CTO</h2>
+      <div class="row">
+        <label>Type</label>
+        <select id="cto_type" onchange="toggleFormCto()">
+          <option value="achat">🛒 Achat de Titre</option>
+          <option value="vente">💰 Vente de Titre</option>
+          <option value="dividende">💵 Dividende Perçu</option>
+        </select>
+      </div>
 
-  <div id="res-analyse"></div>
-</div>
+      <!-- Bloc Nom Libre (Pour Achats/Ventes) -->
+      <div class="row" id="cto-row-name-libre">
+        <label>Nom de l'actif</label>
+        <input id="cto_name" type="text" placeholder="Ex: NVIDIA, Apple, Microsoft...">
+      </div>
 
-<!-- ONGLET 3 : REGISTRE DE MOUVEMENTS -->
-<div id="tab-historique" class="section">
-  <div class="card" id="formulaire-mouvement">
-    <h2>✍️ Saisir / Ajuster un mouvement</h2>
-    <div class="row">
-      <label>Opération</label>
-      <select id="man_type" onchange="toggleFormType()">
-        <option value="achat">🛒 Achat d'ETF</option>
-        <option value="vente">💰 Vente d'ETF</option>
-        <option value="dividende">💵 Dividende Reçu (Réinvesti)</option>
-      </select>
+      <!-- Bloc Sélection Dynamique (Pour Dividendes) -->
+      <div class="row" id="cto-row-name-select" style="display:none;">
+        <label>Choisir le titre</label>
+        <select id="cto_name_select" onchange="handleCtoNameSelect()">
+          <!-- Rempli en JS avec les titres détenus -->
+        </select>
+      </div>
+      <div class="row" id="cto-row-name-custom-div" style="display:none;">
+        <label>Nouveau titre</label>
+        <input id="cto_name_custom_div" type="text" placeholder="Nom du nouveau titre">
+      </div>
+
+      <!-- Variables Chiffrées standard -->
+      <div id="cto-form-quantite">
+        <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" placeholder="Ex: 120.50"></div>
+        <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" value="1.00"></div>
+      </div>
+
+      <!-- Variables Dividendes -->
+      <div id="cto-form-dividende" style="display:none;">
+        <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" placeholder="Montant avant Flat Tax"></div>
+      </div>
+
+      <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
     </div>
-    
-    <div class="row">
-      <label>Support</label>
-      <select id="man_asset">
-        <option value="usa">Amundi S&P 500</option>
-        <option value="eu">BNP Stoxx 600</option>
-        <option value="em">Amundi Émergents</option>
-      </select>
-    </div>
 
-    <div id="form-quantite">
-      <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" placeholder="Ex: 12"></div>
-      <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" placeholder="Ex: 55.40"></div>
-      <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" placeholder="Ex: 1.00"></div>
-    </div>
-
-    <div id="form-dividende" style="display:none;">
-      <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" placeholder="Ex: 45.50"></div>
-    </div>
-
-    <button class="btn-purple" style="margin-top:8px;" onclick="ajouterEvenementManuel()">⚡ Enregistrer le mouvement</button>
-  </div>
-
-  <div id="hist-container"></div>
-  <div style="display:flex;gap:8px;margin-top:8px;">
-    <button class="btn-gray" onclick="exportCSV()">📤 Excel/CSV</button>
-    <button class="btn-red" style="padding:10px;" onclick="clearHist()">🗑️ Reset total</button>
+    <div id="cto-hist-container"></div>
   </div>
 </div>
 
-<!-- ONGLET 4 : CONFIGURATION -->
-<div id="tab-config" class="section">
-  <div class="card">
-    <h2>Répartition Cible (%)</h2>
-    <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
-    <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
-    <div class="row"><label>Émergents</label><input id="c_em" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
-    <div id="cible-total" style="margin-top:10px;font-size:13px;font-weight:bold;"></div>
-    <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
+<!-- FOOTER LOGISTIQUE COMMUN -->
+<div class="card" style="margin-top:20px; background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
+  <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Unique)</h2>
+  <div style="display:flex; gap:8px;">
+    <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+    <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input').click()">📥 Importer .json</button>
   </div>
-
-  <div class="card">
-    <h2>Paramètres Généraux</h2>
-    <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
-    <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal"></div>
-    <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" placeholder="Frais par défaut"></div>
-    <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider les modifications</button>
-  </div>
-
-  <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-    <h2 style="color:#7dd3fc;">☁️ Sauvegarde Fichier iCloud Drive</h2>
-    <button class="btn-blue" style="padding:12px; font-size:14px; margin-bottom:12px;" onclick="exportJSON()">📤 Exporter le fichier .json</button>
-    <input type="file" id="json_file_input" accept=".json" style="display:none;" onchange="importJSON(this)">
-    <button class="btn-gray" style="border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('json_file_input').click()">📥 Importer un fichier .json</button>
-  </div>
+  <input type="file" id="global_json_input" accept=".json" style="display:none;" onchange="importJSON(this)">
+  <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
 </div>
 
 </div>
 
 <script>
+// UNIFICATION DES STRUCTURES DE DONNÉES EN LOCALSTORAGE
 function loadData() {
-  var local = localStorage.getItem("etf_manual_pea_v5");
+  var local = localStorage.getItem("patrimoine_multi_v6");
   if (local) {
     try { 
       var parsed = JSON.parse(local);
-      if(!parsed.points_histoire) parsed.points_histoire = [];
-      if(!parsed.settings.taux_fisc) parsed.settings.taux_fisc = 17.2; 
-      if(parsed.settings.frais_courtage === undefined) parsed.settings.frais_courtage = 1.00;
+      if(!parsed.pea) parsed.pea = {};
+      if(!parsed.cto) parsed.cto = { historique: [], cours: {} };
+      if(!parsed.pea.historique) parsed.pea.historique = [];
+      if(!parsed.pea.points_histoire) parsed.pea.points_histoire = [];
       return parsed;
     } catch(e) {}
   }
   return {
-    cibles: { usa: 60, eu: 30, em: 10 },
-    prix: { usa: 56.34, eu: 20.47, em: 7.75 },
-    historique: [],
-    points_histoire: [],
-    settings: { budget: '', alerte_seuil: 5, taux_fisc: 17.2, frais_courtage: 1.00 }
+    pea: {
+      cibles: { usa: 60, eu: 30, em: 10 },
+      prix: { usa: 56.34, eu: 20.47, em: 7.75 },
+      historique: [],
+      points_histoire: [],
+      settings: { budget: '', alerte_seuil: 5, taux_fisc: 17.2, frais_courtage: 1.00 }
+    },
+    cto: {
+      historique: [],
+      cours: {} // Stockage des derniers prix saisis pour la valorisation libre
+    }
   };
 }
 
-function saveData(d) { localStorage.setItem("etf_manual_pea_v5", JSON.stringify(d)); }
+function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringify(d)); }
 
 var appData = loadData();
+var universActuel = 'pea';
 
-function recalculerQuantitesDepuisHistorique() {
+function switchUnivers(u) {
+  universActuel = u;
+  document.getElementById('btn-main-pea').classList.toggle('active', u === 'pea');
+  document.getElementById('btn-main-cto').classList.toggle('active', u === 'cto');
+  document.getElementById('univers-pea').style.display = (u === 'pea') ? 'block' : 'none';
+  document.getElementById('univers-cto').style.display = (u === 'cto') ? 'block' : 'none';
+  
+  if(u === 'pea') {
+    showSubTab('pea', 'portefeuille');
+  } else {
+    showSubTab('cto', 'portefeuille');
+  }
+}
+
+function showSubTab(univ, section) {
+  var tabs = univ === 'pea' ? ['portefeuille','analyse','historique','config'] : ['portefeuille','historique'];
+  tabs.forEach(function(t) {
+    var el = document.getElementById(univ + '-' + t);
+    if(el) el.classList.toggle('active', t === section);
+    var btn = document.getElementById('subtab-' + univ + '-' + t.substring(0,1));
+    if(btn) btn.classList.toggle('active', t === section);
+  });
+
+  if(univ === 'pea') {
+    if(section === 'portefeuille') { recalculerQuantitesPEA(); calculerOrdreOptimal(); }
+    if(section === 'analyse') { renderStatsPEA(); renderTrendChartPEA(); calcPEA(); }
+    if(section === 'historique') renderHistPEA();
+    if(section === 'config') updateCibleTotal();
+  } else {
+    if(section === 'portefeuille') renderCTOUniverse();
+    if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); }
+  }
+}
+
+// =========================================================
+//                      MOTEUR PEA 
+// =========================================================
+function recalculerQuantitesPEA() {
   var q = { usa: 0, eu: 0, em: 0 };
-  appData.historique.forEach(function(m){
-    if (m.type === 'achat' || !m.type) {
-      q[m.tag] += parseFloat(m.nb || 0);
-    } else if (m.type === 'vente') {
-      q[m.tag] -= parseFloat(m.nb || 0);
-    }
+  appData.pea.historique.forEach(function(m){
+    if (m.type === 'achat' || !m.type) q[m.tag] += parseFloat(m.nb || 0);
+    else if (m.type === 'vente') q[m.tag] -= parseFloat(m.nb || 0);
   });
   q.usa = Math.max(0, q.usa); q.eu = Math.max(0, q.eu); q.em = Math.max(0, q.em);
   document.getElementById('lbl_usa_q').textContent = q.usa;
@@ -291,44 +437,40 @@ function recalculerQuantitesDepuisHistorique() {
   return q;
 }
 
-function init() {
-  document.getElementById('p_usa').value = appData.prix.usa;
-  document.getElementById('p_eu').value = appData.prix.eu;
-  document.getElementById('p_em').value = appData.prix.em;
-  document.getElementById('budget').value = appData.settings.budget;
-  
-  document.getElementById('c_usa').value = appData.cibles.usa;
-  document.getElementById('c_eu').value = appData.cibles.eu;
-  document.getElementById('c_em').value = appData.cibles.em;
-  document.getElementById('alerte_seuil').value = appData.settings.alerte_seuil;
-  document.getElementById('taux_fisc').value = appData.settings.taux_fisc || 17.2;
-  document.getElementById('frais_courtage').value = appData.settings.frais_courtage !== undefined ? appData.settings.frais_courtage : 1.00;
-  
-  recalculerQuantitesDepuisHistorique();
-  calculerOrdreOptimal();
-}
+function calculerOrdreOptimal() {
+  var q = recalculerQuantitesPEA();
+  var b = +appData.pea.settings.budget || 0;
+  var container = document.getElementById('suggestion-ordre-container');
+  if (b <= 0) { container.innerHTML = ''; return; }
 
-function saveInputs() {
-  appData.prix = {
-    usa: +document.getElementById('p_usa').value || 0,
-    eu: +document.getElementById('p_eu').value || 0,
-    em: +document.getElementById('p_em').value || 0
-  };
-  appData.settings.budget = document.getElementById('budget').value;
-  saveData(appData);
-}
-
-function showTab(name) {
-  var tabs = ['portefeuille','analyse','historique','config'];
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
+  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
+  var pU = totActuel ? (u/totActuel)*100 : 0, pE = totActuel ? (e/totActuel)*100 : 0, pM = totActuel ? (m/totActuel)*100 : 0;
+  var cU = appData.pea.cibles.usa, cE = appData.pea.cibles.eu, cM = appData.pea.cibles.em;
   
-  saveInputs();
-  if(name==='portefeuille') { recalculerQuantitesDepuisHistorique(); calculerOrdreOptimal(); }
-  if(name==='analyse') { renderStats(); renderTrendChart(); calc(); }
-  if(name==='historique') renderHist();
-  if(name==='config') updateCibleTotal();
+  var devU = cU - pU, devE = cE - pE, devM = cM - pM;
+  var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
+  
+  if (devE >= devU && devE >= devM) { cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu'; }
+  else if (devM >= devU && devM >= devE) { cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em'; }
+  else { cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa'; }
+
+  var fraisBase = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
+  var nParts = (b > fraisBase && ciblePrix > 0) ? Math.floor((b - fraisBase) / ciblePrix) : 0;
+  var cashAchatNecessaire = (nParts * ciblePrix) + fraisBase;
+
+  var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border); margin-top:10px;">' +
+    '<h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
+    if(nParts > 0) {
+      html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+      '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Détails : '+(nParts * ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € frais</div>' +
+      '<div style="font-size:13px; display:flex; justify-content:space-between;">' +
+        '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
+        '<span style="color:var(--em);">Reste : <b>'+(b - cashAchatNecessaire).toFixed(2)+' €</b></span>' +
+      '</div>';
+    } else { html += '<div style="color:var(--red); font-size:13px;">⚠️ Budget trop bas.</div>'; }
+  html += '</div>';
+  container.innerHTML = html;
 }
 
 function toggleFormType() {
@@ -338,381 +480,392 @@ function toggleFormType() {
   document.getElementById('row-frais-ajustable').style.display = type === 'achat' ? 'flex' : 'none';
 }
 
-function calculerOrdreOptimal() {
-  var q = recalculerQuantitesDepuisHistorique();
-  var b = +appData.settings.budget || 0;
-  var container = document.getElementById('suggestion-ordre-container');
-  
-  if (b <= 0) { container.innerHTML = ''; return; }
-
-  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
-  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
-  
-  var pU = totActuel ? (u/totActuel)*100 : 0;
-  var pE = totActuel ? (e/totActuel)*100 : 0;
-  var pM = totActuel ? (m/totActuel)*100 : 0;
-
-  var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
-  var devU = cU - pU; var devE = cE - pE; var devM = cM - pM;
-  
-  var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
-  if (devE >= devU && devE >= devM) {
-    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
-  } else if (devM >= devU && devM >= devE) {
-    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
-  } else {
-    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
-  }
-
-  var fraisBase = appData.settings.frais_courtage !== undefined ? appData.settings.frais_courtage : 1.00;
-  var nParts = 0, cashAchatNecessaire = 0;
-  
-  if (b > fraisBase && ciblePrix > 0) {
-    nParts = Math.floor((b - fraisBase) / ciblePrix);
-    cashAchatNecessaire = (nParts * ciblePrix) + fraisBase;
-  }
-  var resteCash = b - cashAchatNecessaire;
-
-  var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border); margin-top:10px;">' +
-    '<h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
-    if(nParts > 0) {
-      html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
-      '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Estimation basique : '+(nParts * ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € de frais</div>' +
-      '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px;">' +
-        '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
-        '<span style="color:var(--em);">Reste : <b>'+resteCash.toFixed(2)+' €</b></span>' +
-      '</div>' +
-      '<button class="btn-blue" style="padding:10px; font-size:13px;" onclick="preparerAjustement(\''+cibleTag+'\','+nParts+','+ciblePrix+','+fraisBase+')">⚙️ Ajuster prix & frais réels</button>';
-    } else {
-      html += '<div style="color:var(--red); font-size:13px;">⚠️ Budget trop bas pour acheter au moins 1 part.</div>';
-    }
-  html += '</div>';
-  
-  container.innerHTML = html;
-}
-
-function preparerAjustement(tag, nb, prix, fraisAssocie) {
-  showTab('historique');
-  document.getElementById('man_type').value = 'achat';
-  document.getElementById('man_asset').value = tag;
-  document.getElementById('man_q').value = nb;
-  document.getElementById('man_p').value = prix.toFixed(2);
-  document.getElementById('man_frais').value = fraisAssocie.toFixed(2);
-  
-  toggleFormType();
-  
-  var form = document.getElementById('formulaire-mouvement');
-  form.style.borderColor = 'var(--usa)';
-  setTimeout(function(){ form.style.borderColor = 'var(--glass-border)'; }, 1500);
-}
-
 function ajouterEvenementManuel() {
   var type = document.getElementById('man_type').value;
   var asset = document.getElementById('man_asset').value;
-  var now = new Date();
-  var dateStr = now.toLocaleDateString('fr-FR');
+  var dateStr = new Date().toLocaleDateString('fr-FR');
   var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
   
   if(type === 'achat' || type === 'vente') {
-    var q = +document.getElementById('man_q').value || 0;
-    var p = +document.getElementById('man_p').value || 0;
-    var f = type === 'achat' ? (+document.getElementById('man_frais').value || 0) : 0;
-    
-    if(q <= 0 || p <= 0) { alert('Quantités et prix exigés.'); return; }
-    if(type === 'vente') {
-      var dispo = recalculerQuantitesDepuisHistorique()[asset];
-      if(q > dispo) { alert('Erreur : Vous possédez seulement ' + dispo + ' parts.'); return; }
-    }
-    
-    var totalLigne = (type === 'achat') ? (q * p) + f : (q * p);
-    appData.historique.unshift({
-      type: type, 
-      date: dateStr, 
-      etf: names[asset], 
-      tag: asset, 
-      nb: q, 
-      prix: p, 
-      frais: f, 
-      total: totalLigne.toFixed(2)
-    });
-  } 
-  else if(type === 'dividende') {
+    var q = +document.getElementById('man_q').value || 0, p = +document.getElementById('man_p').value || 0, f = type === 'achat' ? (+document.getElementById('man_frais').value || 0) : 0;
+    if(q <= 0 || p <= 0) { alert('Champs requis.'); return; }
+    appData.pea.historique.unshift({ type: type, date: dateStr, etf: names[asset], tag: asset, nb: q, prix: p, frais: f, total: ((type==='achat'?(q*p)+f:(q*p))).toFixed(2) });
+  } else {
     var m = +document.getElementById('man_div_montant').value || 0;
     if(m <= 0) { alert('Montant requis.'); return; }
-    appData.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
+    appData.pea.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
   }
-  
-  appData.settings.budget = '';
-  document.getElementById('budget').value = '';
-  
-  saveData(appData);
-  renderHist();
-  alert('✅ Opération validée et inscrite au registre.');
-  
-  document.getElementById('man_q').value = '';
-  document.getElementById('man_p').value = '';
-  document.getElementById('man_frais').value = '';
-  document.getElementById('man_div_montant').value = '';
-  
-  recalculerQuantitesDepuisHistorique();
-  calculerOrdreOptimal();
+  appData.pea.settings.budget = ''; document.getElementById('budget').value = '';
+  saveData(appData); renderHistPEA(); alert('✅ Validé.');
+  document.getElementById('man_q').value = ''; document.getElementById('man_p').value = ''; document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
 }
 
-function renderStats() {
-  var q = recalculerQuantitesDepuisHistorique();
-  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
+function renderStatsPEA() {
+  var q = recalculerQuantitesPEA();
+  var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
   var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp);
-  
-  var invTotal = 0, divTotal = 0, realisedGain = 0;
-  var historiqueLignes = { usa: {cash:0, parts:0}, eu: {cash:0, parts:0}, em: {cash:0, parts:0} };
+  var invTotal = 0, divTotal = 0, realisedGain = 0, baseDenom = 0;
 
-  appData.historique.slice().reverse().forEach(function(m){
-    var netFrais = parseFloat(m.frais || 0);
-    if(m.type === 'achat' || !m.type) {
-      historiqueLignes[m.tag].cash += parseFloat(m.total);
-      historiqueLignes[m.tag].parts += m.nb;
-      invTotal += parseFloat(m.total);
-    } 
-    else if(m.type === 'vente') {
-      var currentPru = historiqueLignes[m.tag].parts > 0 ? (historiqueLignes[m.tag].cash / historiqueLignes[m.tag].parts) : 0;
-      historiqueLignes[m.tag].parts -= m.nb;
-      historiqueLignes[m.tag].cash -= (currentPru * m.nb);
-      invTotal -= parseFloat(m.total);
-      realisedGain += (parseFloat(m.total) - (currentPru * m.nb));
-    } 
-    else if(m.type === 'dividende') {
-      divTotal += parseFloat(m.total);
-    }
+  appData.pea.historique.slice().reverse().forEach(function(m){
+    if(m.type === 'achat' || !m.type) { baseDenom += parseFloat(m.total); divTotal -= 0; }
+    else if(m.type === 'vente') { baseDenom -= parseFloat(m.total); }
+    else if(m.type === 'dividende') { divTotal += parseFloat(m.total); }
   });
 
-  var baseDenominateur = (historiqueLignes.usa.cash + historiqueLignes.eu.cash + historiqueLignes.em.cash);
-  var netGainLatent = valActuelle - baseDenominateur;
-  var gainGlobalCumule = netGainLatent + divTotal + realisedGain;
-  var perfPourcent = baseDenominateur > 0 ? (gainGlobalCumule / baseDenominateur * 100) : 0;
+  var gainGlobalCumule = (valActuelle - baseDenom) + divTotal;
+  var perfPourcent = baseDenom > 0 ? (gainGlobalCumule / baseDenom * 100) : 0;
+  var taxe = gainGlobalCumule > 0 ? (gainGlobalCumule * ((appData.pea.settings.taux_fisc||17.2)/100)) : 0;
 
-  var tauxFiscActuel = appData.settings.taux_fisc || 17.2;
-  var taxeEstimee = gainGlobalCumule > 0 ? (gainGlobalCumule * (tauxFiscActuel / 100)) : 0;
-  var netApresFisc = valActuelle - taxeEstimee;
-
-  function formatPru(k) {
-    var l = historiqueLignes[k];
-    return l.parts > 0 ? (l.cash / l.parts).toFixed(2) + ' €' : '—';
-  }
-
-  document.getElementById('stats-container').innerHTML = 
-    '<div class="card">' +
-      '<h2>Suivi des Performances</h2>' +
-      '<div class="stat-grid">' +
-        '<div class="stat-box"><div class="stat-lbl">Portefeuille</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Dividendes cumulés</div><div class="stat-val" style="color:var(--div)">+'+divTotal.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Gain Global (Net Frais)</div><div class="stat-val" style="color:'+(gainGlobalCumule>=0?'var(--eu)':'var(--red)')+';">'+(gainGlobalCumule>=0?'+':'')+gainGlobalCumule.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perfPourcent>=0?'var(--eu)':'var(--red)')+';">'+(perfPourcent>=0?'+':'')+perfPourcent.toFixed(2)+'%</div></div>' +
-      '</div>' +
-    '</div>' +
-    
-    '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168, 85, 247, 0.03);">' +
-      '<h2>⚖️ Estimation Fiscale (Sortie PEA à '+tauxFiscActuel+'%)</h2>' +
-      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Plus-value imposable :</span> <b>'+(gainGlobalCumule > 0 ? gainGlobalCumule.toFixed(2) : '0.00')+' €</b></div>' +
-      '<div class="sim-row" style="border:none; padding:4px 0;"><span>Prélèvements Sociaux ('+tauxFiscActuel+'%) :</span> <span style="color:var(--red); font-weight:600;">- '+taxeEstimee.toFixed(2)+' €</span></div>' +
-      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px; margin-top:4px; font-size:14px;"><span>💰 <b>Net Réel Estimé :</b></span> <b style="color:var(--eu);">'+netApresFisc.toFixed(2)+' €</b></div>' +
-    '</div>' +
-
-    '<div class="card">' +
-      '<h2>Prix de Revient Moyens (PRU avec frais)</h2>' +
-      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+formatPru('usa')+'</b></span></div>' +
-      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU : <b>'+formatPru('eu')+'</b></span></div>' +
-      '<div class="sim-row"><span class="tag tag-em">Émergents</span> <span>PRU : <b>'+formatPru('em')+'</b></span></div>' +
-    '</div>';
+  document.getElementById('stats-container').innerHTML = '<div class="card"><div class="stat-grid">' +
+    '<div class="stat-box"><div class="stat-lbl">Actif Net PEA</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
+    '<div class="stat-box"><div class="stat-lbl">Gain Global</div><div class="stat-val" style="color:'+(gainGlobalCumule>=0?'var(--eu)':'var(--red)')+';">'+gainGlobalCumule.toFixed(2)+' €</div></div>' +
+    '</div></div>' +
+    '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168,85,247,0.03);"><h2>Estimation Fiscale PEA ('+(appData.pea.settings.taux_fisc||17.2)+'%)</h2>' +
+    '<div class="sim-row"><span>Prélèvements Sociaux :</span> <b style="color:var(--red);">- '+taxe.toFixed(2)+' €</b></div>' +
+    '<div class="sim-row"><span>Net après retrait théorique :</span> <b style="color:var(--eu);">'+(valActuelle - taxe).toFixed(2)+' €</b></div></div>';
 }
 
-function renderHist() {
-  var htmlRows = '';
-  var hist = appData.historique;
-  var c = document.getElementById('hist-container');
-  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucune écriture enregistrée.</div>'; return; }
+function calcPEA() {
+  var q = recalculerQuantitesPEA();
+  var u = q.usa*appData.pea.prix.usa, e = q.eu*appData.pea.prix.eu, m = q.em*appData.pea.prix.em, tot = u+e+m;
+  var pU = tot ? (u/tot)*100 : 0, pE = tot ? (e/tot)*100 : 0, pM = tot ? (m/tot)*100 : 0;
   
-  hist.forEach(function(a){
-    var fStr = a.frais && parseFloat(a.frais) > 0 ? ' (dont ' + parseFloat(a.frais).toFixed(2) + '€ frais)' : '';
-    if(a.type === 'achat' || !a.type) {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--usa);"><span class="tag tag-usa">ACHAT</span> <b>'+a.etf+'</b> • +'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--text);">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Enregistré le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€'+fStr+'</div></div>';
-    } else if(a.type === 'vente') {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.etf+'</b> • -'+a.nb+' part(s)<span style="float:right;font-weight:600;color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Enregistré le '+a.date+' @ '+parseFloat(a.prix).toFixed(2)+'€</div></div>';
-    } else {
-      htmlRows += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">DIVIDENDE</span> <b>'+a.etf+'</b><span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Réinvesti le '+a.date+'</div></div>';
-    }
-  });
-  c.innerHTML = '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures</h2>' + htmlRows + '</div>';
-}
-
-function calc() {
-  var q = recalculerQuantitesDepuisHistorique();
-  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
-  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
-  
-  var pU = totActuel ? (u/totActuel)*100 : 0;
-  var pE = totActuel ? (e/totActuel)*100 : 0;
-  var pM = totActuel ? (m/totActuel)*100 : 0;
-  
-  // Animation et construction dynamique du donut
-  var uDeg = pU; var eDeg = pU + pE;
   var donut = document.getElementById('chart-donut');
   if(donut) {
-    donut.style.setProperty('--u-deg', uDeg + '%');
-    donut.style.setProperty('--e-deg', eDeg + '%');
+    donut.style.setProperty('--u-deg', pU + '%');
+    donut.style.setProperty('--e-deg', (pU + pE) + '%');
   }
-  
-  // Remplissage complet de la nouvelle légende dynamique (%, €, Parts)
   document.getElementById('leg-usa-pct').textContent = pU.toFixed(1) + '%';
-  document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' € • ' + q.usa + ' part' + (q.usa > 1 ? 's' : '');
-  
+  document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' € • ' + q.usa + ' part(s)';
   document.getElementById('leg-eu-pct').textContent = pE.toFixed(1) + '%';
-  document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' € • ' + q.eu + ' part' + (q.eu > 1 ? 's' : '');
-  
+  document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' € • ' + q.eu + ' part(s)';
   document.getElementById('leg-em-pct').textContent = pM.toFixed(1) + '%';
-  document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' € • ' + q.em + ' part' + (q.em > 1 ? 's' : '');
-
-  var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
-  var seuil = appData.settings.alerte_seuil || 5;
-  var alertHtml = '';
-  var hasAlerte = Math.abs(pU-cU)>seuil || Math.abs(pE-cE)>seuil || Math.abs(pM-cM)>seuil;
-  
-  if(hasAlerte && totActuel > 0) {
-    alertHtml = '<div class="alert-status" style="background:rgba(245,158,11,0.1); color:var(--em); border-left:4px solid var(--em);">⚠️ Déviation détectée par rapport aux cibles (> '+seuil+'%)</div>';
-  } else if (totActuel > 0) {
-    alertHtml = '<div class="alert-status" style="background:rgba(16,185,129,0.1); color:var(--eu); border-left:4px solid var(--eu);">✅ Équilibre conforme aux objectifs</div>';
-  }
-
-  var html = '<div class="card">' +
-    '<h2>Arbitrages & Cibles</h2>' +
-    barLine('Amundi S&P 500', 'tag-usa', pU, cU, seuil) +
-    barLine('BNP Stoxx 600', 'tag-eu', pE, cE, seuil) +
-    barLine('Amundi Émergents', 'tag-em', pM, cM, seuil) +
-    '<div class="bar-container">' +
-      '<div class="bar" style="background:var(--usa);width:'+pU+'%"></div>' +
-      '<div class="bar" style="background:var(--eu);width:'+pE+'%"></div>' +
-      '<div class="bar" style="background:var(--em);width:'+pM+'%"></div>' +
-    '</div>' +
-    alertHtml +
-  '</div>';
-
-  document.getElementById('res-analyse').innerHTML = html;
+  document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' € • ' + q.em + ' part(s)';
 }
 
-function barLine(label, tag, val, cible, seuil) {
-  var diff = val - cible;
-  return '<div style="display:flex;justify-content:space-between;font-size:13px;margin:6px 0;">' +
-    '<span><span class="tag '+tag+'">'+label+'</span></span>' +
-    '<span><b>'+val.toFixed(1)+'%</b> <span style="color:'+(Math.abs(diff)<=seuil?'var(--eu)':'var(--red)')+';">('+(diff>=0?'+':'')+diff.toFixed(1)+'%)</span> / cible '+cible+'%</span>' +
-  '</div>';
+function renderHistPEA() {
+  var h = '';
+  appData.pea.historique.forEach(function(a){
+    h += '<div class="hist-item"><b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' € <span style="float:right;color:var(--text-muted);">'+a.date+'</span></div>';
+  });
+  document.getElementById('hist-container').innerHTML = h || 'Aucun mouvement.';
 }
 
 function figerSoldeDuJour() {
-  var q = recalculerQuantitesDepuisHistorique();
-  var up = appData.prix.usa, ep = appData.prix.eu, mp = appData.prix.em;
-  var total = (q.usa*up) + (q.eu*ep) + (q.em*mp);
-  if (total <= 0) { alert("Votre portefeuille est vide."); return; }
-  
-  var d = new Date();
-  var dateStr = ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2);
-  if(!appData.points_histoire) appData.points_histoire = [];
-  
-  if(appData.points_histoire.length > 0 && appData.points_histoire[appData.points_histoire.length - 1].date === dateStr) {
-    if(confirm("Un point existe déjà pour aujourd'hui. Remplacer sa valeur ?")) {
-      appData.points_histoire[appData.points_histoire.length - 1].val = parseFloat(total.toFixed(2));
-    } else { return; }
-  } else {
-    appData.points_histoire.push({ date: dateStr, val: parseFloat(total.toFixed(2)) });
-  }
-  if(appData.points_histoire.length > 10) appData.points_histoire.shift();
-  
-  saveData(appData); renderTrendChart();
-  alert("📸 Snapshot enregistré (" + total.toFixed(2) + " €) !");
+  var q = recalculerQuantitesPEA();
+  var total = (q.usa*appData.pea.prix.usa) + (q.eu*appData.pea.prix.eu) + (q.em*appData.pea.prix.em);
+  var dateStr = new Date().toLocaleDateString('fr-FR').substring(0,5);
+  appData.pea.points_histoire.push({ date: dateStr, val: parseFloat(total.toFixed(2)) });
+  saveData(appData); renderTrendChartPEA(); alert('📸 Snapshot archivé.');
 }
 
-function renderTrendChart() {
-  var container = document.getElementById('trend-container');
-  var points = appData.points_histoire || [];
-  if(points.length < 2) {
-    container.innerHTML = '<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-size:12px;">Appuyez sur le bouton ci-dessous au fil des mois pour construire votre graphique.</div>';
-    return;
-  }
-  var maxVal = Math.max.apply(Math, points.map(o => o.val)) * 1.1;
-  var html = '<div class="trend-chart">';
-  points.forEach(function(pt) {
-    var heightPct = (pt.val / maxVal) * 100;
-    html += '<div class="trend-bar-wrapper">' +
-              '<div class="trend-bar" style="height:' + heightPct + '%;">' +
-                '<div class="trend-tooltip">' + pt.val.toFixed(2) + ' €</div>' +
-              '</div>' +
-              '<div class="trend-date">' + pt.date + '</div>' +
-            '</div>';
+function renderTrendChartPEA() {
+  var c = document.getElementById('trend-container');
+  var pts = appData.pea.points_histoire || [];
+  if(pts.length < 2) { c.innerHTML = '<div style="text-align:center;padding:15px;color:var(--text-muted);">Plus de points requis.</div>'; return; }
+  var max = Math.max.apply(Math, pts.map(o => o.val)) * 1.1, h = '<div class="trend-chart">';
+  pts.forEach(p => {
+    h += '<div class="trend-bar-wrapper"><div class="trend-bar" style="height:'+(p.val/max*100)+'%;"><div class="trend-tooltip">'+p.val+' €</div></div><div class="trend-date">'+p.date+'</div></div>';
   });
-  html += '</div>'; container.innerHTML = html;
+  c.innerHTML = h + '</div>';
 }
 
+function saveInputs() {
+  appData.pea.prix = { usa: +document.getElementById('p_usa').value||0, eu: +document.getElementById('p_eu').value||0, em: +document.getElementById('p_em').value||0 };
+  appData.pea.settings.budget = document.getElementById('budget').value;
+  saveData(appData);
+}
+function updateCibleTotal() {
+  var t = (+document.getElementById('c_usa').value||0) + (+document.getElementById('c_eu').value||0) + (+document.getElementById('c_em').value||0);
+  document.getElementById('cible-total').innerHTML = 'Total : ' + t + '%';
+}
+function saveCibles() {
+  appData.pea.cibles = { usa: +document.getElementById('c_usa').value, eu: +document.getElementById('c_eu').value, em: +document.getElementById('c_em').value };
+  saveData(appData); alert('Cibles sauvées.');
+}
+function saveSettings() {
+  appData.pea.settings.alerte_seuil = +document.getElementById('alerte_seuil').value;
+  appData.pea.settings.taux_fisc = +document.getElementById('taux_fisc').value;
+  appData.pea.settings.frais_courtage = +document.getElementById('frais_courtage').value;
+  saveData(appData); alert('Paramètres sauvés.');
+}
+
+
+// =========================================================
+//                      MOTEUR CTO 
+// =========================================================
+function toggleFormCto() {
+  var type = document.getElementById('cto_type').value;
+  
+  if (type === 'dividende') {
+    document.getElementById('cto-row-name-libre').style.display = 'none';
+    document.getElementById('cto-row-name-select').style.display = 'flex';
+    document.getElementById('cto-form-quantite').style.display = 'none';
+    document.getElementById('cto-form-dividende').style.display = 'block';
+  } else {
+    document.getElementById('cto-row-name-libre').style.display = 'flex';
+    document.getElementById('cto-row-name-select').style.display = 'none';
+    document.getElementById('cto-row-name-custom-div').style.display = 'none';
+    document.getElementById('cto-form-quantite').style.display = 'block';
+    document.getElementById('cto-form-dividende').style.display = 'none';
+    document.getElementById('cto-row-frais').style.display = (type === 'achat') ? 'flex' : 'none';
+  }
+}
+
+function handleCtoNameSelect() {
+  var select = document.getElementById('cto_name_select');
+  document.getElementById('cto-row-name-custom-div').style.display = (select.value === '__NEW__') ? 'flex' : 'none';
+}
+
+function updateCtoDividendsDropdown() {
+  var positions = calculerPositionsCTO();
+  var select = document.getElementById('cto_name_select');
+  if(!select) return;
+  
+  select.innerHTML = '';
+  
+  Object.keys(positions).forEach(function(nom) {
+    if(positions[nom].parts > 0) {
+      var opt = document.createElement('option');
+      opt.value = nom;
+      opt.textContent = nom + ' (Détenu)';
+      select.appendChild(opt);
+    }
+  });
+  
+  var optNew = document.createElement('option');
+  optNew.value = '__NEW__';
+  optNew.textContent = '➕ Saisir un autre nom libre...';
+  select.appendChild(optNew);
+  handleCtoNameSelect();
+}
+
+function calculerPositionsCTO() {
+  var pos = {};
+  
+  // Parcourir à l'envers pour respecter l'ordre chronologique de construction
+  appData.cto.historique.slice().reverse().forEach(function(m) {
+    var name = m.actif;
+    if(!pos[name]) pos[name] = { parts: 0, totalCost: 0, cumulativeDividends: 0 };
+    
+    if (m.type === 'achat') {
+      pos[name].parts += parseFloat(m.nb);
+      pos[name].totalCost += parseFloat(m.total);
+    } else if (m.type === 'vente') {
+      var currentPru = pos[name].parts > 0 ? (pos[name].totalCost / pos[name].parts) : 0;
+      pos[name].parts -= parseFloat(m.nb);
+      pos[name].totalCost -= (currentPru * parseFloat(m.nb));
+    } else if (m.type === 'dividende') {
+      pos[name].cumulativeDividends += parseFloat(m.total);
+    }
+  });
+  
+  return pos;
+}
+
+function ajouterMouvementCTO() {
+  var type = document.getElementById('cto_type').value;
+  var name = "";
+  
+  if (type === 'dividende') {
+    var selectVal = document.getElementById('cto_name_select').value;
+    if(selectVal === '__NEW__') {
+      name = document.getElementById('cto_name_custom_div').value.trim();
+    } else {
+      name = selectVal;
+    }
+  } else {
+    name = document.getElementById('cto_name').value.trim();
+  }
+  
+  var dateStr = new Date().toLocaleDateString('fr-FR');
+
+  if(!name) { alert('Veuillez spécifier un nom d\'actif valide.'); return; }
+
+  if(type === 'achat' || type === 'vente') {
+    var q = parseFloat(document.getElementById('cto_q').value) || 0;
+    var p = parseFloat(document.getElementById('cto_p').value) || 0;
+    var f = type === 'achat' ? (parseFloat(document.getElementById('cto_frais').value) || 0) : 0;
+    
+    if(q <= 0 || p <= 0) { alert('Champs chiffrés obligatoires.'); return; }
+    
+    var totalLigne = type === 'achat' ? (q * p) + f : (q * p);
+    
+    appData.cto.historique.unshift({
+      type: type, actif: name, date: dateStr, nb: q, prix: p, frais: f, total: totalLigne.toFixed(2)
+    });
+    
+    if(appData.cto.cours[name] === undefined || type === 'achat') {
+      appData.cto.cours[name] = p; // On initialise le cours actuel avec le dernier prix connu
+    }
+  } else {
+    var m = parseFloat(document.getElementById('cto_div_montant').value) || 0;
+    if(m <= 0) { alert('Montant du dividende obligatoire.'); return; }
+    
+    appData.cto.historique.unshift({
+      type: 'dividende', actif: name, date: dateStr, total: m.toFixed(2)
+    });
+  }
+
+  saveData(appData);
+  alert('✅ Transaction CTO enregistrée.');
+  
+  // Reset champs
+  document.getElementById('cto_name').value = '';
+  document.getElementById('cto_name_custom_div').value = '';
+  document.getElementById('cto_q').value = '';
+  document.getElementById('cto_p').value = '';
+  document.getElementById('cto_div_montant').value = '';
+  
+  showSubTab('cto', 'portefeuille');
+}
+
+function updateCtoCours(name, value) {
+  appData.cto.cours[name] = parseFloat(value) || 0;
+  saveData(appData);
+  renderCTOUniverse(); // Recalcule instantanément la valorisation globale
+}
+
+function renderCTOUniverse() {
+  var positions = calculerPositionsCTO();
+  var tbody = document.getElementById('cto-positions-body');
+  tbody.innerHTML = '';
+
+  var globalValeurCTO = 0;
+  var globalPrixRevient = 0;
+  var globalDividendes = 0;
+  var globalPlusValueRealisee = 0; // Provient des transactions historiques de ventes
+
+  // Calculer la plus-value réalisée (Cessions passées)
+  appData.cto.historique.slice().reverse().forEach(function(m) {
+    if(m.type === 'dividende') globalDividendes += parseFloat(m.total);
+  });
+
+  // Construction dynamique du tableau des lignes actives
+  Object.keys(positions).forEach(function(nom) {
+    var p = positions[nom];
+    if(p.parts <= 0 && p.cumulativeDividends <= 0) return; 
+
+    var coursActuel = appData.cto.cours[nom] || 0;
+    var valuation = p.parts * coursActuel;
+    var pru = p.parts > 0 ? (p.totalCost / p.parts) : 0;
+    var pvLatente = valuation - p.totalCost;
+    var pvPct = p.totalCost > 0 ? (pvLatente / p.totalCost * 100) : 0;
+
+    globalValeurCTO += valuation;
+    globalPrixRevient += p.totalCost;
+
+    if(p.parts > 0) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td><span class="tag tag-cto">'+nom+'</span></td>' +
+        '<td><b>'+p.parts+'</b></td>' +
+        '<td>'+pru.toFixed(2)+' €</td>' +
+        '<td><input type="number" step="0.01" style="padding:6px; font-size:12px; min-width:70px;" value="'+coursActuel+'" oninput="updateCtoCours(\''+nom+'\', this.value)"></td>' +
+        '<td><b>'+valuation.toFixed(2)+' €</b></td>' +
+        '<td style="color:'+(pvLatente >= 0 ? 'var(--eu)' : 'var(--red)')+'; font-weight:bold;">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €<br><small>('+pvPct.toFixed(1)+'%)</small></td>';
+      tbody.appendChild(tr);
+    }
+  });
+
+  if(tbody.innerHTML === '') {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">Aucune position ouverte. Allez dans l\'onglet "Mouvements" pour alimenter votre CTO.</td></tr>';
+  }
+
+  // Calculs de performance globale
+  var gainLatentGlobal = globalValeurCTO - globalPrixRevient;
+  var gainTotalCtO = gainLatentGlobal + globalDividendes;
+  
+  // Calcul Flat Tax Prévoyance (30% sur les gains globaux)
+  var flatTaxEstimee = gainTotalCtO > 0 ? (gainTotalCtO * 0.30) : 0;
+  var netApresFlatTax = globalValeurCTO - flatTaxEstimee;
+
+  // Injection du Dashboard CTO haut de page
+  document.getElementById('cto-dashboard-container').innerHTML = 
+    '<div class="card">' +
+      '<h2>Performance Portefeuille CTO</h2>' +
+      '<div class="stat-grid">' +
+        '<div class="stat-box"><div class="stat-lbl">Valeur Actuelle</div><div class="stat-val">'+globalValeurCTO.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Dividendes perçus</div><div class="stat-val" style="color:var(--div)">+'+globalDividendes.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Gains Latents + Div</div><div class="stat-val" style="color:'+(gainTotalCtO>=0?'var(--eu)':'var(--red)')+';">'+(gainTotalCtO>=0?'+':'')+gainTotalCtO.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Investi Réel</div><div class="stat-val" style="color:var(--text-muted)">'+globalPrixRevient.toFixed(2)+' €</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card" style="border-left:4px solid var(--red); background:rgba(244,63,94,0.03);">' +
+      '<h2>⚖️ Estimation Fiscale CTO (Flat Tax 30%)</h2>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Assiette imposable (Plus-values + Divs) :</span> <b>'+(gainTotalCtO > 0 ? gainTotalCtO.toFixed(2) : '0.00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Provision Flat Tax (30%) :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' €</b></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:6px; padding-top:6px;"><span>💰 <b>Estimation Net de Taxe :</b></span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' €</b></div>' +
+    '</div>';
+}
+
+function renderHistCTO() {
+  var h = '';
+  appData.cto.historique.forEach(function(a){
+    if(a.type === 'dividende') {
+      h += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right; font-weight:bold; color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Perçu le '+a.date+'</div></div>';
+    } else if (a.type === 'achat') {
+      h += '<div class="hist-item" style="border-left:3px solid var(--usa);"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+' (Frais: '+a.frais+'€)</div></div>';
+    } else {
+      h += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
+    }
+  });
+  document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
+}
+
+
+// =========================================================
+//             SAUVEGARDE & LOGISTIQUE SYNCHRONISÉE
+// =========================================================
 function exportJSON() {
-  saveInputs();
   var cleanData = JSON.stringify(appData, null, 2);
   var blob = new Blob([cleanData], {type: "application/json;charset=utf-8;"});
-  var d = new Date();
-  var dateStr = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-  var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "pea_backup_" + dateStr + ".json";
+  var link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+  link.download = "patrimoine_global_" + new Date().toISOString().substring(0,10) + ".json";
   document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
 function importJSON(input) {
   if (!input.files || !input.files[0]) return;
-  var file = input.files[0]; var reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
     try {
       var parsed = JSON.parse(e.target.result);
-      if (parsed.cibles && parsed.historique) {
+      if (parsed.pea || parsed.cto) {
         appData = parsed;
-        if(!appData.points_histoire) appData.points_histoire = [];
-        if(!appData.settings.taux_fisc) appData.settings.taux_fisc = 17.2;
-        if(appData.settings.frais_courtage === undefined) appData.settings.frais_courtage = 1.00;
-        saveData(appData); init(); alert("✅ Importation réussie !"); showTab('portefeuille');
-      } else { alert("⚠️ Structure de fichier non reconnue."); }
-    } catch(err) { alert("⚠️ Erreur de lecture."); }
+        if(!appData.pea) appData.pea = { historique:[], points_histoire:[], cibles:{usa:60,eu:30,em:10}, prix:{usa:56.34,eu:20.47,em:7.75}, settings:{} };
+        if(!appData.cto) appData.cto = { historique: [], cours: {} };
+        saveData(appData);
+        alert("✅ Importation globale réussie !");
+        location.reload();
+      } else { alert("Structure de fichier non valide."); }
+    } catch(err) { alert("Erreur lors de la lecture du fichier .json"); }
   };
-  reader.readAsText(file); input.value = '';
+  reader.readAsText(input.files[0]);
 }
 
-function exportCSV() {
-  var lines = ['Type,Date,ETF,Parts,Prix,TotalLigne'];
-  appData.historique.forEach(function(a){ lines.push([a.type||'achat', a.date, a.etf, a.nb||'', a.prix||'', a.total].join(',')); });
-  var blob = new Blob([lines.join('\n')], {type: 'text/csv;charset=utf-8;'});
-  var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "pea_compta.csv";
-  document.body.appendChild(link); link.click(); document.body.removeChild(link);
-}
-
-function clearHist() {
-  if(confirm('⚠️ Purger l\'intégralité des registres ?')) {
-    appData.historique = []; appData.points_histoire = []; saveData(appData); init(); renderHist();
+function resetGlobal() {
+  if(confirm('⚠️ ATTENTION : Cela va supprimer définitivement l\'intégralité des données de votre PEA ET de votre CTO. Continuer ?')) {
+    localStorage.removeItem("patrimoine_multi_v6");
+    location.reload();
   }
 }
 
-function updateCibleTotal() {
-  var u = +document.getElementById('c_usa').value || 0;
-  var e = +document.getElementById('c_eu').value || 0;
-  var m = +document.getElementById('c_em').value || 0;
-  var t = u + e + m;
-  document.getElementById('cible-total').innerHTML = 'Total : <b style="color:'+(t===100?'var(--eu)':'var(--red)')+'">'+t+'%</b>' + (t===100?' ✓':' ⚠️');
-}
-
-function saveCibles() {
-  var u = +document.getElementById('c_usa').value || 0;
-  var e = +document.getElementById('c_eu').value || 0;
-  var m = +document.getElementById('c_em').value || 0;
-  if(u+e+m !== 100) { alert('Le total doit faire exactement 100% !'); return; }
-  appData.cibles = { usa: u, eu: e, em: m }; saveData(appData); alert('Objectifs mémorisés.');
-}
-
-function saveSettings() {
-  appData.settings.alerte_seuil = +document.getElementById('alerte_seuil').value || 5;
-  appData.settings.taux_fisc = parseFloat(document.getElementById('taux_fisc').value) || 17.2;
-  appData.settings.frais_courtage = parseFloat(document.getElementById('frais_courtage').value) || 0;
-  saveData(appData); alert('Paramètres mis à jour.'); calculerOrdreOptimal();
+// INITIALISATION DU SYSTÈME
+function init() {
+  // Remplissage formulaires PEA
+  document.getElementById('p_usa').value = appData.pea.prix.usa;
+  document.getElementById('p_eu').value = appData.pea.prix.eu;
+  document.getElementById('p_em').value = appData.pea.prix.em;
+  document.getElementById('budget').value = appData.pea.settings.budget || '';
+  document.getElementById('c_usa').value = appData.pea.cibles.usa;
+  document.getElementById('c_eu').value = appData.pea.cibles.eu;
+  document.getElementById('c_em').value = appData.pea.cibles.em;
+  document.getElementById('alerte_seuil').value = appData.pea.settings.alerte_seuil || 5;
+  document.getElementById('taux_fisc').value = appData.pea.settings.taux_fisc || 17.2;
+  document.getElementById('frais_courtage').value = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
+  
+  recalculerQuantitesPEA();
+  calculerOrdreOptimal();
 }
 
 init();
