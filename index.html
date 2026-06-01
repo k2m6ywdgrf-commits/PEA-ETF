@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mon Patrimoine">
-<title>Mon Assistant PEA & CTO</title>
+<title>Mon Assistant Patrimoine Global</title>
 <style>
 :root {
   --bg: #000000;
@@ -20,6 +20,7 @@
   --em: #f59e0b;
   --div: #a855f7;
   --red: #f43f5e;
+  --gold: #fbbf24;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{
@@ -62,15 +63,15 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .btn-red{background: linear-gradient(135deg, #f43f5e, #e11d48); color:white;}
 .btn-gray{background: rgba(255,255,255,0.08); color:var(--text); font-size:13px; padding:10px;}
 
-/* Navigation Maîtresse (PEA vs CTO) */
+/* Navigation Maîtresse (Global vs PEA vs CTO) */
 .main-nav {
-  display: flex; gap: 8px; margin-bottom: 20px;
+  display: flex; gap: 6px; margin-bottom: 20px;
 }
 .btn-nav-main {
-  flex: 1; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; background: rgba(255,255,255,0.03); color: var(--text-muted); border: 1px solid var(--glass-border);
+  flex: 1; padding: 14px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.02); color: var(--text-muted); border: 1px solid var(--glass-border);
 }
 .btn-nav-main.active {
-  background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; border-color: #4338ca; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+  background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; border-color: #4338ca; box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
 }
 
 /* Sous-onglets */
@@ -84,6 +85,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 }
 .tab.active{background:rgba(255,255,255,0.12);color:white;font-weight:600;backdrop-filter:blur(5px);}
 .section{display:none;}.section.active{display:block;}
+.universe-block{display:none;}
 
 /* Éléments Graphiques & Badges */
 .tag{display:inline-block;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;text-transform: uppercase;}
@@ -95,7 +97,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .tag-cto{background:rgba(255,255,255,0.08);color:#e2e8f0;border:1px solid rgba(255,255,255,0.05);}
 .bar-container{background:rgba(255,255,255,0.05);border-radius:9px;height:12px;overflow:hidden;display:flex;margin:10px 0;}
 .bar{height:100%;transition:width 0.5s ease-out;}
-.alert-status{padding:12px;border-radius:10px;font-size:13px;margin-top:12px;font-weight:600;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .stat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);border-radius:12px;padding:14px;text-align:center;}
 .stat-val{font-size:20px;font-weight:700;margin-top:4px;letter-spacing:-0.5px;}
@@ -141,17 +142,67 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .trend-bar:hover .trend-tooltip { display: block; }
 .trend-tooltip { display: none; position: absolute; top: -35px; background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: bold;}
 .trend-date { font-size: 9px; color: var(--text-muted); margin-top: 4px; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Styles spécifiques à l'accueil global */
+.widget-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: white;}
+.widget-perf { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; float: right; margin-top: -2px;}
+.perf-up { background: rgba(16, 185, 129, 0.15); color: var(--eu); }
+.perf-down { background: rgba(244, 63, 94, 0.15); color: var(--red); }
 </style>
 </head>
 <body>
 <div style="max-width:600px;margin:auto;padding-bottom:40px;">
 
 <div class="main-nav">
-  <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')">Gestion Libre PEA</button>
-  <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Stock-Picking CTO</button>
+  <button id="btn-main-home" class="btn-nav-main active" onclick="switchUnivers('home')">🏠 Accueil Global</button>
+  <button id="btn-main-pea" class="btn-nav-main" onclick="switchUnivers('pea')">📈 Compte PEA</button>
+  <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Compte CTO</button>
 </div>
 
-<div id="univers-pea">
+<div id="univers-home" class="universe-block" style="display:block;">
+  <div class="card" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-color: rgba(99, 102, 241, 0.3); text-align: center; padding: 24px 14px;">
+    <div class="stat-lbl" style="color: #a5b4fc; font-weight: 600; letter-spacing: 1.5px;">Patrimoine Financier Net Réel</div>
+    <div class="stat-val" id="global-total-net" style="font-size: 32px; color: #ffffff; margin: 8px 0; text-shadow: 0 0 15px rgba(255,255,255,0.2);">0.00 €</div>
+    <div style="font-size: 11px; color: var(--text-muted);">Somme nette d'impôts théoriques (PEA + CTO)</div>
+  </div>
+
+  <div class="card">
+    <h2>⚖️ Répartition Macro du Capital</h2>
+    <div class="bar-container" style="height: 18px; border-radius: 6px;">
+      <div id="macro-bar-pea" class="bar" style="background: linear-gradient(to right, #10b981, #059669); width: 50%;"></div>
+      <div id="macro-bar-cto" class="bar" style="background: linear-gradient(to right, #0ea5e9, #0284c7); width: 50%;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+      <span style="color: var(--eu);">🟢 PEA : <span id="macro-txt-pea">0%</span></span>
+      <span style="color: var(--usa);">🔵 CTO : <span id="macro-txt-cto">0%</span></span>
+    </div>
+  </div>
+
+  <div class="card" style="border-left: 4px solid var(--eu); cursor: pointer;" onclick="switchUnivers('pea')">
+    <span id="widget-pea-perf" class="widget-perf">0.00 €</span>
+    <div class="widget-title">📈 Portefeuille PEA (ETF)</div>
+    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-pea-val">0.00 €</b></div>
+    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-pea-investi">0.00 €</span></div>
+  </div>
+
+  <div class="card" style="border-left: 4px solid var(--usa); cursor: pointer;" onclick="switchUnivers('cto')">
+    <span id="widget-cto-perf" class="widget-perf">0.00 €</span>
+    <div class="widget-title">💼 Portefeuille CTO (Stock-Picking)</div>
+    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-cto-val">0.00 €</b></div>
+    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-cto-investi">0.00 €</span></div>
+  </div>
+
+  <div class="card" style="background: rgba(168, 85, 247, 0.05); border-color: rgba(168, 85, 247, 0.2);">
+    <div class="widget-title" style="color: #d8b4fe;"><span style="font-size:18px;">💵</span> Rente Passive Cumulée</div>
+    <div class="sim-row" style="border:none; padding:2px 0;">
+      <span style="color: var(--text-muted);">Total des dividendes captés :</span>
+      <b style="color: var(--div); font-size: 18px;" id="global-dividendes-total">0.00 €</b>
+    </div>
+  </div>
+</div>
+
+
+<div id="univers-pea" class="universe-block">
   <div class="tabs">
     <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
     <button class="tab" id="subtab-pea-a" onclick="showSubTab('pea', 'analyse')">Tableau de Bord</button>
@@ -205,7 +256,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <div id="trend-container"></div>
       <button class="btn-gray" style="margin-top:10px; background:rgba(14, 165, 233, 0.15); color:var(--usa); font-weight:600;" onclick="figerSoldeDuJour()">📸 Figer la valeur PEA d'aujourd'hui</button>
     </div>
-    <div id="res-analyse"></div>
   </div>
 
   <div id="pea-historique" class="section">
@@ -254,7 +304,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
     </div>
     <div class="card">
-      <h2>Paramètres Générales PEA</h2>
+      <h2>Paramètres Généraux PEA</h2>
       <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal" pattern="[0-9]*"></div>
       <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*"></div>
       <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*"></div>
@@ -274,7 +324,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 </div>
 
 
-<div id="univers-cto" style="display:none;">
+<div id="univers-cto" class="universe-block">
   <div class="tabs">
     <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
     <button class="tab" id="subtab-cto-h" onclick="showSubTab('cto', 'historique')">Mouvements / Div</button>
@@ -286,8 +336,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     
     <div class="card">
       <h2>1. Valeurs des Cours CTO (€)</h2>
-      <div id="cto-cours-inputs-container">
-        </div>
+      <div id="cto-cours-inputs-container"></div>
     </div>
 
     <div class="card">
@@ -304,8 +353,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
               <th>Plus-Value Latente</th>
             </tr>
           </thead>
-          <tbody id="cto-positions-body">
-            </tbody>
+          <tbody id="cto-positions-body"></tbody>
         </table>
       </div>
     </div>
@@ -334,8 +382,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
       <div class="row" id="cto-row-name-select" style="display:none;">
         <label>Choisir le titre</label>
-        <select id="cto_name_select" onchange="handleCtoNameSelect()">
-          </select>
+        <select id="cto_name_select" onchange="handleCtoNameSelect()"></select>
       </div>
       <div class="row" id="cto-row-name-custom-div" style="display:none;">
         <label>Nouveau titre</label>
@@ -354,7 +401,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
       <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
     </div>
-
     <div id="cto-hist-container"></div>
   </div>
 
@@ -412,7 +458,7 @@ function loadData() {
 function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringify(d)); }
 
 var appData = loadData();
-var universActuel = 'pea';
+var universActuel = 'home';
 
 function generateId() {
   return '_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
@@ -445,12 +491,17 @@ function initDatesFormulaires() {
 
 function switchUnivers(u) {
   universActuel = u;
+  document.getElementById('btn-main-home').classList.toggle('active', u === 'home');
   document.getElementById('btn-main-pea').classList.toggle('active', u === 'pea');
   document.getElementById('btn-main-cto').classList.toggle('active', u === 'cto');
+  
+  document.getElementById('univers-home').style.display = (u === 'home') ? 'block' : 'none';
   document.getElementById('univers-pea').style.display = (u === 'pea') ? 'block' : 'none';
   document.getElementById('univers-cto').style.display = (u === 'cto') ? 'block' : 'none';
   
-  if(u === 'pea') {
+  if(u === 'home') {
+    calculerEtAfficherAccueilGlobal();
+  } else if(u === 'pea') {
     showSubTab('pea', 'portefeuille');
   } else {
     showSubTab('cto', 'portefeuille');
@@ -476,6 +527,87 @@ function showSubTab(univ, section) {
     if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); initDatesFormulaires(); }
     if(section === 'config') { document.getElementById('cto_tax_rate').value = appData.cto.settings.tax_rate || 30.0; }
   }
+}
+
+// =========================================================
+//            CALCULS DE CONSOLIDATION ACCUEIL GLOBAL
+// =========================================================
+function calculerEtAfficherAccueilGlobal() {
+  // 1. Partie PEA
+  var qPea = { usa: 0, eu: 0, em: 0 };
+  var peaInvestiReel = 0;
+  var peaDividendes = 0;
+  appData.pea.historique.forEach(function(m){
+    if (m.type === 'achat' || !m.type) { qPea[m.tag] += parseFloat(m.nb || 0); peaInvestiReel += parseFloat(m.total || 0); }
+    else if (m.type === 'vente') { qPea[m.tag] -= parseFloat(m.nb || 0); peaInvestiReel -= parseFloat(m.total || 0); }
+    else if (m.type === 'dividende') { peaDividendes += parseFloat(m.total || 0); }
+  });
+  var peaValeurBrute = (qPea.usa * (appData.pea.prix.usa || 0)) + (qPea.eu * (appData.pea.prix.eu || 0)) + (qPea.em * (appData.pea.prix.em || 0));
+  var peaGainGlobal = (peaValeurBrute - peaInvestiReel) + peaDividendes;
+  var peaTaxeTheorique = peaGainGlobal > 0 ? (peaGainGlobal * ((appData.pea.settings.taux_fisc || 17.2) / 100)) : 0;
+  var peaValeurNette = peaValeurBrute - peaTaxeTheorique;
+
+  // 2. Partie CTO
+  var posCto = {};
+  var ctoInvestiReel = 0;
+  var ctoDividendes = 0;
+  appData.cto.historique.slice().reverse().forEach(function(m) {
+    var name = m.actif;
+    if(!posCto[name]) posCto[name] = { parts: 0, totalCost: 0 };
+    if (m.type === 'achat') {
+      posCto[name].parts += parseFloat(m.nb); posCto[name].totalCost += parseFloat(m.total);
+    } else if (m.type === 'vente') {
+      var currentPru = posCto[name].parts > 0 ? (posCto[name].totalCost / posCto[name].parts) : 0;
+      posCto[name].parts -= parseFloat(m.nb); posCto[name].totalCost -= (currentPru * parseFloat(m.nb));
+    } else if (m.type === 'dividende') {
+      ctoDividendes += parseFloat(m.total);
+    }
+  });
+  
+  var ctoValeurBrute = 0;
+  Object.keys(posCto).forEach(function(nom) {
+    var cours = appData.cto.cours[nom] || 0;
+    ctoValeurBrute += posCto[nom].parts * cours;
+    ctoInvestiReel += posCto[nom].totalCost;
+  });
+  var ctoGainLatent = ctoValeurBrute - ctoInvestiReel;
+  var ctoGainTotal = ctoGainLatent + ctoDividendes;
+  var ctoTaxRate = appData.cto.settings.tax_rate !== undefined ? appData.cto.settings.tax_rate : 30.0;
+  var ctoTaxeTheorique = ctoGainTotal > 0 ? (ctoGainTotal * (ctoTaxRate / 100)) : 0;
+  var ctoValeurNette = ctoValeurBrute - ctoTaxeTheorique;
+
+  // 3. Totaux Consolidés
+  var patrimoineNetGlobal = peaValeurNette + ctoValeurNette;
+  var totalBrutGlobal = peaValeurBrute + ctoValeurBrute;
+  var totalDividendesCaptes = peaDividendes + ctoDividendes;
+
+  // Affichage des chiffres sur l'accueil
+  document.getElementById('global-total-net').textContent = patrimoineNetGlobal.toFixed(2) + ' €';
+  document.getElementById('global-dividendes-total').textContent = totalDividendesCaptes.toFixed(2) + ' €';
+
+  // Widgets détaillés
+  document.getElementById('widget-pea-val').textContent = peaValeurBrute.toFixed(2) + ' €';
+  document.getElementById('widget-pea-investi').textContent = Math.max(0, peaInvestiReel).toFixed(2) + ' €';
+  var badgePea = document.getElementById('widget-pea-perf');
+  badgePea.textContent = (peaGainGlobal >= 0 ? '+' : '') + peaGainGlobal.toFixed(2) + ' €';
+  badgePea.className = 'widget-perf ' + (peaGainGlobal >= 0 ? 'perf-up' : 'perf-down');
+
+  document.getElementById('widget-cto-val').textContent = ctoValeurBrute.toFixed(2) + ' €';
+  document.getElementById('widget-cto-investi').textContent = Math.max(0, ctoInvestiReel).toFixed(2) + ' €';
+  var badgeCto = document.getElementById('widget-cto-perf');
+  badgeCto.textContent = (ctoGainTotal >= 0 ? '+' : '') + ctoGainTotal.toFixed(2) + ' €';
+  badgeCto.className = 'widget-perf ' + (ctoGainTotal >= 0 ? 'perf-up' : 'perf-down');
+
+  // Ajustement de la barre macro répartition (sur la base de la valeur brute)
+  var pctPea = totalBrutGlobal > 0 ? (peaValeurBrute / totalBrutGlobal * 100) : 0;
+  var pctCto = totalBrutGlobal > 0 ? (ctoValeurBrute / totalBrutGlobal * 100) : 0;
+  
+  if (totalBrutGlobal === 0) { pctPea = 50; pctCto = 50; } // Remplacement propre si vide
+  
+  document.getElementById('macro-bar-pea').style.width = pctPea + '%';
+  document.getElementById('macro-bar-cto').style.width = pctCto + '%';
+  document.getElementById('macro-txt-pea').textContent = (totalBrutGlobal > 0 ? pctPea.toFixed(1) : '0') + '%';
+  document.getElementById('macro-txt-cto').textContent = (totalBrutGlobal > 0 ? pctCto.toFixed(1) : '0') + '%';
 }
 
 // =========================================================
@@ -672,7 +804,6 @@ function saveSettings() {
 // =========================================================
 function toggleFormCto() {
   var type = document.getElementById('cto_type').value;
-  
   if (type === 'dividende') {
     document.getElementById('cto-row-name-libre').style.display = 'none';
     document.getElementById('cto-row-name-select').style.display = 'flex';
@@ -736,7 +867,6 @@ function calculerPositionsCTO() {
 function ajouterMouvementCTO() {
   var type = document.getElementById('cto_type').value;
   var name = "";
-  
   if (type === 'dividende') {
     var selectVal = document.getElementById('cto_name_select').value;
     name = (selectVal === '__NEW__') ? document.getElementById('cto-row-name-custom-div').value.trim() : selectVal;
@@ -783,11 +913,9 @@ function supprimerMouvementCTO(id) {
   }
 }
 
-// APPELÉ DEPUIS LE BLOC DE SAISIE ÉLÉGANT
 function updateCtoCours(name, value) {
   appData.cto.cours[name] = parseFloat(value) || 0;
   saveData(appData);
-  // On recalcule l'univers CTO sans reconstruire la liste des inputs de saisie pour pas couper le clavier
   renderCTOUniverseOnly(); 
 }
 
@@ -796,15 +924,12 @@ function saveCtoSettings() {
   saveData(appData); alert('Paramètres CTO sauvés.');
 }
 
-// GENÈRE LA CARTE DES COURS COMME SUR LE PEA
 function renderCTOInputsCours() {
   var positions = calculerPositionsCTO();
   var container = document.getElementById('cto-cours-inputs-container');
   if(!container) return;
-  
   var html = '';
   var actfsVivant = Object.keys(positions).filter(function(n) { return positions[n].parts > 0; });
-  
   actfsVivant.forEach(function(nom) {
     var coursActuel = appData.cto.cours[nom] || 0;
     html += '<div class="row">' +
@@ -812,17 +937,14 @@ function renderCTOInputsCours() {
               '<input type="number" inputmode="decimal" pattern="[0-9]*" value="' + coursActuel + '" oninput="updateCtoCours(\'' + nom + '\', this.value)">' +
             '</div>';
   });
-  
   container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">Aucun actif en portefeuille pour le moment.</div>';
 }
 
-// GLOBAL CTO REFRESH
 function renderCTOUniverse() {
   renderCTOInputsCours();
   renderCTOUniverseOnly();
 }
 
-// MET À JOUR UNIQUEMENT LES GRAPHIQUES ET TABLEAUX (SANS TOUCHER AUX INPUTS POUR EVITER LE BUG CLAVIER)
 function renderCTOUniverseOnly() {
   var positions = calculerPositionsCTO();
   var tbody = document.getElementById('cto-positions-body');
@@ -894,9 +1016,7 @@ function renderHistCTO() {
     } else {
       detailHtml = '<div class="hist-content"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
     }
-
     var borderStyle = a.type === 'dividende' ? 'var(--div)' : (a.type === 'achat' ? 'var(--usa)' : 'var(--red)');
-
     h += '<div class="hist-item" style="border-left:3px solid ' + borderStyle + ';">' +
            detailHtml +
            '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">🗑️</button>' +
@@ -904,7 +1024,6 @@ function renderHistCTO() {
   });
   document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
 }
-
 
 // =========================================================
 //             SAUVEGARDE & LOGISTIQUE
@@ -927,8 +1046,7 @@ function importJSON(input) {
         appData = parsed;
         if(!appData.pea) appData.pea = { historique:[], points_histoire:[], cibles:{usa:60,eu:30,em:10}, prix:{usa:56.34,eu:20.47,em:7.75}, settings:{} };
         if(!appData.cto) appData.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
-        patchMissingIds();
-        saveData(appData); alert("✅ Importation globale réussie !"); location.reload();
+        patchMissingIds(); saveData(appData); alert("✅ Importation globale réussie !"); location.reload();
       } else { alert("Fichier non valide."); }
     } catch(err) { alert("Erreur lors de la lecture du fichier .json"); }
   };
@@ -954,7 +1072,7 @@ function init() {
   document.getElementById('frais_courtage').value = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
   
   initDatesFormulaires();
-  recalculerQuantitesPEA(); calculerOrdreOptimal();
+  calculerEtAfficherAccueilGlobal();
 }
 init();
 </script>
