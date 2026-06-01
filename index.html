@@ -88,12 +88,16 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;}
 
-/* Graphiques */
-.donut-wrapper { display: flex; justify-content: center; align-items: center; margin: 20px 0; gap: 24px; }
-.donut { width: 110px; height: 110px; border-radius: 50%; background: conic-gradient(var(--usa) 0%, var(--usa) var(--u-deg), var(--eu) var(--u-deg), var(--eu) var(--e-deg), var(--em) var(--e-deg), var(--em) 100%); position: relative; }
-.donut::before { content: ""; position: absolute; top: 18px; left: 18px; width: 74px; height: 74px; background: #0f1322; border-radius: 50%; }
-.donut-legends { font-size: 12px; display: flex; flex-direction: column; gap: 6px; }
-.donut-legend-item { display: flex; align-items: center; gap: 8px; }
+/* Graphiques & Légende optimisés */
+.donut-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; gap: 16px; }
+@media(min-width: 420px) { .donut-wrapper { flex-direction: row; justify-content: center; gap: 24px; } }
+.donut { width: 100px; height: 100px; min-width: 100px; border-radius: 50%; background: conic-gradient(var(--usa) 0%, var(--usa) var(--u-deg), var(--eu) var(--u-deg), var(--eu) var(--e-deg), var(--em) var(--e-deg), var(--em) 100%); position: relative; }
+.donut::before { content: ""; position: absolute; top: 16px; left: 16px; width: 68px; height: 68px; background: #0f1322; border-radius: 50%; }
+.donut-legends { font-size: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; width: 100%; }
+.donut-legend-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
+.donut-legend-left { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.donut-legend-right { display: flex; flex-direction: column; align-items: flex-end; font-family: monospace; font-size: 11px; color: var(--text-muted); }
+.donut-legend-right b { color: var(--text); font-size: 12px; }
 .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
 
 .trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; padding: 10px 5px 0; margin: 15px 0 5px; background: rgba(255,255,255,0.02); border-bottom: 2px solid rgba(255,255,255,0.1); border-radius: 6px; gap: 6px;}
@@ -147,9 +151,19 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div class="donut-wrapper">
       <div class="donut" id="chart-donut"></div>
       <div class="donut-legends">
-        <div class="donut-legend-item"><div class="donut-dot" style="background:var(--usa)"></div><span id="leg-usa">S&P 500 : 0%</span></div>
-        <div class="donut-legend-item"><div class="donut-dot" style="background:var(--eu)"></div><span id="leg-eu">Stoxx 600 : 0%</span></div>
-        <div class="donut-legend-item"><div class="donut-dot" style="background:var(--em)"></div><span id="leg-em">Émergents : 0%</span></div>
+        <!-- Légende enrichie en %, € et Parts -->
+        <div class="donut-legend-item">
+          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--usa)"></div>S&P 500</div>
+          <div class="donut-legend-right"><b id="leg-usa-pct">0%</b><span id="leg-usa-details">0 € • 0 part</span></div>
+        </div>
+        <div class="donut-legend-item">
+          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--eu)"></div>Stoxx 600</div>
+          <div class="donut-legend-right"><b id="leg-eu-pct">0%</b><span id="leg-eu-details">0 € • 0 part</span></div>
+        </div>
+        <div class="donut-legend-item">
+          <div class="donut-legend-left"><div class="donut-dot" style="background:var(--em)"></div>Émergents</div>
+          <div class="donut-legend-right"><b id="leg-em-pct">0%</b><span id="leg-em-details">0 € • 0 part</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -512,11 +526,11 @@ function renderStats() {
 }
 
 function renderHist() {
+  var htmlRows = '';
   var hist = appData.historique;
   var c = document.getElementById('hist-container');
   if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucune écriture enregistrée.</div>'; return; }
   
-  var htmlRows = '';
   hist.forEach(function(a){
     var fStr = a.frais && parseFloat(a.frais) > 0 ? ' (dont ' + parseFloat(a.frais).toFixed(2) + '€ frais)' : '';
     if(a.type === 'achat' || !a.type) {
@@ -539,15 +553,23 @@ function calc() {
   var pE = totActuel ? (e/totActuel)*100 : 0;
   var pM = totActuel ? (m/totActuel)*100 : 0;
   
+  // Animation et construction dynamique du donut
   var uDeg = pU; var eDeg = pU + pE;
   var donut = document.getElementById('chart-donut');
   if(donut) {
     donut.style.setProperty('--u-deg', uDeg + '%');
     donut.style.setProperty('--e-deg', eDeg + '%');
   }
-  document.getElementById('leg-usa').textContent = 'S&P 500 : ' + pU.toFixed(1) + '%';
-  document.getElementById('leg-eu').textContent = 'Stoxx 600 : ' + pE.toFixed(1) + '%';
-  document.getElementById('leg-em').textContent = 'Émergents : ' + pM.toFixed(1) + '%';
+  
+  // Remplissage complet de la nouvelle légende dynamique (%, €, Parts)
+  document.getElementById('leg-usa-pct').textContent = pU.toFixed(1) + '%';
+  document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' € • ' + q.usa + ' part' + (q.usa > 1 ? 's' : '');
+  
+  document.getElementById('leg-eu-pct').textContent = pE.toFixed(1) + '%';
+  document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' € • ' + q.eu + ' part' + (q.eu > 1 ? 's' : '');
+  
+  document.getElementById('leg-em-pct').textContent = pM.toFixed(1) + '%';
+  document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' € • ' + q.em + ' part' + (q.em > 1 ? 's' : '');
 
   var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
   var seuil = appData.settings.alerte_seuil || 5;
