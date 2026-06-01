@@ -133,24 +133,19 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <body>
 <div style="max-width:600px;margin:auto;padding-bottom:40px;">
 
-<!-- DOUBLE NAVIGATION MAÎTRESSE -->
 <div class="main-nav">
   <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')"> Gestion Libre PEA</button>
   <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Stock-Picking CTO</button>
 </div>
 
-<!-- ========================================================= -->
-<!--                      UNIVERS PEA                          -->
-<!-- ========================================================= -->
 <div id="univers-pea">
   <div class="tabs">
     <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
     <button class="tab" id="subtab-pea-a" onclick="showSubTab('pea', 'analyse')">Tableau de Bord</button>
     <button class="tab" id="subtab-pea-h" onclick="showSubTab('pea', 'historique')">Mouvements</button>
-    <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramétrages</button>
+    <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramètres</button>
   </div>
 
-  <!-- PEA SUB-TAB 1: SAISIE -->
   <div id="pea-portefeuille" class="section active">
     <div class="card">
       <h2>1. Valeurs des Cours (€)</h2>
@@ -170,7 +165,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     </div>
   </div>
 
-  <!-- PEA SUB-TAB 2: ANALYSE -->
   <div id="pea-analyse" class="section">
     <div class="card">
       <h2>Structure de l'allocation</h2>
@@ -201,7 +195,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="res-analyse"></div>
   </div>
 
-  <!-- PEA SUB-TAB 3: HISTORIQUE -->
   <div id="pea-historique" class="section">
     <div class="card" id="formulaire-mouvement">
       <h2>✍️ Enregistrer un mouvement PEA</h2>
@@ -234,7 +227,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="hist-container"></div>
   </div>
 
-  <!-- PEA SUB-TAB 4: CONFIG -->
   <div id="pea-config" class="section">
     <div class="card">
       <h2>Répartition Cible (%)</h2>
@@ -251,20 +243,27 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal"></div>
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
+    
+    <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
+      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_pea').click()">📥 Importer .json</button>
+      </div>
+      <input type="file" id="global_json_input_pea" accept=".json" style="display:none;" onchange="importJSON(this)">
+      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
+    </div>
   </div>
 </div>
 
 
-<!-- ========================================================= -->
-<!--                      UNIVERS CTO                          -->
-<!-- ========================================================= -->
 <div id="univers-cto" style="display:none;">
   <div class="tabs">
     <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
     <button class="tab" id="subtab-cto-h" onclick="showSubTab('cto', 'historique')">Mouvements / Div</button>
+    <button class="tab" id="subtab-cto-c" onclick="showSubTab('cto', 'config')">Paramètres</button>
   </div>
 
-  <!-- CTO SUB-TAB 1: POSITIONS ACTUELLES -->
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
     
@@ -283,14 +282,12 @@ button:active{transform:scale(0.97);opacity:0.9;}
             </tr>
           </thead>
           <tbody id="cto-positions-body">
-            <!-- Injecté par JS -->
-          </tbody>
+            </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- CTO SUB-TAB 2: AJOUT TRANSACTION -->
   <div id="cto-historique" class="section">
     <div class="card">
       <h2>✍️ Enregistrer une opération CTO</h2>
@@ -303,32 +300,27 @@ button:active{transform:scale(0.97);opacity:0.9;}
         </select>
       </div>
 
-      <!-- Bloc Nom Libre (Pour Achats/Ventes) -->
       <div class="row" id="cto-row-name-libre">
         <label>Nom de l'actif</label>
         <input id="cto_name" type="text" placeholder="Ex: NVIDIA, Apple, Microsoft...">
       </div>
 
-      <!-- Bloc Sélection Dynamique (Pour Dividendes) -->
       <div class="row" id="cto-row-name-select" style="display:none;">
         <label>Choisir le titre</label>
         <select id="cto_name_select" onchange="handleCtoNameSelect()">
-          <!-- Rempli en JS avec les titres détenus -->
-        </select>
+          </select>
       </div>
       <div class="row" id="cto-row-name-custom-div" style="display:none;">
         <label>Nouveau titre</label>
         <input id="cto_name_custom_div" type="text" placeholder="Nom du nouveau titre">
       </div>
 
-      <!-- Variables Chiffrées standard -->
       <div id="cto-form-quantite">
         <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
         <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" placeholder="Ex: 120.50"></div>
         <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" value="1.00"></div>
       </div>
 
-      <!-- Variables Dividendes -->
       <div id="cto-form-dividende" style="display:none;">
         <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" placeholder="Montant avant Flat Tax"></div>
       </div>
@@ -338,30 +330,37 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
     <div id="cto-hist-container"></div>
   </div>
-</div>
 
-<!-- FOOTER LOGISTIQUE COMMUN -->
-<div class="card" style="margin-top:20px; background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-  <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Unique)</h2>
-  <div style="display:flex; gap:8px;">
-    <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
-    <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input').click()">📥 Importer .json</button>
+  <div id="cto-config" class="section">
+    <div class="card">
+      <h2>Réglementation & Impôts CTO</h2>
+      <div class="row"><label>Taux Flat Tax (%)</label><input id="cto_tax_rate" type="number" step="0.1" inputmode="decimal" value="30.0"></div>
+      <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
+    </div>
+
+    <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
+      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_cto').click()">📥 Importer .json</button>
+      </div>
+      <input type="file" id="global_json_input_cto" accept=".json" style="display:none;" onchange="importJSON(this)">
+      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
+    </div>
   </div>
-  <input type="file" id="global_json_input" accept=".json" style="display:none;" onchange="importJSON(this)">
-  <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
 </div>
 
 </div>
 
 <script>
-// UNIFICATION DES STRUCTURES DE DONNÉES EN LOCALSTORAGE
 function loadData() {
   var local = localStorage.getItem("patrimoine_multi_v6");
   if (local) {
     try { 
       var parsed = JSON.parse(local);
       if(!parsed.pea) parsed.pea = {};
-      if(!parsed.cto) parsed.cto = { historique: [], cours: {} };
+      if(!parsed.cto) parsed.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
+      if(!parsed.cto.settings) parsed.cto.settings = { tax_rate: 30.0 };
       if(!parsed.pea.historique) parsed.pea.historique = [];
       if(!parsed.pea.points_histoire) parsed.pea.points_histoire = [];
       return parsed;
@@ -377,7 +376,8 @@ function loadData() {
     },
     cto: {
       historique: [],
-      cours: {} // Stockage des derniers prix saisis pour la valorisation libre
+      cours: {},
+      settings: { tax_rate: 30.0 }
     }
   };
 }
@@ -402,7 +402,7 @@ function switchUnivers(u) {
 }
 
 function showSubTab(univ, section) {
-  var tabs = univ === 'pea' ? ['portefeuille','analyse','historique','config'] : ['portefeuille','historique'];
+  var tabs = univ === 'pea' ? ['portefeuille','analyse','historique','config'] : ['portefeuille','historique','config'];
   tabs.forEach(function(t) {
     var el = document.getElementById(univ + '-' + t);
     if(el) el.classList.toggle('active', t === section);
@@ -418,6 +418,7 @@ function showSubTab(univ, section) {
   } else {
     if(section === 'portefeuille') renderCTOUniverse();
     if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); }
+    if(section === 'config') { document.getElementById('cto_tax_rate').value = appData.cto.settings.tax_rate || 30.0; }
   }
 }
 
@@ -504,16 +505,15 @@ function renderStatsPEA() {
   var q = recalculerQuantitesPEA();
   var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
   var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp);
-  var invTotal = 0, divTotal = 0, realisedGain = 0, baseDenom = 0;
+  var invTotal = 0, divTotal = 0, baseDenom = 0;
 
   appData.pea.historique.slice().reverse().forEach(function(m){
-    if(m.type === 'achat' || !m.type) { baseDenom += parseFloat(m.total); divTotal -= 0; }
+    if(m.type === 'achat' || !m.type) { baseDenom += parseFloat(m.total); }
     else if(m.type === 'vente') { baseDenom -= parseFloat(m.total); }
     else if(m.type === 'dividende') { divTotal += parseFloat(m.total); }
   });
 
   var gainGlobalCumule = (valActuelle - baseDenom) + divTotal;
-  var perfPourcent = baseDenom > 0 ? (gainGlobalCumule / baseDenom * 100) : 0;
   var taxe = gainGlobalCumule > 0 ? (gainGlobalCumule * ((appData.pea.settings.taux_fisc||17.2)/100)) : 0;
 
   document.getElementById('stats-container').innerHTML = '<div class="card"><div class="stat-grid">' +
@@ -621,29 +621,24 @@ function updateCtoDividendsDropdown() {
   var positions = calculerPositionsCTO();
   var select = document.getElementById('cto_name_select');
   if(!select) return;
-  
   select.innerHTML = '';
   
   Object.keys(positions).forEach(function(nom) {
     if(positions[nom].parts > 0) {
       var opt = document.createElement('option');
-      opt.value = nom;
-      opt.textContent = nom + ' (Détenu)';
+      opt.value = nom; opt.textContent = nom + ' (Détenu)';
       select.appendChild(opt);
     }
   });
   
   var optNew = document.createElement('option');
-  optNew.value = '__NEW__';
-  optNew.textContent = '➕ Saisir un autre nom libre...';
+  optNew.value = '__NEW__'; optNew.textContent = '➕ Saisir un autre nom libre...';
   select.appendChild(optNew);
   handleCtoNameSelect();
 }
 
 function calculerPositionsCTO() {
   var pos = {};
-  
-  // Parcourir à l'envers pour respecter l'ordre chronologique de construction
   appData.cto.historique.slice().reverse().forEach(function(m) {
     var name = m.actif;
     if(!pos[name]) pos[name] = { parts: 0, totalCost: 0, cumulativeDividends: 0 };
@@ -659,7 +654,6 @@ function calculerPositionsCTO() {
       pos[name].cumulativeDividends += parseFloat(m.total);
     }
   });
-  
   return pos;
 }
 
@@ -669,61 +663,43 @@ function ajouterMouvementCTO() {
   
   if (type === 'dividende') {
     var selectVal = document.getElementById('cto_name_select').value;
-    if(selectVal === '__NEW__') {
-      name = document.getElementById('cto_name_custom_div').value.trim();
-    } else {
-      name = selectVal;
-    }
+    name = (selectVal === '__NEW__') ? document.getElementById('cto-row-name-custom-div').value.trim() : selectVal;
   } else {
     name = document.getElementById('cto_name').value.trim();
   }
   
   var dateStr = new Date().toLocaleDateString('fr-FR');
-
-  if(!name) { alert('Veuillez spécifier un nom d\'actif valide.'); return; }
+  if(!name) { alert('Spécifiez un nom valide.'); return; }
 
   if(type === 'achat' || type === 'vente') {
     var q = parseFloat(document.getElementById('cto_q').value) || 0;
     var p = parseFloat(document.getElementById('cto_p').value) || 0;
     var f = type === 'achat' ? (parseFloat(document.getElementById('cto_frais').value) || 0) : 0;
-    
-    if(q <= 0 || p <= 0) { alert('Champs chiffrés obligatoires.'); return; }
+    if(q <= 0 || p <= 0) { alert('Champs requis.'); return; }
     
     var totalLigne = type === 'achat' ? (q * p) + f : (q * p);
-    
-    appData.cto.historique.unshift({
-      type: type, actif: name, date: dateStr, nb: q, prix: p, frais: f, total: totalLigne.toFixed(2)
-    });
-    
-    if(appData.cto.cours[name] === undefined || type === 'achat') {
-      appData.cto.cours[name] = p; // On initialise le cours actuel avec le dernier prix connu
-    }
+    appData.cto.historique.unshift({ type: type, actif: name, date: dateStr, nb: q, prix: p, frais: f, total: totalLigne.toFixed(2) });
+    if(appData.cto.cours[name] === undefined || type === 'achat') appData.cto.cours[name] = p;
   } else {
     var m = parseFloat(document.getElementById('cto_div_montant').value) || 0;
-    if(m <= 0) { alert('Montant du dividende obligatoire.'); return; }
-    
-    appData.cto.historique.unshift({
-      type: 'dividende', actif: name, date: dateStr, total: m.toFixed(2)
-    });
+    if(m <= 0) { alert('Montant requis.'); return; }
+    appData.cto.historique.unshift({ type: 'dividende', actif: name, date: dateStr, total: m.toFixed(2) });
   }
 
-  saveData(appData);
-  alert('✅ Transaction CTO enregistrée.');
-  
-  // Reset champs
-  document.getElementById('cto_name').value = '';
-  document.getElementById('cto_name_custom_div').value = '';
-  document.getElementById('cto_q').value = '';
-  document.getElementById('cto_p').value = '';
-  document.getElementById('cto_div_montant').value = '';
-  
+  saveData(appData); alert('✅ Enregistré.');
+  document.getElementById('cto_name').value = ''; document.getElementById('cto_name_custom_div').value = '';
+  document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = ''; document.getElementById('cto_div_montant').value = '';
   showSubTab('cto', 'portefeuille');
 }
 
 function updateCtoCours(name, value) {
   appData.cto.cours[name] = parseFloat(value) || 0;
-  saveData(appData);
-  renderCTOUniverse(); // Recalcule instantanément la valorisation globale
+  saveData(appData); renderCTOUniverse();
+}
+
+function saveCtoSettings() {
+  appData.cto.settings.tax_rate = parseFloat(document.getElementById('cto_tax_rate').value) || 30.0;
+  saveData(appData); alert('Paramètres CTO sauvés.');
 }
 
 function renderCTOUniverse() {
@@ -731,17 +707,11 @@ function renderCTOUniverse() {
   var tbody = document.getElementById('cto-positions-body');
   tbody.innerHTML = '';
 
-  var globalValeurCTO = 0;
-  var globalPrixRevient = 0;
-  var globalDividendes = 0;
-  var globalPlusValueRealisee = 0; // Provient des transactions historiques de ventes
-
-  // Calculer la plus-value réalisée (Cessions passées)
+  var globalValeurCTO = 0, globalPrixRevient = 0, globalDividendes = 0;
   appData.cto.historique.slice().reverse().forEach(function(m) {
     if(m.type === 'dividende') globalDividendes += parseFloat(m.total);
   });
 
-  // Construction dynamique du tableau des lignes actives
   Object.keys(positions).forEach(function(nom) {
     var p = positions[nom];
     if(p.parts <= 0 && p.cumulativeDividends <= 0) return; 
@@ -752,8 +722,7 @@ function renderCTOUniverse() {
     var pvLatente = valuation - p.totalCost;
     var pvPct = p.totalCost > 0 ? (pvLatente / p.totalCost * 100) : 0;
 
-    globalValeurCTO += valuation;
-    globalPrixRevient += p.totalCost;
+    globalValeurCTO += valuation; globalPrixRevient += p.totalCost;
 
     if(p.parts > 0) {
       var tr = document.createElement('tr');
@@ -768,33 +737,27 @@ function renderCTOUniverse() {
   });
 
   if(tbody.innerHTML === '') {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">Aucune position ouverte. Allez dans l\'onglet "Mouvements" pour alimenter votre CTO.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">Aucune position ouverte.</td></tr>';
   }
 
-  // Calculs de performance globale
   var gainLatentGlobal = globalValeurCTO - globalPrixRevient;
   var gainTotalCtO = gainLatentGlobal + globalDividendes;
-  
-  // Calcul Flat Tax Prévoyance (30% sur les gains globaux)
-  var flatTaxEstimee = gainTotalCtO > 0 ? (gainTotalCtO * 0.30) : 0;
+  var currentTaxRate = (appData.cto.settings.tax_rate !== undefined) ? appData.cto.settings.tax_rate : 30.0;
+  var flatTaxEstimee = gainTotalCtO > 0 ? (gainTotalCtO * (currentTaxRate / 100)) : 0;
   var netApresFlatTax = globalValeurCTO - flatTaxEstimee;
 
-  // Injection du Dashboard CTO haut de page
   document.getElementById('cto-dashboard-container').innerHTML = 
-    '<div class="card">' +
-      '<h2>Performance Portefeuille CTO</h2>' +
-      '<div class="stat-grid">' +
+    '<div class="card"><h2>Performance Portefeuille CTO</h2><div class="stat-grid">' +
         '<div class="stat-box"><div class="stat-lbl">Valeur Actuelle</div><div class="stat-val">'+globalValeurCTO.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Dividendes perçus</div><div class="stat-val" style="color:var(--div)">+'+globalDividendes.toFixed(2)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Gains Latents + Div</div><div class="stat-val" style="color:'+(gainTotalCtO>=0?'var(--eu)':'var(--red)')+';">'+(gainTotalCtO>=0?'+':'')+gainTotalCtO.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Dividendes</div><div class="stat-val" style="color:var(--div)">+'+globalDividendes.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Gains + Div</div><div class="stat-val" style="color:'+(gainTotalCtO>=0?'var(--eu)':'var(--red)')+';">'+(gainTotalCtO>=0?'+':'')+gainTotalCtO.toFixed(2)+' €</div></div>' +
         '<div class="stat-box"><div class="stat-lbl">Investi Réel</div><div class="stat-val" style="color:var(--text-muted)">'+globalPrixRevient.toFixed(2)+' €</div></div>' +
-      '</div>' +
-    '</div>' +
+    '</div></div>' +
     '<div class="card" style="border-left:4px solid var(--red); background:rgba(244,63,94,0.03);">' +
-      '<h2>⚖️ Estimation Fiscale CTO (Flat Tax 30%)</h2>' +
-      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Assiette imposable (Plus-values + Divs) :</span> <b>'+(gainTotalCtO > 0 ? gainTotalCtO.toFixed(2) : '0.00')+' €</b></div>' +
-      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Provision Flat Tax (30%) :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' €</b></div>' +
-      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:6px; padding-top:6px;"><span>💰 <b>Estimation Net de Taxe :</b></span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' €</b></div>' +
+      '<h2>⚖️ Estimation Fiscale CTO ('+currentTaxRate+'%)</h2>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Assiette (PV + Divs) :</span> <b>'+(gainTotalCtO > 0 ? gainTotalCtO.toFixed(2) : '0.00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Taxe estimée :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' €</b></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:6px; padding-top:6px;"><span>💰 <b>Net de Taxe :</b></span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' €</b></div>' +
     '</div>';
 }
 
@@ -814,7 +777,7 @@ function renderHistCTO() {
 
 
 // =========================================================
-//             SAUVEGARDE & LOGISTIQUE SYNCHRONISÉE
+//             SAUVEGARDE & LOGISTIQUE
 // =========================================================
 function exportJSON() {
   var cleanData = JSON.stringify(appData, null, 2);
@@ -833,26 +796,21 @@ function importJSON(input) {
       if (parsed.pea || parsed.cto) {
         appData = parsed;
         if(!appData.pea) appData.pea = { historique:[], points_histoire:[], cibles:{usa:60,eu:30,em:10}, prix:{usa:56.34,eu:20.47,em:7.75}, settings:{} };
-        if(!appData.cto) appData.cto = { historique: [], cours: {} };
-        saveData(appData);
-        alert("✅ Importation globale réussie !");
-        location.reload();
-      } else { alert("Structure de fichier non valide."); }
+        if(!appData.cto) appData.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
+        saveData(appData); alert("✅ Importation globale réussie !"); location.reload();
+      } else { alert("Fichier non valide."); }
     } catch(err) { alert("Erreur lors de la lecture du fichier .json"); }
   };
   reader.readAsText(input.files[0]);
 }
 
 function resetGlobal() {
-  if(confirm('⚠️ ATTENTION : Cela va supprimer définitivement l\'intégralité des données de votre PEA ET de votre CTO. Continuer ?')) {
-    localStorage.removeItem("patrimoine_multi_v6");
-    location.reload();
+  if(confirm('⚠️ ATTENTION : Cela va supprimer l\'intégralité des données (PEA + CTO). Continuer ?')) {
+    localStorage.removeItem("patrimoine_multi_v6"); location.reload();
   }
 }
 
-// INITIALISATION DU SYSTÈME
 function init() {
-  // Remplissage formulaires PEA
   document.getElementById('p_usa').value = appData.pea.prix.usa;
   document.getElementById('p_eu').value = appData.pea.prix.eu;
   document.getElementById('p_em').value = appData.pea.prix.em;
@@ -864,10 +822,8 @@ function init() {
   document.getElementById('taux_fisc').value = appData.pea.settings.taux_fisc || 17.2;
   document.getElementById('frais_courtage').value = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
   
-  recalculerQuantitesPEA();
-  calculerOrdreOptimal();
+  recalculerQuantitesPEA(); calculerOrdreOptimal();
 }
-
 init();
 </script>
 </body>
