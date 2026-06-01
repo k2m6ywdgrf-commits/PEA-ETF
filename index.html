@@ -17,22 +17,25 @@
   --usa: #38bdf8;
   --eu: #34d399;
   --em: #fbbf24;
+  --div: #a855f7;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:16px;font-size:15px;}
 .card{background:var(--card);padding:16px;border-radius:14px;margin-bottom:14px;border:1px solid #1e293b;}
 h2{margin:0 0 14px;font-size:15px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
-input[type=number]{padding:12px;border-radius:8px;border:none;background:var(--input);color:white;font-size:16px;width:100%;transition:background 0.2s;}
-input[type=number]:focus{background:#222b40;outline:none;}
+h3{margin:0 0 10px;font-size:13px;color:var(--text);font-weight:600;}
+input, select{padding:12px;border-radius:8px;border:none;background:var(--input);color:white;font-size:15px;width:100%;transition:background 0.2s;}
+input:focus, select:focus{background:#222b40;outline:none;}
 .row{display:flex;gap:10px;margin-bottom:8px;align-items:center;}
 .row label{width:110px;min-width:110px;font-size:13px;color:var(--text-muted);}
-.row input{flex:1;}
+.row input, .row select{flex:1;}
 button{width:100%;padding:14px;border:none;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer;transition:transform 0.1s,opacity 0.2s;}
 button:active{transform:scale(0.98);opacity:0.9;}
 .btn-blue{background:var(--usa);color:#090d16;}
 .btn-green{background:var(--eu);color:#090d16;}
+.btn-purple{background:var(--div);color:white;}
 .btn-red{background:#f87171;color:#090d16;}
-.btn-gray{background:var(--input);color:var(--text-muted);font-size:13px;padding:10px;}
+.btn-gray{background:var(--input);color:var(--text);font-size:13px;padding:10px;}
 .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--card);padding:4px;border-radius:10px;}
 .tab{flex:1;padding:8px 2px;border:none;border-radius:6px;background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;font-weight:500;}
 .tab.active{background:var(--input);color:white;font-weight:600;}
@@ -41,6 +44,7 @@ button:active{transform:scale(0.98);opacity:0.9;}
 .tag-usa{background:#1e3a5f;color:var(--usa);}
 .tag-eu{background:#1a3a2a;color:var(--eu);}
 .tag-em{background:#3a2a00;color:var(--em);}
+.tag-div{background:#2e164d;color:var(--div);}
 .bar-container{background:var(--input);border-radius:8px;height:14px;overflow:hidden;display:flex;margin:8px 0;}
 .bar{height:100%;transition:width 0.4s;}
 .prix-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
@@ -51,7 +55,7 @@ button:active{transform:scale(0.98);opacity:0.9;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 .stat-box{background:var(--input);border-radius:10px;padding:12px;text-align:center;}
 .stat-val{font-size:18px;font-weight:bold;margin-top:4px;}
-.stat-lbl{font-size:11px;color(--text-muted);}
+.stat-lbl{font-size:11px;color:var(--text-muted);}
 .hist-item{background:var(--input);border-radius:10px;padding:12px;margin-bottom:8px;font-size:13px;}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--input);font-size:13px;}
 .divider{border:none;border-top:1px solid var(--input);margin:12px 0;}
@@ -68,7 +72,7 @@ button:active{transform:scale(0.98);opacity:0.9;}
   <button class="tab active" onclick="showTab('portefeuille')">Saisie</button>
   <button class="tab" onclick="showTab('analyse')">Analyse</button>
   <button class="tab" onclick="showTab('stats')">Suivi</button>
-  <button class="tab" onclick="showTab('historique')">Ordres</button>
+  <button class="tab" onclick="showTab('historique')">Ordres & Div</button>
   <button class="tab" onclick="showTab('config')">Cibles</button>
 </div>
 
@@ -87,7 +91,7 @@ button:active{transform:scale(0.98);opacity:0.9;}
     <div class="row"><label><span class="tag tag-eu">Stoxx 600</span> parts</label><input id="eu_q" type="number" inputmode="decimal" placeholder="0" oninput="saveInputs()"></div>
     <div class="row"><label><span class="tag tag-em">Emergents</span> parts</label><input id="em_q" type="number" inputmode="decimal" placeholder="0" oninput="saveInputs()"></div>
     <hr class="divider">
-    <div class="row"><label>Budget à investir</label><input id="budget" type="number" inputmode="decimal" placeholder="En euros (€)" oninput="saveInputs()"></div>
+    <div class="row"><label>Budget d'achat</label><input id="budget" type="number" inputmode="decimal" placeholder="En euros (€)" oninput="saveInputs()"></div>
     <button class="btn-blue" style="margin-top:10px;" onclick="executerAnalyse()">🚀 Lancer l'analyse</button>
   </div>
 </div>
@@ -102,17 +106,52 @@ button:active{transform:scale(0.98);opacity:0.9;}
   <div id="res-analyse"></div>
 </div>
 
-<!-- SECTION 3 : SUIVI -->
+<!-- SECTION 3 : SUIVI (PERF & DIVIDENDES) -->
 <div id="tab-stats" class="section">
   <div id="stats-container"></div>
 </div>
 
-<!-- SECTION 4 : ORDRES -->
+<!-- SECTION 4 : HISTORIQUE, ORDRES MANUELS & DIVIDENDES -->
 <div id="tab-historique" class="section">
+  
+  <!-- Formulaire d'ajout manuel rapide -->
+  <div class="card" style="border: 1px dashed var(--text-muted);">
+    <h2>✍️ Ajouter un événement manuel</h2>
+    <div class="row">
+      <label>Type</label>
+      <select id="man_type" onchange="toggleFormType()">
+        <option value="achat">Achat d'ETF</option>
+        <option value="dividende">Dividende Reçu</option>
+      </select>
+    </div>
+    
+    <div class="row">
+      <label>Actif / ETF</label>
+      <select id="man_asset">
+        <option value="usa">Amundi S&P 500</option>
+        <option value="eu">BNP Stoxx 600</option>
+        <option value="em">Amundi Emergents</option>
+      </select>
+    </div>
+
+    <!-- Champs dynamiques Achat -->
+    <div id="form-achat">
+      <div class="row"><label>Nb de parts</label><input id="man_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
+      <div class="row"><label>Prix unitaire</label><input id="man_p" type="number" inputmode="decimal" placeholder="Ex: 54.20"></div>
+    </div>
+
+    <!-- Champs dynamiques Dividende -->
+    <div id="form-div" style="display:none;">
+      <div class="row"><label>Montant (€)</label><input id="man_div_montant" type="number" inputmode="decimal" placeholder="Montant net reçu en €"></div>
+    </div>
+
+    <button class="btn-purple" style="margin-top:8px; padding:10px; font-size:13px;" onclick="ajouterEvenementManuel()">➕ Enregistrer au registre</button>
+  </div>
+
   <div id="hist-container"></div>
   <div style="display:flex;gap:8px;margin-top:8px;">
     <button class="btn-gray" onclick="exportCSV()">📤 Exporter CSV</button>
-    <button class="btn-red" style="padding:10px;" onclick="clearHist()">🗑️ Reset</button>
+    <button class="btn-red" style="padding:10px;" onclick="clearHist()">🗑️ Reset Historique</button>
   </div>
 </div>
 
@@ -137,7 +176,7 @@ button:active{transform:scale(0.98);opacity:0.9;}
 
 <script>
 function loadData() {
-  var local = localStorage.getItem("etf_manual_pea_v3");
+  var local = localStorage.getItem("etf_manual_pea_v4");
   if (local) {
     try { return JSON.parse(local); } catch(e) {}
   }
@@ -145,12 +184,12 @@ function loadData() {
     cibles: { usa: 60, eu: 30, em: 10 },
     portefeuille: { usa_q: '', eu_q: '', em_q: '' },
     prix: { usa: 56.34, eu: 20.47, em: 7.75 },
-    historique: [],
+    historique: [], // Contiendra les achats ET les dividendes
     settings: { budget: '', alerte_seuil: 5 }
   };
 }
 
-function saveData(d) { localStorage.setItem("etf_manual_pea_v3", JSON.stringify(d)); }
+function saveData(d) { localStorage.setItem("etf_manual_pea_v4", JSON.stringify(d)); }
 
 var appData = loadData();
 
@@ -204,6 +243,12 @@ function showTab(name) {
   if(name==='config') updateCibleTotal();
 }
 
+function toggleFormType() {
+  var type = document.getElementById('man_type').value;
+  document.getElementById('form-achat').style.display = type === 'achat' ? 'block' : 'none';
+  document.getElementById('form-div').style.display = type === 'dividende' ? 'block' : 'none';
+}
+
 function executerAnalyse() {
   saveInputs();
   showTab('analyse');
@@ -220,7 +265,7 @@ function calc() {
   var u = uq*up, e = eq*ep, m = mq*mp, totActuel = u+e+m;
   
   if(!totActuel && !b) {
-    document.getElementById('res-analyse').innerHTML = '<div class="card">⚠️ Indiquez au moins vos parts ou un budget.</div>';
+    document.getElementById('res-analyse').innerHTML = '<div class="card">⚠️ Indiquez vos positions actuelles ou un montant à investir.</div>';
     return;
   }
 
@@ -228,7 +273,7 @@ function calc() {
   var pE = totActuel ? (e/totActuel)*100 : 0;
   var pM = totActuel ? (m/totActuel)*100 : 0;
   
-  // ALGORITHME DE SÉLECTION D'UN SEUL ETF (ÉCONOMIE DE FRAIS DE COURTAGE)
+  // STRATÉGIE SINGLE-ACHAT ULTRA FRAIS FIXES LIMITÉS (1€)
   var cU = appData.cibles.usa, cE = appData.cibles.eu, cM = appData.cibles.em;
   var devU = cU - pU;
   var devE = cE - pE;
@@ -244,12 +289,10 @@ function calc() {
     cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
   }
 
-  // Calcul du nombre de parts max possibles sur cet ETF unique en déduisant 1€ de frais fixes
-  var nParts = 0;
-  var cashAchatNecessaire = 0;
+  var nParts = 0, cashAchatNecessaire = 0;
   if (b > 1 && ciblePrix > 0) {
     nParts = Math.floor((b - 1) / ciblePrix);
-    cashAchatNecessaire = (nParts * ciblePrix) + 1; // Parts + 1€ de frais
+    cashAchatNecessaire = (nParts * ciblePrix) + 1; // 1€ frais inclus
   }
   var resteCash = b - cashAchatNecessaire;
 
@@ -258,9 +301,9 @@ function calc() {
   var hasAlerte = Math.abs(pU-cU)>seuil || Math.abs(pE-cE)>seuil || Math.abs(pM-cM)>seuil;
   
   if(hasAlerte && totActuel > 0) {
-    alertHtml = '<div class="alert-status" style="background:#2a1e00; color:var(--em); border-left:4px solid var(--em);">⚠️ Portefeuille déséquilibré (Seuil > '+seuil+'%)</div>';
+    alertHtml = '<div class="alert-status" style="background:#2a1e00; color:var(--em); border-left:4px solid var(--em);">⚠️ Déséquilibre détecté (Seuil > '+seuil+'%)</div>';
   } else if (totActuel > 0) {
-    alertHtml = '<div class="alert-status" style="background:#13271e; color:var(--eu); border-left:4px solid var(--eu);">✅ Répartition équilibrée conforme aux cibles</div>';
+    alertHtml = '<div class="alert-status" style="background:#13271e; color:var(--eu); border-left:4px solid var(--eu);">✅ Parfaitement aligné aux cibles</div>';
   }
 
   var html = '<div class="card">' +
@@ -273,7 +316,7 @@ function calc() {
       '<div class="bar" style="background:var(--eu);width:'+pE+'%"></div>' +
       '<div class="bar" style="background:var(--em);width:'+pM+'%"></div>' +
     '</div>' +
-    '<div style="font-size:13px; text-align:right; color:var(--text-muted); margin-top:6px;">Valeur : <b>'+totActuel.toFixed(2)+' €</b></div>' +
+    '<div style="font-size:13px; text-align:right; color:var(--text-muted); margin-top:6px;">Valeur Portefeuille : <b>'+totActuel.toFixed(2)+' €</b></div>' +
     alertHtml +
   '</div>';
 
@@ -282,15 +325,15 @@ function calc() {
       '<h2>Ordre Unique Suggéré (Frais optimisés)</h2>';
       if(nParts > 0) {
         html += '<div style="margin:8px 0; font-size:16px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
-        '<div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">Prix des parts : '+(nParts * ciblePrix).toFixed(2)+' € + 1.00 € (Frais d\'ordre)</div>' +
+        '<div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">Coût net : '+(nParts * ciblePrix).toFixed(2)+' € + 1.00 € de courtage</div>' +
         '<hr class="divider">' +
         '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px;">' +
-          '<span>Total débité du compte : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
+          '<span>Total débité : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
           '<span style="color:var(--em);">Reste : <b>'+resteCash.toFixed(2)+' €</b></span>' +
         '</div>' +
-        '<button class="btn-green" onclick="validerAchatUnique(\''+cibleNom+'\',\''+cibleTag+'\','+nParts+','+ciblePrix+')">✅ Valider et enregistrer cet unique ordre</button>';
+        '<button class="btn-green" onclick="validerAchatUnique(\''+cibleNom+'\',\''+cibleTag+'\','+nParts+','+ciblePrix+')">✅ Valider cet unique ordre d\'achat</button>';
       } else {
-        html += '<div style="color:#f87171; font-size:13px; padding:6px 0;">⚠️ Budget trop juste ('+b+' €) pour acquérir 1 part de '+cibleNom+' après déduction de 1 € de frais.</div>';
+        html += '<div style="color:#f87171; font-size:13px; padding:6px 0;">⚠️ Le budget est insuffisant pour acheter 1 part de '+cibleNom+' avec le frais de courtage de 1€.</div>';
       }
     html += '</div>';
   }
@@ -311,8 +354,7 @@ function validerAchatUnique(nom, tag, nb, prix) {
   var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   var netTotal = (nb * prix);
   
-  // Enregistrement brut (hors frais pour garder un PRU exact basé sur les parts réelles)
-  appData.historique.unshift({date:dateStr, etf:nom, tag:tag, nb:nb, prix:prix, total:netTotal.toFixed(2)});
+  appData.historique.unshift({type:'achat', date:dateStr, etf:nom, tag:tag, nb:nb, prix:prix, total:netTotal.toFixed(2)});
 
   if(tag==='usa') appData.portefeuille.usa_q = (+appData.portefeuille.usa_q || 0) + nb;
   if(tag==='eu') appData.portefeuille.eu_q = (+appData.portefeuille.eu_q || 0) + nb;
@@ -327,7 +369,45 @@ function validerAchatUnique(nom, tag, nb, prix) {
   
   saveData(appData);
   executerAnalyse();
-  alert('✅ Ordre unique enregistré ! Vos positions ont été incrémentées.');
+  alert('✅ Ordre d\'achat enregistré.');
+}
+
+function ajouterEvenementManuel() {
+  var type = document.getElementById('man_type').value;
+  var asset = document.getElementById('man_asset').value;
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  
+  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Emergents'};
+  
+  if(type === 'achat') {
+    var q = +document.getElementById('man_q').value || 0;
+    var p = +document.getElementById('man_p').value || 0;
+    if(q <= 0 || p <= 0) { alert('Saisissez des quantités et prix valides.'); return; }
+    
+    appData.historique.unshift({type:'achat', date:dateStr, etf:names[asset], tag:asset, nb:q, prix:p, total:(q*p).toFixed(2)});
+    
+    // Met à jour l'écran de saisie en ajoutant les parts
+    var idInput = asset + '_q';
+    appData.portefeuille[idInput] = (+appData.portefeuille[idInput] || 0) + q;
+    document.getElementById(idInput).value = appData.portefeuille[idInput];
+  } 
+  else if(type === 'dividende') {
+    var m = +document.getElementById('man_div_montant').value || 0;
+    if(m <= 0) { alert('Saisissez un montant de dividende valide.'); return; }
+    
+    appData.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
+  }
+  
+  saveData(appData);
+  saveInputs();
+  renderHist();
+  alert('✅ Événement ajouté manuellement avec succès !');
+  
+  // Reset champs formulaires
+  document.getElementById('man_q').value = '';
+  document.getElementById('man_p').value = '';
+  document.getElementById('man_div_montant').value = '';
 }
 
 function renderStats() {
@@ -338,67 +418,86 @@ function renderStats() {
   var mq = +appData.portefeuille.em_q || 0;
   
   var valActuelle = (uq*up) + (eq*ep) + (mq*mp);
-  var inv = {usa:0, eu:0, em:0}, parts = {usa:0, eu:0, em:0};
+  var inv = {usa:0, eu:0, em:0}, partsPurchased = {usa:0, eu:0, em:0}, divTotaux = 0;
   
   hist.forEach(function(a){
-    inv[a.tag] += parseFloat(a.total);
-    parts[a.tag] += a.nb;
+    if(!a.type || a.type === 'achat') {
+      inv[a.tag] += parseFloat(a.total);
+      partsPurchased[a.tag] += a.nb;
+    } else if(a.type === 'dividende') {
+      divTotaux += parseFloat(a.total);
+    }
   });
   
   var totalInvesti = inv.usa + inv.eu + inv.em;
-  var gain = valActuelle - totalInvesti;
+  // Calcul de la performance en incluant le cash des dividendes reçus
+  var gain = (valActuelle + divTotaux) - totalInvesti;
   var perf = totalInvesti > 0 ? (gain / totalInvesti * 100) : 0;
 
-  function getPru(k) { return parts[k] > 0 ? (inv[k]/parts[k]).toFixed(2) + ' €' : '—'; }
+  // Calcul mathématique précis du PRU basé strictement sur le historique d'achats réels
+  function getPru(k) { return partsPurchased[k] > 0 ? (inv[k]/partsPurchased[k]).toFixed(2) + ' €' : '—'; }
 
   document.getElementById('stats-container').innerHTML = 
     '<div class="card">' +
-      '<h2>Performance Totale (via Historique)</h2>' +
+      '<h2>Performance Réelle du PEA</h2>' +
       '<div class="stat-grid">' +
-        '<div class="stat-box"><div class="stat-lbl">Actuel</div><div class="stat-val">'+valActuelle.toFixed(0)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Investi</div><div class="stat-val">'+totalInvesti.toFixed(0)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Plus/Moins value</div><div class="stat-val" style="color:'+(gain>=0?'var(--eu)':'#f87171')+';">'+(gain>=0?'+':'')+gain.toFixed(1)+' €</div></div>' +
-        '<div class="stat-box"><div class="stat-lbl">Rendement</div><div class="stat-val" style="color:'+(perf>=0?'var(--eu)':'#f87171')+';">'+(perf>=0?'+':'')+perf.toFixed(1)+'%</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Portefeuille</div><div class="stat-val">'+valActuelle.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Total Investi</div><div class="stat-val">'+totalInvesti.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Dividendes reçus</div><div class="stat-val" style="color:var(--div)">+'+divTotaux.toFixed(2)+' €</div></div>' +
+        '<div class="stat-box"><div class="stat-lbl">Performance Totale</div><div class="stat-val" style="color:'+(gain>=0?'var(--eu)':'#f87171')+';">'+(gain>=0?'+':'')+perf.toFixed(2)+'%</div></div>' +
       '</div>' +
     '</div>' +
     '<div class="card">' +
-      '<h2>Prix de Revient Moyen (PRU)</h2>' +
-      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU : <b>'+getPru('usa')+'</b></span> <span style="color:var(--text-muted);">Cours : '+up+' €</span></div>' +
-      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU : <b>'+getPru('eu')+'</b></span> <span style="color:var(--text-muted);">Cours : '+ep+' €</span></div>' +
-      '<div class="sim-row"><span class="tag tag-em">Emergents</span> <span>PRU : <b>'+getPru('em')+'</b></span> <span style="color:var(--text-muted);">Cours : '+mp+' €</span></div>' +
+      '<h2>Prix de Revient Moyen Réel (PRU)</h2>' +
+      '<div class="sim-row"><span class="tag tag-usa">S&P 500</span> <span>PRU Historique : <b>'+getPru('usa')+'</b></span> <span style="color:var(--text-muted);">Cours : '+up+' €</span></div>' +
+      '<div class="sim-row"><span class="tag tag-eu">Stoxx 600</span> <span>PRU Historique : <b>'+getPru('eu')+'</b></span> <span style="color:var(--text-muted);">Cours : '+ep+' €</span></div>' +
+      '<div class="sim-row"><span class="tag tag-em">Emergents</span> <span>PRU Historique : <b>'+getPru('em')+'</b></span> <span style="color:var(--text-muted);">Cours : '+mp+' €</span></div>' +
     '</div>';
 }
 
 function renderHist() {
   var hist = appData.historique;
   var c = document.getElementById('hist-container');
-  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);">Aucun ordre mémorisé.</div>'; return; }
+  if(!hist.length) { c.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);margin-top:14px;">Aucun ordre ni dividende enregistré.</div>'; return; }
   
   var rows = hist.map(function(a){
-    var cl = 'tag-' + a.tag;
-    return '<div class="hist-item">' +
-      '<span class="tag '+cl+'">'+a.etf+'</span> <b>+'+a.nb+'</b> part(s) @ '+a.prix.toFixed(2)+'€' +
-      '<span style="float:right;font-weight:600;color:var(--eu);">'+a.total+' €</span>' +
-      '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">'+a.date+'</div>' +
-    '</div>';
+    if(!a.type || a.type === 'achat') {
+      return '<div class="hist-item">' +
+        '<span class="tag tag-'+a.tag+'">'+a.etf+'</span> <b>+'+a.nb+'</b> part(s) @ '+parseFloat(a.prix).toFixed(2)+'€' +
+        '<span style="float:right;font-weight:600;color:var(--eu);">- '+parseFloat(a.total).toFixed(2)+' €</span>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">🛒 Achat • '+a.date+'</div>' +
+      '</div>';
+    } else {
+      return '<div class="hist-item" style="border-left: 4px solid var(--div);">' +
+        '<span class="tag tag-div">Dividende</span> '+a.etf +
+        '<span style="float:right;font-weight:600;color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">💰 Reçu • '+a.date+'</div>' +
+      '</div>';
+    }
   }).join('');
-  c.innerHTML = '<div class="card"><h2>Registre d\'ordres passés</h2>' + rows + '</div>';
+  c.innerHTML = '<div class="card" style="margin-top:14px;"><h2>Registre des Mouvements</h2>' + rows + '</div>';
 }
 
 function exportCSV() {
-  var lines = ['Date,ETF,Parts,Prix,Total'];
-  appData.historique.forEach(function(a){ lines.push([a.date, a.etf, a.nb, a.prix, a.total].join(',')); });
+  var lines = ['Type,Date,ETF,Parts/Montant,PrixUnitaire,TotalLigne'];
+  appData.historique.forEach(function(a){ 
+    if(!a.type || a.type==='achat') {
+      lines.push(['Achat', a.date, a.etf, a.nb, a.prix, a.total].join(','));
+    } else {
+      lines.push(['Dividende', a.date, a.etf, a.total, '', a.total].join(','));
+    }
+  });
   var blob = new Blob([lines.join('\n')], {type: 'text/csv;charset=utf-8;'});
   var link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "pea_historique.csv";
+  link.download = "pea_comptabilite.csv";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 }
 
 function clearHist() {
-  if(confirm('Supprimer l\'historique ? (Vos parts déjà saisies resteront intactes)')) {
+  if(confirm('⚠️ Attention : Effacer l\'historique réinitialisera les PRU et les dividendes accumulés dans les calculs (les parts saisies ne bougeront pas). Confirmer ?')) {
     appData.historique = [];
     saveData(appData);
     renderHist();
@@ -420,13 +519,13 @@ function saveCibles() {
   if(u+e+m !== 100) { alert('Le total doit faire précisément 100% !'); return; }
   appData.cibles = { usa: u, eu: e, em: m };
   saveData(appData);
-  alert('Cibles de l\'allocation enregistrées.');
+  alert('Cibles enregistrées.');
 }
 
 function saveSettings() {
   appData.settings.alerte_seuil = +document.getElementById('alerte_seuil').value || 5;
   saveData(appData);
-  alert('Seuil appliqué.');
+  alert('Seuil mis à jour.');
 }
 
 init();
