@@ -92,7 +92,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .tag-em{background:rgba(245,158,11,0.15);color:var(--em);}
 .tag-div{background:rgba(168,85,247,0.15);color:var(--div);}
 .tag-red{background:rgba(244,63,94,0.15);color:var(--red);}
-.tag-cto{background:rgba(255,255,255,0.1);color:#fff;}
+.tag-cto{background:rgba(255,255,255,0.08);color:#e2e8f0;border:1px solid rgba(255,255,255,0.05);}
 .bar-container{background:rgba(255,255,255,0.05);border-radius:9px;height:12px;overflow:hidden;display:flex;margin:10px 0;}
 .bar{height:100%;transition:width 0.5s ease-out;}
 .alert-status{padding:12px;border-radius:10px;font-size:13px;margin-top:12px;font-weight:600;}
@@ -162,9 +162,9 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div id="pea-portefeuille" class="section active">
     <div class="card">
       <h2>1. Valeurs des Cours (€)</h2>
-      <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-      <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-      <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" pattern="[0-9]*" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" pattern="[0-9]*" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" pattern="[0-9]*" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
     </div>
     <div class="card">
       <h2>2. Vos Positions (Calculées)</h2>
@@ -173,7 +173,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
       <hr class="divider">
       <h2>3. Nouveau versement</h2>
-      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
       <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
     </div>
   </div>
@@ -232,12 +232,12 @@ button:active{transform:scale(0.97);opacity:0.9;}
         </select>
       </div>
       <div id="form-quantite">
-        <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" placeholder="Ex: 12"></div>
-        <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" placeholder="Ex: 55.40"></div>
-        <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" placeholder="Ex: 1.00"></div>
+        <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 12"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 55.40"></div>
+        <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 1.00"></div>
       </div>
       <div id="form-dividende" style="display:none;">
-        <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" placeholder="Ex: 45.50"></div>
+        <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 45.50"></div>
       </div>
       <button class="btn-purple" style="margin-top:8px;" onclick="ajouterEvenementManuel()">Enregistrer au registre</button>
     </div>
@@ -247,17 +247,17 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div id="pea-config" class="section">
     <div class="card">
       <h2>Répartition Cible (%)</h2>
-      <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
-      <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
-      <div class="row"><label>Émergents</label><input id="c_em" type="number" inputmode="decimal" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>Émergents</label><input id="c_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
       <div id="cible-total" style="margin-top:10px;font-size:13px;font-weight:bold;"></div>
       <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
     </div>
     <div class="card">
-      <h2>Paramètres Généraux PEA</h2>
-      <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal"></div>
-      <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal"></div>
-      <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal"></div>
+      <h2>Paramètres Générales PEA</h2>
+      <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal" pattern="[0-9]*"></div>
+      <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*"></div>
+      <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*"></div>
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
     
@@ -285,7 +285,13 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="cto-dashboard-container"></div>
     
     <div class="card">
-      <h2>Positions Actuelles (Stock-Picking)</h2>
+      <h2>1. Valeurs des Cours CTO (€)</h2>
+      <div id="cto-cours-inputs-container">
+        </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Positions Actuelles (Stock-Picking)</h2>
       <div style="overflow-x:auto;">
         <table class="cto-table">
           <thead>
@@ -293,7 +299,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
               <th>Actif</th>
               <th>Parts</th>
               <th>PRU</th>
-              <th>Cours Actuel</th>
+              <th>Cours</th>
               <th>Valeur</th>
               <th>Plus-Value Latente</th>
             </tr>
@@ -337,13 +343,13 @@ button:active{transform:scale(0.97);opacity:0.9;}
       </div>
 
       <div id="cto-form-quantite">
-        <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
-        <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" placeholder="Ex: 120.50"></div>
-        <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" value="1.00"></div>
+        <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 5"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 120.50"></div>
+        <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" value="1.00"></div>
       </div>
 
       <div id="cto-form-dividende" style="display:none;">
-        <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" placeholder="Montant avant Flat Tax"></div>
+        <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant avant Flat Tax"></div>
       </div>
 
       <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
@@ -355,7 +361,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div id="cto-config" class="section">
     <div class="card">
       <h2>Réglementation & Impôts CTO</h2>
-      <div class="row"><label>Taux Flat Tax (%)</label><input id="cto_tax_rate" type="number" step="0.1" inputmode="decimal" value="30.0"></div>
+      <div class="row"><label>Taux Flat Tax (%)</label><input id="cto_tax_rate" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" value="30.0"></div>
       <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
     </div>
 
@@ -408,12 +414,10 @@ function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringif
 var appData = loadData();
 var universActuel = 'pea';
 
-// Générateur d'identifiant unique pour pouvoir supprimer proprement les lignes
 function generateId() {
   return '_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
 }
 
-// Sécurise l'existence des identifiants sur les historiques existants pour rétrocompatibilité
 function patchMissingIds() {
   var changed = false;
   if(appData.pea && appData.pea.historique) {
@@ -468,7 +472,7 @@ function showSubTab(univ, section) {
     if(section === 'historique') { renderHistPEA(); initDatesFormulaires(); }
     if(section === 'config') updateCibleTotal();
   } else {
-    if(section === 'portefeuille') renderCTOUniverse();
+    if(section === 'portefeuille') { renderCTOInputsCours(); renderCTOUniverse(); }
     if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); initDatesFormulaires(); }
     if(section === 'config') { document.getElementById('cto_tax_rate').value = appData.cto.settings.tax_rate || 30.0; }
   }
@@ -775,13 +779,16 @@ function supprimerMouvementCTO(id) {
   if(confirm("Supprimer définitivement ce mouvement du registre CTO ?")) {
     appData.cto.historique = appData.cto.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
-    renderHistCTO();
+    showSubTab('cto', 'portefeuille');
   }
 }
 
+// APPELÉ DEPUIS LE BLOC DE SAISIE ÉLÉGANT
 function updateCtoCours(name, value) {
   appData.cto.cours[name] = parseFloat(value) || 0;
-  saveData(appData); renderCTOUniverse();
+  saveData(appData);
+  // On recalcule l'univers CTO sans reconstruire la liste des inputs de saisie pour pas couper le clavier
+  renderCTOUniverseOnly(); 
 }
 
 function saveCtoSettings() {
@@ -789,9 +796,37 @@ function saveCtoSettings() {
   saveData(appData); alert('Paramètres CTO sauvés.');
 }
 
+// GENÈRE LA CARTE DES COURS COMME SUR LE PEA
+function renderCTOInputsCours() {
+  var positions = calculerPositionsCTO();
+  var container = document.getElementById('cto-cours-inputs-container');
+  if(!container) return;
+  
+  var html = '';
+  var actfsVivant = Object.keys(positions).filter(function(n) { return positions[n].parts > 0; });
+  
+  actfsVivant.forEach(function(nom) {
+    var coursActuel = appData.cto.cours[nom] || 0;
+    html += '<div class="row">' +
+              '<label><span class="tag tag-cto">' + nom + '</span></label>' +
+              '<input type="number" inputmode="decimal" pattern="[0-9]*" value="' + coursActuel + '" oninput="updateCtoCours(\'' + nom + '\', this.value)">' +
+            '</div>';
+  });
+  
+  container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">Aucun actif en portefeuille pour le moment.</div>';
+}
+
+// GLOBAL CTO REFRESH
 function renderCTOUniverse() {
+  renderCTOInputsCours();
+  renderCTOUniverseOnly();
+}
+
+// MET À JOUR UNIQUEMENT LES GRAPHIQUES ET TABLEAUX (SANS TOUCHER AUX INPUTS POUR EVITER LE BUG CLAVIER)
+function renderCTOUniverseOnly() {
   var positions = calculerPositionsCTO();
   var tbody = document.getElementById('cto-positions-body');
+  if(!tbody) return;
   tbody.innerHTML = '';
 
   var globalValeurCTO = 0, globalPrixRevient = 0, globalDividendes = 0;
@@ -816,7 +851,7 @@ function renderCTOUniverse() {
       tr.innerHTML = '<td><span class="tag tag-cto">'+nom+'</span></td>' +
         '<td><b>'+p.parts+'</b></td>' +
         '<td>'+pru.toFixed(2)+' €</td>' +
-        '<td><input type="number" step="0.01" style="padding:6px; font-size:12px; min-width:70px;" value="'+coursActuel+'" oninput="updateCtoCours(\''+nom+'\', this.value)"></td>' +
+        '<td><b style="color:var(--usa)">'+coursActuel.toFixed(2)+' €</b></td>' +
         '<td><b>'+valuation.toFixed(2)+' €</b></td>' +
         '<td style="color:'+(pvLatente >= 0 ? 'var(--eu)' : 'var(--red)')+'; font-weight:bold;">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €<br><small>('+pvPct.toFixed(1)+'%)</small></td>';
       tbody.appendChild(tr);
