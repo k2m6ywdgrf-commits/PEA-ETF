@@ -100,7 +100,20 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .stat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);border-radius:12px;padding:14px;text-align:center;}
 .stat-val{font-size:20px;font-weight:700;margin-top:4px;letter-spacing:-0.5px;}
 .stat-lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
-.hist-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:12px;padding:12px;margin-bottom:8px;font-size:13px;}
+
+/* Éléments d'historique avec bouton supprimer */
+.hist-item{
+  background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);
+  border-radius:12px;padding:12px;margin-bottom:8px;font-size:13px;
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.hist-content { flex: 1; }
+.btn-delete-item {
+  background: transparent; color: var(--red); width: auto; padding: 6px 10px; 
+  font-size: 14px; border-radius: 6px; border: 1px solid rgba(244,63,94,0.2);
+}
+.btn-delete-item:hover { background: rgba(244,63,94,0.1); }
+
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;}
 
@@ -133,15 +146,11 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <body>
 <div style="max-width:600px;margin:auto;padding-bottom:40px;">
 
-<!-- DOUBLE NAVIGATION MAÎTRESSE -->
 <div class="main-nav">
   <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')">Gestion Libre PEA</button>
   <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Stock-Picking CTO</button>
 </div>
 
-<!-- ========================================================= -->
-<!--                      UNIVERS PEA                          -->
-<!-- ========================================================= -->
 <div id="univers-pea">
   <div class="tabs">
     <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
@@ -150,7 +159,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramètres</button>
   </div>
 
-  <!-- PEA SUB-TAB 1: SAISIE -->
   <div id="pea-portefeuille" class="section active">
     <div class="card">
       <h2>1. Valeurs des Cours (€)</h2>
@@ -170,7 +178,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     </div>
   </div>
 
-  <!-- PEA SUB-TAB 2: ANALYSE -->
   <div id="pea-analyse" class="section">
     <div class="card">
       <h2>Structure de l'allocation</h2>
@@ -201,7 +208,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="res-analyse"></div>
   </div>
 
-  <!-- PEA SUB-TAB 3: HISTORIQUE -->
   <div id="pea-historique" class="section">
     <div class="card" id="formulaire-mouvement">
       <h2>✍️ Enregistrer un mouvement PEA</h2>
@@ -238,7 +244,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="hist-container"></div>
   </div>
 
-  <!-- PEA SUB-TAB 4: CONFIG / PARAMÈTRES -->
   <div id="pea-config" class="section">
     <div class="card">
       <h2>Répartition Cible (%)</h2>
@@ -256,7 +261,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
     
-    <!-- Injection Sauvegarde PEA -->
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
       <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
@@ -270,9 +274,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
 </div>
 
 
-<!-- ========================================================= -->
-<!--                      UNIVERS CTO                          -->
-<!-- ========================================================= -->
 <div id="univers-cto" style="display:none;">
   <div class="tabs">
     <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
@@ -280,7 +281,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="tab" id="subtab-cto-c" onclick="showSubTab('cto', 'config')">Paramètres</button>
   </div>
 
-  <!-- CTO SUB-TAB 1: POSITIONS ACTUELLES -->
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
     
@@ -299,14 +299,12 @@ button:active{transform:scale(0.97);opacity:0.9;}
             </tr>
           </thead>
           <tbody id="cto-positions-body">
-            <!-- Injecté par JS -->
-          </tbody>
+            </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- CTO SUB-TAB 2: AJOUT TRANSACTION -->
   <div id="cto-historique" class="section">
     <div class="card">
       <h2>✍️ Enregistrer une opération CTO</h2>
@@ -323,32 +321,27 @@ button:active{transform:scale(0.97);opacity:0.9;}
         </select>
       </div>
 
-      <!-- Bloc Nom Libre (Pour Achats/Ventes) -->
       <div class="row" id="cto-row-name-libre">
         <label>Nom de l'actif</label>
         <input id="cto_name" type="text" placeholder="Ex: NVIDIA, Apple, Microsoft...">
       </div>
 
-      <!-- Bloc Sélection Dynamique (Pour Dividendes) -->
       <div class="row" id="cto-row-name-select" style="display:none;">
         <label>Choisir le titre</label>
         <select id="cto_name_select" onchange="handleCtoNameSelect()">
-          <!-- Rempli en JS avec les titres détenus -->
-        </select>
+          </select>
       </div>
       <div class="row" id="cto-row-name-custom-div" style="display:none;">
         <label>Nouveau titre</label>
         <input id="cto_name_custom_div" type="text" placeholder="Nom du nouveau titre">
       </div>
 
-      <!-- Variables Chiffrées standard -->
       <div id="cto-form-quantite">
         <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
         <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" placeholder="Ex: 120.50"></div>
         <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" value="1.00"></div>
       </div>
 
-      <!-- Variables Dividendes -->
       <div id="cto-form-dividende" style="display:none;">
         <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" placeholder="Montant avant Flat Tax"></div>
       </div>
@@ -359,7 +352,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="cto-hist-container"></div>
   </div>
 
-  <!-- CTO SUB-TAB 3: PARAMÈTRES CTO -->
   <div id="cto-config" class="section">
     <div class="card">
       <h2>Réglementation & Impôts CTO</h2>
@@ -367,7 +359,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
     </div>
 
-    <!-- Injection Sauvegarde CTO -->
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
       <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
@@ -417,7 +408,24 @@ function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringif
 var appData = loadData();
 var universActuel = 'pea';
 
-// Formattage date HTML vers Affichage FR (YYYY-MM-DD -> DD/MM/YYYY)
+// Générateur d'identifiant unique pour pouvoir supprimer proprement les lignes
+function generateId() {
+  return '_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+// Sécurise l'existence des identifiants sur les historiques existants pour rétrocompatibilité
+function patchMissingIds() {
+  var changed = false;
+  if(appData.pea && appData.pea.historique) {
+    appData.pea.historique.forEach(function(m) { if(!m.id) { m.id = generateId(); changed = true; } });
+  }
+  if(appData.cto && appData.cto.historique) {
+    appData.cto.historique.forEach(function(m) { if(!m.id) { m.id = generateId(); changed = true; } });
+  }
+  if(changed) saveData(appData);
+}
+patchMissingIds();
+
 function formatDateToFR(dateString) {
   if(!dateString) return new Date().toLocaleDateString('fr-FR');
   var parts = dateString.split('-');
@@ -425,7 +433,6 @@ function formatDateToFR(dateString) {
   return dateString;
 }
 
-// Assigne la date du jour aux sélecteurs par défaut
 function initDatesFormulaires() {
   var aujourdhui = new Date().toISOString().split('T')[0];
   if(document.getElementById('man_date')) document.getElementById('man_date').value = aujourdhui;
@@ -533,19 +540,31 @@ function ajouterEvenementManuel() {
   var dateStr = formatDateToFR(dateSaisie);
   var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
   
+  var baseObj = { id: generateId(), type: type, date: dateStr, etf: names[asset], tag: asset };
+
   if(type === 'achat' || type === 'vente') {
     var q = +document.getElementById('man_q').value || 0, p = +document.getElementById('man_p').value || 0, f = type === 'achat' ? (+document.getElementById('man_frais').value || 0) : 0;
     if(q <= 0 || p <= 0) { alert('Champs requis.'); return; }
-    appData.pea.historique.unshift({ type: type, date: dateStr, etf: names[asset], tag: asset, nb: q, prix: p, frais: f, total: ((type==='achat'?(q*p)+f:(q*p))).toFixed(2) });
+    baseObj.nb = q; baseObj.prix = p; baseObj.frais = f;
+    baseObj.total = ((type==='achat'?(q*p)+f:(q*p))).toFixed(2);
   } else {
     var m = +document.getElementById('man_div_montant').value || 0;
     if(m <= 0) { alert('Montant requis.'); return; }
-    appData.pea.historique.unshift({type:'dividende', date:dateStr, etf:names[asset], tag:asset, total:m.toFixed(2)});
+    baseObj.total = m.toFixed(2);
   }
+  appData.pea.historique.unshift(baseObj);
   appData.pea.settings.budget = ''; document.getElementById('budget').value = '';
   saveData(appData); renderHistPEA(); alert('✅ Validé.');
   document.getElementById('man_q').value = ''; document.getElementById('man_p').value = ''; document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
   initDatesFormulaires();
+}
+
+function supprimerMouvementPEA(id) {
+  if(confirm("Supprimer définitivement ce mouvement du registre PEA ?")) {
+    appData.pea.historique = appData.pea.historique.filter(function(m) { return m.id !== id; });
+    saveData(appData);
+    renderHistPEA();
+  }
 }
 
 function renderStatsPEA() {
@@ -593,9 +612,15 @@ function calcPEA() {
 function renderHistPEA() {
   var h = '';
   appData.pea.historique.forEach(function(a){
-    h += '<div class="hist-item"><b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' € <span style="float:right;color:var(--text-muted);">'+a.date+'</span></div>';
+    h += '<div class="hist-item">' +
+           '<div class="hist-content">' +
+             '<b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' € ' +
+             '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date+'</div>' +
+           '</div>' +
+           '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">🗑️</button>' +
+         '</div>';
   });
-  document.getElementById('hist-container').innerHTML = h || 'Aucun mouvement.';
+  document.getElementById('hist-container').innerHTML = h || '<div style="text-align:center;color:var(--text-muted);padding:10px;">Aucun mouvement.</div>';
 }
 
 function figerSoldeDuJour() {
@@ -719,6 +744,8 @@ function ajouterMouvementCTO() {
   var dateStr = formatDateToFR(dateSaisie);
   if(!name) { alert('Spécifiez un nom valide.'); return; }
 
+  var baseObj = { id: generateId(), type: type, actif: name, date: dateStr };
+
   if(type === 'achat' || type === 'vente') {
     var q = parseFloat(document.getElementById('cto_q').value) || 0;
     var p = parseFloat(document.getElementById('cto_p').value) || 0;
@@ -726,12 +753,15 @@ function ajouterMouvementCTO() {
     if(q <= 0 || p <= 0) { alert('Champs requis.'); return; }
     
     var totalLigne = type === 'achat' ? (q * p) + f : (q * p);
-    appData.cto.historique.unshift({ type: type, actif: name, date: dateStr, nb: q, prix: p, frais: f, total: totalLigne.toFixed(2) });
+    baseObj.nb = q; baseObj.prix = p; baseObj.frais = f; baseObj.total = totalLigne.toFixed(2);
+    
+    appData.cto.historique.unshift(baseObj);
     if(appData.cto.cours[name] === undefined || type === 'achat') appData.cto.cours[name] = p;
   } else {
     var m = parseFloat(document.getElementById('cto_div_montant').value) || 0;
     if(m <= 0) { alert('Montant requis.'); return; }
-    appData.cto.historique.unshift({ type: 'dividende', actif: name, date: dateStr, total: m.toFixed(2) });
+    baseObj.total = m.toFixed(2);
+    appData.cto.historique.unshift(baseObj);
   }
 
   saveData(appData); alert('✅ Enregistré.');
@@ -739,6 +769,14 @@ function ajouterMouvementCTO() {
   document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = ''; document.getElementById('cto_div_montant').value = '';
   initDatesFormulaires();
   showSubTab('cto', 'portefeuille');
+}
+
+function supprimerMouvementCTO(id) {
+  if(confirm("Supprimer définitivement ce mouvement du registre CTO ?")) {
+    appData.cto.historique = appData.cto.historique.filter(function(m) { return m.id !== id; });
+    saveData(appData);
+    renderHistCTO();
+  }
 }
 
 function updateCtoCours(name, value) {
@@ -813,13 +851,21 @@ function renderCTOUniverse() {
 function renderHistCTO() {
   var h = '';
   appData.cto.historique.forEach(function(a){
+    var detailHtml = '';
     if(a.type === 'dividende') {
-      h += '<div class="hist-item" style="border-left:3px solid var(--div);"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right; font-weight:bold; color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Perçu le '+a.date+'</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right; font-weight:bold; color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Perçu le '+a.date+'</div></div>';
     } else if (a.type === 'achat') {
-      h += '<div class="hist-item" style="border-left:3px solid var(--usa);"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+' (Frais: '+a.frais+'€)</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+' (Frais: '+a.frais+'€)</div></div>';
     } else {
-      h += '<div class="hist-item" style="border-left:3px solid var(--red);"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
     }
+
+    var borderStyle = a.type === 'dividende' ? 'var(--div)' : (a.type === 'achat' ? 'var(--usa)' : 'var(--red)');
+
+    h += '<div class="hist-item" style="border-left:3px solid ' + borderStyle + ';">' +
+           detailHtml +
+           '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">🗑️</button>' +
+         '</div>';
   });
   document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
 }
@@ -846,6 +892,7 @@ function importJSON(input) {
         appData = parsed;
         if(!appData.pea) appData.pea = { historique:[], points_histoire:[], cibles:{usa:60,eu:30,em:10}, prix:{usa:56.34,eu:20.47,em:7.75}, settings:{} };
         if(!appData.cto) appData.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
+        patchMissingIds();
         saveData(appData); alert("✅ Importation globale réussie !"); location.reload();
       } else { alert("Fichier non valide."); }
     } catch(err) { alert("Erreur lors de la lecture du fichier .json"); }
