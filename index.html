@@ -133,11 +133,15 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <body>
 <div style="max-width:600px;margin:auto;padding-bottom:40px;">
 
+<!-- DOUBLE NAVIGATION MAÎTRESSE -->
 <div class="main-nav">
-  <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')"> Gestion Libre PEA</button>
+  <button id="btn-main-pea" class="btn-nav-main active" onclick="switchUnivers('pea')">Gestion Libre PEA</button>
   <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Stock-Picking CTO</button>
 </div>
 
+<!-- ========================================================= -->
+<!--                      UNIVERS PEA                          -->
+<!-- ========================================================= -->
 <div id="univers-pea">
   <div class="tabs">
     <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
@@ -146,6 +150,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramètres</button>
   </div>
 
+  <!-- PEA SUB-TAB 1: SAISIE -->
   <div id="pea-portefeuille" class="section active">
     <div class="card">
       <h2>1. Valeurs des Cours (€)</h2>
@@ -165,6 +170,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     </div>
   </div>
 
+  <!-- PEA SUB-TAB 2: ANALYSE -->
   <div id="pea-analyse" class="section">
     <div class="card">
       <h2>Structure de l'allocation</h2>
@@ -195,9 +201,14 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="res-analyse"></div>
   </div>
 
+  <!-- PEA SUB-TAB 3: HISTORIQUE -->
   <div id="pea-historique" class="section">
     <div class="card" id="formulaire-mouvement">
       <h2>✍️ Enregistrer un mouvement PEA</h2>
+      <div class="row">
+        <label>Date</label>
+        <input id="man_date" type="date">
+      </div>
       <div class="row">
         <label>Opération</label>
         <select id="man_type" onchange="toggleFormType()">
@@ -227,6 +238,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="hist-container"></div>
   </div>
 
+  <!-- PEA SUB-TAB 4: CONFIG / PARAMÈTRES -->
   <div id="pea-config" class="section">
     <div class="card">
       <h2>Répartition Cible (%)</h2>
@@ -244,6 +256,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
     
+    <!-- Injection Sauvegarde PEA -->
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
       <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
@@ -257,6 +270,9 @@ button:active{transform:scale(0.97);opacity:0.9;}
 </div>
 
 
+<!-- ========================================================= -->
+<!--                      UNIVERS CTO                          -->
+<!-- ========================================================= -->
 <div id="univers-cto" style="display:none;">
   <div class="tabs">
     <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
@@ -264,6 +280,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="tab" id="subtab-cto-c" onclick="showSubTab('cto', 'config')">Paramètres</button>
   </div>
 
+  <!-- CTO SUB-TAB 1: POSITIONS ACTUELLES -->
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
     
@@ -282,15 +299,21 @@ button:active{transform:scale(0.97);opacity:0.9;}
             </tr>
           </thead>
           <tbody id="cto-positions-body">
-            </tbody>
+            <!-- Injecté par JS -->
+          </tbody>
         </table>
       </div>
     </div>
   </div>
 
+  <!-- CTO SUB-TAB 2: AJOUT TRANSACTION -->
   <div id="cto-historique" class="section">
     <div class="card">
       <h2>✍️ Enregistrer une opération CTO</h2>
+      <div class="row">
+        <label>Date</label>
+        <input id="cto_date" type="date">
+      </div>
       <div class="row">
         <label>Type</label>
         <select id="cto_type" onchange="toggleFormCto()">
@@ -300,27 +323,32 @@ button:active{transform:scale(0.97);opacity:0.9;}
         </select>
       </div>
 
+      <!-- Bloc Nom Libre (Pour Achats/Ventes) -->
       <div class="row" id="cto-row-name-libre">
         <label>Nom de l'actif</label>
         <input id="cto_name" type="text" placeholder="Ex: NVIDIA, Apple, Microsoft...">
       </div>
 
+      <!-- Bloc Sélection Dynamique (Pour Dividendes) -->
       <div class="row" id="cto-row-name-select" style="display:none;">
         <label>Choisir le titre</label>
         <select id="cto_name_select" onchange="handleCtoNameSelect()">
-          </select>
+          <!-- Rempli en JS avec les titres détenus -->
+        </select>
       </div>
       <div class="row" id="cto-row-name-custom-div" style="display:none;">
         <label>Nouveau titre</label>
         <input id="cto_name_custom_div" type="text" placeholder="Nom du nouveau titre">
       </div>
 
+      <!-- Variables Chiffrées standard -->
       <div id="cto-form-quantite">
         <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" placeholder="Ex: 5"></div>
         <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" placeholder="Ex: 120.50"></div>
         <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" value="1.00"></div>
       </div>
 
+      <!-- Variables Dividendes -->
       <div id="cto-form-dividende" style="display:none;">
         <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" placeholder="Montant avant Flat Tax"></div>
       </div>
@@ -331,6 +359,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="cto-hist-container"></div>
   </div>
 
+  <!-- CTO SUB-TAB 3: PARAMÈTRES CTO -->
   <div id="cto-config" class="section">
     <div class="card">
       <h2>Réglementation & Impôts CTO</h2>
@@ -338,6 +367,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
     </div>
 
+    <!-- Injection Sauvegarde CTO -->
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
       <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
@@ -387,6 +417,21 @@ function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringif
 var appData = loadData();
 var universActuel = 'pea';
 
+// Formattage date HTML vers Affichage FR (YYYY-MM-DD -> DD/MM/YYYY)
+function formatDateToFR(dateString) {
+  if(!dateString) return new Date().toLocaleDateString('fr-FR');
+  var parts = dateString.split('-');
+  if(parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+  return dateString;
+}
+
+// Assigne la date du jour aux sélecteurs par défaut
+function initDatesFormulaires() {
+  var aujourdhui = new Date().toISOString().split('T')[0];
+  if(document.getElementById('man_date')) document.getElementById('man_date').value = aujourdhui;
+  if(document.getElementById('cto_date')) document.getElementById('cto_date').value = aujourdhui;
+}
+
 function switchUnivers(u) {
   universActuel = u;
   document.getElementById('btn-main-pea').classList.toggle('active', u === 'pea');
@@ -413,11 +458,11 @@ function showSubTab(univ, section) {
   if(univ === 'pea') {
     if(section === 'portefeuille') { recalculerQuantitesPEA(); calculerOrdreOptimal(); }
     if(section === 'analyse') { renderStatsPEA(); renderTrendChartPEA(); calcPEA(); }
-    if(section === 'historique') renderHistPEA();
+    if(section === 'historique') { renderHistPEA(); initDatesFormulaires(); }
     if(section === 'config') updateCibleTotal();
   } else {
     if(section === 'portefeuille') renderCTOUniverse();
-    if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); }
+    if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); initDatesFormulaires(); }
     if(section === 'config') { document.getElementById('cto_tax_rate').value = appData.cto.settings.tax_rate || 30.0; }
   }
 }
@@ -484,7 +529,8 @@ function toggleFormType() {
 function ajouterEvenementManuel() {
   var type = document.getElementById('man_type').value;
   var asset = document.getElementById('man_asset').value;
-  var dateStr = new Date().toLocaleDateString('fr-FR');
+  var dateSaisie = document.getElementById('man_date').value;
+  var dateStr = formatDateToFR(dateSaisie);
   var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
   
   if(type === 'achat' || type === 'vente') {
@@ -499,6 +545,7 @@ function ajouterEvenementManuel() {
   appData.pea.settings.budget = ''; document.getElementById('budget').value = '';
   saveData(appData); renderHistPEA(); alert('✅ Validé.');
   document.getElementById('man_q').value = ''; document.getElementById('man_p').value = ''; document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
+  initDatesFormulaires();
 }
 
 function renderStatsPEA() {
@@ -668,7 +715,8 @@ function ajouterMouvementCTO() {
     name = document.getElementById('cto_name').value.trim();
   }
   
-  var dateStr = new Date().toLocaleDateString('fr-FR');
+  var dateSaisie = document.getElementById('cto_date').value;
+  var dateStr = formatDateToFR(dateSaisie);
   if(!name) { alert('Spécifiez un nom valide.'); return; }
 
   if(type === 'achat' || type === 'vente') {
@@ -689,6 +737,7 @@ function ajouterMouvementCTO() {
   saveData(appData); alert('✅ Enregistré.');
   document.getElementById('cto_name').value = ''; document.getElementById('cto_name_custom_div').value = '';
   document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = ''; document.getElementById('cto_div_montant').value = '';
+  initDatesFormulaires();
   showSubTab('cto', 'portefeuille');
 }
 
@@ -822,6 +871,7 @@ function init() {
   document.getElementById('taux_fisc').value = appData.pea.settings.taux_fisc || 17.2;
   document.getElementById('frais_courtage').value = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
   
+  initDatesFormulaires();
   recalculerQuantitesPEA(); calculerOrdreOptimal();
 }
 init();
