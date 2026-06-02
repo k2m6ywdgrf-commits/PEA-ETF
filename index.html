@@ -134,65 +134,65 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <div style="max-width:600px;margin:auto;padding-bottom:40px;width:100%;">
 
 <div class="main-nav-container">
-  <button id="btn-main-home" class="btn-nav-main active" onclick="switchUnivers('home')">ð  Accueil Global</button>
+  <button id="btn-main-home" class="btn-nav-main active" onclick="switchUnivers('home')">🏠 Accueil Global</button>
   <div class="main-nav-row">
-    <button id="btn-main-pea" class="btn-nav-main" onclick="switchUnivers('pea')">ð Compte PEA</button>
-    <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">ð¼ Compte CTO</button>
+    <button id="btn-main-pea" class="btn-nav-main" onclick="switchUnivers('pea')">📈 Compte PEA</button>
+    <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Compte CTO</button>
   </div>
 </div>
 
 <div id="univers-home" class="universe-block" style="display:block;">
   <div class="card" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-color: rgba(99, 102, 241, 0.3); text-align: center; padding: 24px 14px;">
-    <div class="stat-lbl" style="color: #a5b4fc; font-weight: 600; letter-spacing: 1.5px;">Patrimoine Financier Net RÃ©el</div>
-    <div class="stat-val" id="global-total-net" style="font-size: 32px; color: #ffffff; margin: 8px 0; text-shadow: 0 0 15px rgba(255,255,255,0.2);">0.00 â¬</div>
-    <div style="font-size: 11px; color: var(--text-muted);">Somme nette aprÃ¨s dÃ©duction des taxes thÃ©oriques</div>
+    <div class="stat-lbl" style="color: #a5b4fc; font-weight: 600; letter-spacing: 1.5px;">Patrimoine Financier Net Réel</div>
+    <div class="stat-val" id="global-total-net" style="font-size: 32px; color: #ffffff; margin: 8px 0; text-shadow: 0 0 15px rgba(255,255,255,0.2);">0.00 €</div>
+    <div style="font-size: 11px; color: var(--text-muted);">Somme nette après déduction des taxes théoriques</div>
     
     <div class="fees-container-badge">
-       Frais de courtage cumulÃ©s (PEA+CTO) : <b id="global-fees-total" style="color:white;">0.00 â¬</b>
+       Frais de courtage cumulés (PEA+CTO) : <b id="global-fees-total" style="color:white;">0.00 €</b>
     </div>
   </div>
 
   <div class="card">
-    <h2>ð Courbe d'Ãvolution : Investi vs Valeur MarchÃ©</h2>
+    <h2>📊 Courbe d'Évolution : Investi vs Valeur Marché</h2>
     <div id="chart-svg-wrapper-target"></div>
     <div style="display:flex; justify-content:center; gap:20px; font-size:11px; margin-top:8px; color:var(--text-muted);">
       <span><span style="display:inline-block; width:12px; height:2px; border-top:2px dashed #94a3b8; margin-right:6px; vertical-align:middle;"></span>Montant Investi</span>
-      <span><span style="display:inline-block; width:12px; height:3px; background:linear-gradient(to right, #0ea5e9, #10b981); border-radius:1px; margin-right:6px; vertical-align:middle;"></span>Valeur MarchÃ©</span>
+      <span><span style="display:inline-block; width:12px; height:3px; background:linear-gradient(to right, #0ea5e9, #10b981); border-radius:1px; margin-right:6px; vertical-align:middle;"></span>Valeur Marché</span>
     </div>
-    <button class="btn-gray" style="margin-top:14px; background:rgba(99, 102, 241, 0.15); color:#a5b4fc; font-weight:600; width:100%;" onclick="figerSoldeGlobal()">ð¸ Enregistrer la situation actuelle sur le graphique</button>
+    <button class="btn-gray" style="margin-top:14px; background:rgba(99, 102, 241, 0.15); color:#a5b4fc; font-weight:600; width:100%;" onclick="figerSoldeGlobal()">📸 Enregistrer la situation actuelle sur le graphique</button>
   </div>
 
   <div class="card">
-    <h2>âï¸ RÃ©partition Macro du Capital</h2>
+    <h2>⚖️ Répartition Macro du Capital</h2>
     <div class="bar-container" style="height: 18px; border-radius: 6px;">
       <div id="macro-bar-pea" class="bar" style="background: linear-gradient(to right, #10b981, #059669); width: 50%;"></div>
       <div id="macro-bar-cto" class="bar" style="background: linear-gradient(to right, #0ea5e9, #0284c7); width: 50%;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
-      <span style="color: var(--eu);">ð¢ PEA : <span id="macro-txt-pea">0%</span></span>
-      <span style="color: var(--usa);">ðµ CTO : <span id="macro-txt-cto">0%</span></span>
+      <span style="color: var(--eu);">🟢 PEA : <span id="macro-txt-pea">0%</span></span>
+      <span style="color: var(--usa);">🔵 CTO : <span id="macro-txt-cto">0%</span></span>
     </div>
   </div>
 
   <div class="card" style="border-left: 4px solid var(--eu); cursor: pointer;" onclick="switchUnivers('pea')">
-    <span id="widget-pea-perf" class="widget-perf">0.00 â¬</span>
-    <div class="widget-title">ð Portefeuille PEA (ETF)</div>
-    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-pea-val">0.00 â¬</b></div>
-    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-pea-investi">0.00 â¬</span></div>
+    <span id="widget-pea-perf" class="widget-perf">0.00 €</span>
+    <div class="widget-title">📈 Portefeuille PEA (ETF)</div>
+    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-pea-val">0.00 €</b></div>
+    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-pea-investi">0.00 €</span></div>
   </div>
 
   <div class="card" style="border-left: 4px solid var(--usa); cursor: pointer;" onclick="switchUnivers('cto')">
-    <span id="widget-cto-perf" class="widget-perf">0.00 â¬</span>
-    <div class="widget-title">ð¼ Portefeuille CTO (Stock-Picking)</div>
-    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-cto-val">0.00 â¬</b></div>
-    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-cto-investi">0.00 â¬</span></div>
+    <span id="widget-cto-perf" class="widget-perf">0.00 €</span>
+    <div class="widget-title">💼 Portefeuille CTO (Stock-Picking)</div>
+    <div class="sim-row" style="border:none; padding: 2px 0;"><span>Valeur brute actuelle :</span> <b id="widget-cto-val">0.00 €</b></div>
+    <div class="sim-row" style="border:none; padding: 2px 0; font-size: 12px; color: var(--text-muted);"><span>Fonds propres investis :</span> <span id="widget-cto-investi">0.00 €</span></div>
   </div>
 
   <div class="card" style="background: rgba(168, 85, 247, 0.05); border-color: rgba(168, 85, 247, 0.2);">
-    <div class="widget-title" style="color: #d8b4fe;"><span style="font-size:18px;">ðµ</span> Rente Passive CumulÃ©e</div>
+    <div class="widget-title" style="color: #d8b4fe;"><span style="font-size:18px;">💵</span> Rente Passive Cumulée</div>
     <div class="sim-row" style="border:none; padding:2px 0;">
-      <span style="color: var(--text-muted);">Total des dividendes captÃ©s :</span>
-      <b style="color: var(--div); font-size: 18px;" id="global-dividendes-total">0.00 â¬</b>
+      <span style="color: var(--text-muted);">Total des dividendes captés :</span>
+      <b style="color: var(--div); font-size: 18px;" id="global-dividendes-total">0.00 €</b>
     </div>
   </div>
 </div>
@@ -202,24 +202,24 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
     <button class="tab" id="subtab-pea-a" onclick="showSubTab('pea', 'analyse')">Tableau de Bord</button>
     <button class="tab" id="subtab-pea-h" onclick="showSubTab('pea', 'historique')">Mouvements</button>
-    <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">ParamÃ¨tres</button>
+    <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramètres</button>
   </div>
 
   <div id="pea-portefeuille" class="section active">
     <div class="card">
-      <h2>1. Valeurs des Cours (â¬)</h2>
+      <h2>1. Valeurs des Cours (€)</h2>
       <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" pattern="[0-9]*" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
       <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" pattern="[0-9]*" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
       <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" pattern="[0-9]*" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
     </div>
     <div class="card">
-      <h2>2. Vos Positions (CalculÃ©es)</h2>
-      <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts dÃ©tenues</span> <b id="lbl_usa_q">0</b></div>
-      <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts dÃ©tenues</span> <b id="lbl_eu_q">0</b></div>
-      <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts dÃ©tenues</span> <b id="lbl_em_q">0</b></div>
+      <h2>2. Vos Positions (Calculées)</h2>
+      <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
+      <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
+      <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
       <hr class="divider">
       <h2>3. Nouveau versement</h2>
-      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (â¬)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
       <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
     </div>
   </div>
@@ -232,15 +232,15 @@ button:active{transform:scale(0.97);opacity:0.9;}
         <div class="donut-legends">
           <div class="donut-legend-item">
             <div class="donut-legend-left"><div class="donut-dot" style="background:var(--usa)"></div>S&P 500</div>
-            <div class="donut-legend-right"><b id="leg-usa-pct">0%</b><span id="leg-usa-details">0 â¬ â¢ 0 part</span></div>
+            <div class="donut-legend-right"><b id="leg-usa-pct">0%</b><span id="leg-usa-details">0 € • 0 part</span></div>
           </div>
           <div class="donut-legend-item">
             <div class="donut-legend-left"><div class="donut-dot" style="background:var(--eu)"></div>Stoxx 600</div>
-            <div class="donut-legend-right"><b id="leg-eu-pct">0%</b><span id="leg-eu-details">0 â¬ â¢ 0 part</span></div>
+            <div class="donut-legend-right"><b id="leg-eu-pct">0%</b><span id="leg-eu-details">0 € • 0 part</span></div>
           </div>
           <div class="donut-legend-item">
-            <div class="donut-legend-left"><div class="donut-dot" style="background:var(--em)"></div>Ãmergents</div>
-            <div class="donut-legend-right"><b id="leg-em-pct">0%</b><span id="leg-em-details">0 â¬ â¢ 0 part</span></div>
+            <div class="donut-legend-left"><div class="donut-dot" style="background:var(--em)"></div>Émergents</div>
+            <div class="donut-legend-right"><b id="leg-em-pct">0%</b><span id="leg-em-details">0 € • 0 part</span></div>
           </div>
         </div>
       </div>
@@ -250,17 +250,17 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
   <div id="pea-historique" class="section">
     <div class="card" id="formulaire-mouvement">
-      <h2>âï¸ Enregistrer un mouvement PEA</h2>
+      <h2>✍️ Enregistrer un mouvement PEA</h2>
       <div class="row">
         <label>Date</label>
         <input id="man_date" type="date">
       </div>
       <div class="row">
-        <label>OpÃ©ration</label>
+        <label>Opération</label>
         <select id="man_type" onchange="toggleFormType()">
-          <option value="achat">ð Achat d'ETF</option>
-          <option value="vente">ð° Vente d'ETF</option>
-          <option value="dividende">ðµ Dividende ReÃ§u (RÃ©investi)</option>
+          <option value="achat">🛒 Achat d'ETF</option>
+          <option value="vente">💰 Vente d'ETF</option>
+          <option value="dividende">💵 Dividende Reçu (Réinvesti)</option>
         </select>
       </div>
       <div class="row">
@@ -268,16 +268,16 @@ button:active{transform:scale(0.97);opacity:0.9;}
         <select id="man_asset">
           <option value="usa">Amundi S&P 500</option>
           <option value="eu">BNP Stoxx 600</option>
-          <option value="em">Amundi Ãmergents</option>
+          <option value="em">Amundi Émergents</option>
         </select>
       </div>
       <div id="form-quantite">
         <div class="row"><label>Nombre de parts</label><input id="man_q" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 12"></div>
-        <div class="row"><label>Prix unitaire (â¬)</label><input id="man_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 55.40"></div>
-        <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (â¬)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 1.00"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="man_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 55.40"></div>
+        <div class="row" id="row-frais-ajustable"><label>Frais d'ordre (€)</label><input id="man_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 1.00"></div>
       </div>
       <div id="form-dividende" style="display:none;">
-        <div class="row"><label>Montant net (â¬)</label><input id="man_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 45.50"></div>
+        <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 45.50"></div>
       </div>
       <button class="btn-purple" style="margin-top:8px;" onclick="ajouterEvenementManuel()">Enregistrer au registre</button>
     </div>
@@ -286,29 +286,29 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
   <div id="pea-config" class="section">
     <div class="card">
-      <h2>RÃ©partition Cible (%)</h2>
+      <h2>Répartition Cible (%)</h2>
       <div class="row"><label>S&P 500</label><input id="c_usa" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
       <div class="row"><label>Stoxx 600</label><input id="c_eu" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
-      <div class="row"><label>Ãmergents</label><input id="c_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
+      <div class="row"><label>Émergents</label><input id="c_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="updateCibleTotal()"></div>
       <div id="cible-total" style="margin-top:10px;font-size:13px;font-weight:bold;"></div>
-      <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">ð¾ Sauvegarder les cibles</button>
+      <button class="btn-green" style="margin-top:12px;" onclick="saveCibles()">💾 Sauvegarder les cibles</button>
     </div>
     <div class="card">
-      <h2>ParamÃ¨tres GÃ©nÃ©raux PEA</h2>
-      <div class="row"><label>Alerte Ãcart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal" pattern="[0-9]*"></div>
-      <div class="row"><label>PrÃ©lÃ¨v. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*"></div>
-      <div class="row"><label>Frais de base (â¬)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*"></div>
+      <h2>Paramètres Généraux PEA</h2>
+      <div class="row"><label>Alerte Écart (%)</label><input id="alerte_seuil" type="number" inputmode="decimal" pattern="[0-9]*"></div>
+      <div class="row"><label>Prélèv. Sociaux (%)</label><input id="taux_fisc" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*"></div>
+      <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*"></div>
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-      <h2 style="color:#7dd3fc;">âï¸ Sauvegarde GÃ©nÃ©rale (Fichier Commun)</h2>
+      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
-        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">ð¤ Exporter .json</button>
-        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_pea').click()">ð¥ Importer .json</button>
+        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_pea').click()">📥 Importer .json</button>
       </div>
       <input type="file" id="global_json_input_pea" accept=".json" style="display:none;" onchange="importJSON(this)">
-      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">ðï¸ Reset Global de l'Application</button>
+      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
     </div>
   </div>
 </div>
@@ -317,14 +317,14 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div class="tabs">
     <button class="tab active" id="subtab-cto-p" onclick="showSubTab('cto', 'portefeuille')">Positions</button>
     <button class="tab" id="subtab-cto-h" onclick="showSubTab('cto', 'historique')">Mouvements / Div</button>
-    <button class="tab" id="subtab-cto-c" onclick="showSubTab('cto', 'config')">ParamÃ¨tres</button>
+    <button class="tab" id="subtab-cto-c" onclick="showSubTab('cto', 'config')">Paramètres</button>
   </div>
 
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
     
     <div class="card">
-      <h2>1. Valeurs des Cours CTO (â¬)</h2>
+      <h2>1. Valeurs des Cours CTO (€)</h2>
       <div id="cto-cours-inputs-container"></div>
     </div>
 
@@ -350,7 +350,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
   <div id="cto-historique" class="section">
     <div class="card">
-      <h2>âï¸ Enregistrer une opÃ©ration CTO</h2>
+      <h2>✍️ Enregistrer une opération CTO</h2>
       <div class="row">
         <label>Date</label>
         <input id="cto_date" type="date">
@@ -358,9 +358,9 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <div class="row">
         <label>Type</label>
         <select id="cto_type" onchange="toggleFormCto()">
-          <option value="achat">ð Achat de Titre</option>
-          <option value="vente">ð° Vente de Titre</option>
-          <option value="dividende">ðµ Dividende PerÃ§u</option>
+          <option value="achat">🛒 Achat de Titre</option>
+          <option value="vente">💰 Vente de Titre</option>
+          <option value="dividende">💵 Dividende Perçu</option>
         </select>
       </div>
 
@@ -380,34 +380,34 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
       <div id="cto-form-quantite">
         <div class="row"><label>Nombre de parts</label><input id="cto_q" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 5"></div>
-        <div class="row"><label>Prix unitaire (â¬)</label><input id="cto_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 120.50"></div>
-        <div class="row" id="cto-row-frais"><label>Frais d'ordre (â¬)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" value="1.00"></div>
+        <div class="row"><label>Prix unitaire (€)</label><input id="cto_p" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 120.50"></div>
+        <div class="row" id="cto-row-frais"><label>Frais d'ordre (€)</label><input id="cto_frais" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*" value="1.00"></div>
       </div>
 
       <div id="cto-form-dividende" style="display:none;">
-        <div class="row"><label>Montant Brut (â¬)</label><input id="cto_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant avant Flat Tax"></div>
+        <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant avant Flat Tax"></div>
       </div>
 
-      <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">â¡ Confirmer l'inscription</button>
+      <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
     </div>
     <div id="cto-hist-container"></div>
   </div>
 
   <div id="cto-config" class="section">
     <div class="card">
-      <h2>RÃ©glementation & ImpÃ´ts CTO</h2>
+      <h2>Réglementation & Impôts CTO</h2>
       <div class="row"><label>Taux Flat Tax (%)</label><input id="cto_tax_rate" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" value="30.0"></div>
-      <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramÃ¨tres CTO</button>
+      <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
     </div>
 
     <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-      <h2 style="color:#7dd3fc;">âï¸ Sauvegarde GÃ©nÃ©rale (Fichier Commun)</h2>
+      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale (Fichier Commun)</h2>
       <div style="display:flex; gap:8px;">
-        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">ð¤ Exporter .json</button>
-        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_cto').click()">ð¥ Importer .json</button>
+        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_cto').click()">📥 Importer .json</button>
       </div>
       <input type="file" id="global_json_input_cto" accept=".json" style="display:none;" onchange="importJSON(this)">
-      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">ðï¸ Reset Global de l'Application</button>
+      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
     </div>
   </div>
 </div>
@@ -579,20 +579,20 @@ function calculerEtAfficherAccueilGlobal() {
   var totalDividendesCaptes = c.peaDiv + c.ctoDiv;
   var totalFraisGlobaux = c.peaFrais + c.ctoFrais;
 
-  document.getElementById('global-total-net').textContent = patrimoineNetGlobal.toFixed(2) + ' â¬';
-  document.getElementById('global-dividendes-total').textContent = totalDividendesCaptes.toFixed(2) + ' â¬';
-  document.getElementById('global-fees-total').textContent = totalFraisGlobaux.toFixed(2) + ' â¬';
+  document.getElementById('global-total-net').textContent = patrimoineNetGlobal.toFixed(2) + ' €';
+  document.getElementById('global-dividendes-total').textContent = totalDividendesCaptes.toFixed(2) + ' €';
+  document.getElementById('global-fees-total').textContent = totalFraisGlobaux.toFixed(2) + ' €';
 
-  document.getElementById('widget-pea-val').textContent = c.peaBrut.toFixed(2) + ' â¬';
-  document.getElementById('widget-pea-investi').textContent = Math.max(0, c.peaInvesti).toFixed(2) + ' â¬';
+  document.getElementById('widget-pea-val').textContent = c.peaBrut.toFixed(2) + ' €';
+  document.getElementById('widget-pea-investi').textContent = Math.max(0, c.peaInvesti).toFixed(2) + ' €';
   var badgePea = document.getElementById('widget-pea-perf');
-  badgePea.textContent = (c.peaGain >= 0 ? '+' : '') + c.peaGain.toFixed(2) + ' â¬';
+  badgePea.textContent = (c.peaGain >= 0 ? '+' : '') + c.peaGain.toFixed(2) + ' €';
   badgePea.className = 'widget-perf ' + (c.peaGain >= 0 ? 'perf-up' : 'perf-down');
 
-  document.getElementById('widget-cto-val').textContent = c.ctoBrut.toFixed(2) + ' â¬';
-  document.getElementById('widget-cto-investi').textContent = Math.max(0, c.ctoInvesti).toFixed(2) + ' â¬';
+  document.getElementById('widget-cto-val').textContent = c.ctoBrut.toFixed(2) + ' €';
+  document.getElementById('widget-cto-investi').textContent = Math.max(0, c.ctoInvesti).toFixed(2) + ' €';
   var badgeCto = document.getElementById('widget-cto-perf');
-  badgeCto.textContent = (c.ctoGain >= 0 ? '+' : '') + c.ctoGain.toFixed(2) + ' â¬';
+  badgeCto.textContent = (c.ctoGain >= 0 ? '+' : '') + c.ctoGain.toFixed(2) + ' €';
   badgeCto.className = 'widget-perf ' + (c.ctoGain >= 0 ? 'perf-up' : 'perf-down');
 
   var pctPea = totalBrutGlobal > 0 ? (c.peaBrut / totalBrutGlobal * 100) : 0;
@@ -622,26 +622,26 @@ function figerSoldeGlobal() {
   
   saveData(appData);
   renderGlobalTrendChartCurve();
-  alert('ð¸ Point sauvegardÃ© avec succÃ¨s sur la courbe !');
+  alert('📸 Point sauvegardé avec succès sur la courbe !');
 }
 
-// NOUVEAU : RENDU DU GRAPHIQUE COMPACT EN LIGNES TRACÃES (SVG NATIF)
+// NOUVEAU : RENDU DU GRAPHIQUE COMPACT EN LIGNES TRACÉES (SVG NATIF)
 function renderGlobalTrendChartCurve() {
   var container = document.getElementById('chart-svg-wrapper-target');
   var pts = appData.global_history || [];
   
   if(pts.length < 1) { 
-    container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;border:1px dashed rgba(255,255,255,0.05);border-radius:12px;">Aucun point enregistrÃ©. Cliquez sur le bouton ci-dessous pour dÃ©marrer votre historique de courbes.</div>'; 
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;border:1px dashed rgba(255,255,255,0.05);border-radius:12px;">Aucun point enregistré. Cliquez sur le bouton ci-dessous pour démarrer votre historique de courbes.</div>'; 
     return; 
   }
   
-  // Si un seul point, on double l'affichage pour Ã©tirer une ligne droite minimale lisible
+  // Si un seul point, on double l'affichage pour étirer une ligne droite minimale lisible
   var renderPts = pts.slice();
   if(renderPts.length === 1) {
     renderPts.push({ date: renderPts[0].date, investi: renderPts[0].investi, brut: renderPts[0].brut });
   }
 
-  // Ãchelle & Bornes
+  // Échelle & Bornes
   var maxVal = 0;
   renderPts.forEach(function(o) {
     if(o.investi > maxVal) maxVal = o.investi;
@@ -665,23 +665,23 @@ function renderGlobalTrendChartCurve() {
 
   renderPts.forEach(function(p, i) {
     var x = paddingLeftRight + (i * stepX);
-    // Calcul Y inversÃ© (0 en haut en SVG)
+    // Calcul Y inversé (0 en haut en SVG)
     var yInvesti = height - paddingTopBottom - ((p.investi / maxVal) * effectiveH);
     var yBrut = height - paddingTopBottom - ((p.brut / maxVal) * effectiveH);
 
     pathInvestiArr.push(x + ',' + yInvesti);
     pathBrutArr.push(x + ',' + yBrut);
 
-    // PrÃ©parer les zones interactives au survol
+    // Préparer les zones interactives au survol
     var diff = p.brut - p.investi;
     var sign = diff >= 0 ? "+" : "";
     interactiveZonesHtml += 
       '<div class="chart-node-col">' +
         '<div class="chart-tooltip-v2">' +
-          'ð Date : <b>' + p.date + '</b><br>' +
-          '<span style="color:#94a3b8;">âª Investi :</span> ' + p.investi.toFixed(2) + ' â¬<br>' +
-          '<span style="color:#10b981;">ð¢ Valeur :</span> ' + p.brut.toFixed(2) + ' â¬<br>' +
-          'â¨ Performance : <b style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + diff.toFixed(2) + ' â¬</b>' +
+          '📅 Date : <b>' + p.date + '</b><br>' +
+          '<span style="color:#94a3b8;">⚪ Investi :</span> ' + p.investi.toFixed(2) + ' €<br>' +
+          '<span style="color:#10b981;">🟢 Valeur :</span> ' + p.brut.toFixed(2) + ' €<br>' +
+          '✨ Performance : <b style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + diff.toFixed(2) + ' €</b>' +
         '</div>' +
       '</div>';
   });
@@ -716,7 +716,7 @@ function renderGlobalTrendChartCurve() {
 
   // Affichage des labels temporels dessous (premier et dernier pour rester propre)
   html += '<div class="chart-timeline-labels">' +
-            '<span>DÃ©but (' + pts[0].date + ')</span>' +
+            '<span>Début (' + pts[0].date + ')</span>' +
             '<span>Fin (' + pts[pts.length - 1].date + ')</span>' +
           '</div>';
 
@@ -756,12 +756,12 @@ function calculerOrdreOptimal() {
     horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
   }
   else if (devM >= devU && devM >= devE) { 
-    cibleNom = 'Amundi Ãmergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
+    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
     horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
   }
   else { 
     cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
-    horaireConseille = '15h30 - 17h00 (Ouverture US)'; horaireAEviter = 'MatinÃ©e, 09h00-10h00 et 17h00-17h30';
+    horaireConseille = '15h30 - 17h00 (Ouverture US)'; horaireAEviter = 'Matinée, 09h00-10h00 et 17h00-17h30';
   }
 
   var fraisBase = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
@@ -769,19 +769,19 @@ function calculerOrdreOptimal() {
   var cashAchatNecessaire = (nParts * ciblePrix) + fraisBase;
 
   var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border); margin-top:10px;">' +
-    '<h2 style="color:#7dd3fc; margin-bottom:10px;">ð¯ Suggestion d\'ordre unique</h2>';
+    '<h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
     if(nParts > 0) {
-      html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> Ã <b>'+nParts+'</b> part(s)</div>' +
-      '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">DÃ©tails : '+(nParts * ciblePrix).toFixed(2)+' â¬ + '+fraisBase.toFixed(2)+' â¬ frais</div>' +
+      html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+      '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Détails : '+(nParts * ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € frais</div>' +
       '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px dashed rgba(255,255,255,0.08); padding-bottom:10px;">' +
-        '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' â¬</b></span>' +
-        '<span style="color:var(--em);">Reste : <b>'+(b - cashAchatNecessaire).toFixed(2)+' â¬</b></span>' +
+        '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
+        '<span style="color:var(--em);">Reste : <b>'+(b - cashAchatNecessaire).toFixed(2)+' €</b></span>' +
       '</div>' +
       '<div style="font-size:11px; line-height:1.4; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.02);">' +
-        '<div style="color:var(--eu);">ð¢ <b>CrÃ©neau idÃ©al :</b> ' + horaireConseille + '</div>' +
-        '<div style="color:var(--red); margin-top:2px;">â ï¸ <b>Ã Ã©viter :</b> ' + horaireAEviter + '</div>' +
+        '<div style="color:var(--eu);">🟢 <b>Créneau idéal :</b> ' + horaireConseille + '</div>' +
+        '<div style="color:var(--red); margin-top:2px;">⚠️ <b>À éviter :</b> ' + horaireAEviter + '</div>' +
       '</div>';
-    } else { html += '<div style="color:var(--red); font-size:13px;">â ï¸ Budget trop bas.</div>'; }
+    } else { html += '<div style="color:var(--red); font-size:13px;">⚠️ Budget trop bas.</div>'; }
   html += '</div>';
   container.innerHTML = html;
 }
@@ -798,7 +798,7 @@ function ajouterEvenementManuel() {
   var asset = document.getElementById('man_asset').value;
   var dateSaisie = document.getElementById('man_date').value;
   var dateStr = formatDateToFR(dateSaisie);
-  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Ãmergents'};
+  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
   
   var baseObj = { id: generateId(), type: type, date: dateStr, etf: names[asset], tag: asset };
 
@@ -815,13 +815,13 @@ function ajouterEvenementManuel() {
   }
   appData.pea.historique.unshift(baseObj);
   appData.pea.settings.budget = ''; document.getElementById('budget').value = '';
-  saveData(appData); renderHistPEA(); alert('â ValidÃ©.');
+  saveData(appData); renderHistPEA(); alert('✅ Validé.');
   document.getElementById('man_q').value = ''; document.getElementById('man_p').value = ''; document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
   initDatesFormulaires();
 }
 
 function supprimerMouvementPEA(id) {
-  if(confirm("Supprimer dÃ©finitivement ce mouvement du registre PEA ?")) {
+  if(confirm("Supprimer définitivement ce mouvement du registre PEA ?")) {
     appData.pea.historique = appData.pea.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
     renderHistPEA();
@@ -863,26 +863,26 @@ function renderStatsPEA() {
     '<div class="card">' +
       '<h2>Performance Portefeuille PEA</h2>' +
       '<div class="sim-row" style="padding:4px 0 12px 0;">' +
-        '<span>Valeur Brute Actuelle :</span> <b style="font-size:22px; color:white;">' + valActuelle.toFixed(2) + ' â¬</b>' +
+        '<span>Valeur Brute Actuelle :</span> <b style="font-size:22px; color:white;">' + valActuelle.toFixed(2) + ' €</b>' +
       '</div>' +
       '<div class="fees-container-badge" style="margin-bottom:14px; margin-top:0;">' +
-        'Frais de courtage appliquÃ©s sur ce compte : <b>' + totalFeesPEA.toFixed(2) + ' â¬</b>' +
+        'Frais de courtage appliqués sur ce compte : <b>' + totalFeesPEA.toFixed(2) + ' €</b>' +
       '</div>' +
       '<div class="stat-grid" style="margin-top:10px;">' +
         '<div class="stat-box" style="border-top: 3px solid var(--eu);">' +
-          '<div class="stat-lbl">Gain RÃ©el Absolu<br><small>(Frais inc. + Divs)</small></div>' +
-          '<div class="stat-val" style="color:'+(gainRealAbsolu>=0?'var(--eu)':'var(--red)')+';">' + (gainRealAbsolu>=0?'+':'') + gainRealAbsolu.toFixed(2) + ' â¬<br><small style="font-size:12px;">('+gainRealPct.toFixed(1)+'%)</small></div>' +
+          '<div class="stat-lbl">Gain Réel Absolu<br><small>(Frais inc. + Divs)</small></div>' +
+          '<div class="stat-val" style="color:'+(gainRealAbsolu>=0?'var(--eu)':'var(--red)')+';">' + (gainRealAbsolu>=0?'+':'') + gainRealAbsolu.toFixed(2) + ' €<br><small style="font-size:12px;">('+gainRealPct.toFixed(1)+'%)</small></div>' +
         '</div>' +
         '<div class="stat-box" style="border-top: 3px solid var(--usa);">' +
-          '<div class="stat-lbl">Plus-Value Latente<br><small>(MarchÃ© pur vs PRU)</small></div>' +
-          '<div class="stat-val" style="color:'+(pvLatentePure>=0?'var(--eu)':'var(--red)')+';">' + (pvLatentePure>=0?'+':'') + pvLatentePure.toFixed(2) + ' â¬<br><small style="font-size:12px;">('+pvLatentePct.toFixed(1)+'%)</small></div>' +
+          '<div class="stat-lbl">Plus-Value Latente<br><small>(Marché pur vs PRU)</small></div>' +
+          '<div class="stat-val" style="color:'+(pvLatentePure>=0?'var(--eu)':'var(--red)')+';">' + (pvLatentePure>=0?'+':'') + pvLatentePure.toFixed(2) + ' €<br><small style="font-size:12px;">('+pvLatentePct.toFixed(1)+'%)</small></div>' +
         '</div>' +
       '</div>' +
     '</div>' +
     
     '<div class="card" style="border-left: 4px solid var(--div); background: rgba(168,85,247,0.03);"><h2>Estimation Fiscale PEA ('+(appData.pea.settings.taux_fisc||17.2)+'%)</h2>' +
-      '<div class="sim-row"><span>PrÃ©lÃ¨vements Sociaux thÃ©oriques :</span> <b style="color:var(--red);">- '+taxe.toFixed(2)+' â¬</b></div>' +
-      '<div class="sim-row"><span>Net aprÃ¨s retrait thÃ©orique :</span> <b style="color:var(--eu);">'+(valActuelle - taxe).toFixed(2)+' â¬</b></div>' +
+      '<div class="sim-row"><span>Prélèvements Sociaux théoriques :</span> <b style="color:var(--red);">- '+taxe.toFixed(2)+' €</b></div>' +
+      '<div class="sim-row"><span>Net après retrait théorique :</span> <b style="color:var(--eu);">'+(valActuelle - taxe).toFixed(2)+' €</b></div>' +
     '</div>';
 
   document.getElementById('stats-container').innerHTML = htmlStats;
@@ -899,24 +899,24 @@ function calcPEA() {
     donut.style.setProperty('--e-deg', (pU + pE) + '%');
   }
   document.getElementById('leg-usa-pct').textContent = pU.toFixed(1) + '%';
-  document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' â¬ â¢ ' + q.usa + ' part(s)';
+  document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' € • ' + q.usa + ' part(s)';
   document.getElementById('leg-eu-pct').textContent = pE.toFixed(1) + '%';
-  document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' â¬ â¢ ' + q.eu + ' part(s)';
+  document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' € • ' + q.eu + ' part(s)';
   document.getElementById('leg-em-pct').textContent = pM.toFixed(1) + '%';
-  document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' â¬ â¢ ' + q.em + ' part(s)';
+  document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' € • ' + q.em + ' part(s)';
 }
 
 function renderHistPEA() {
   var h = '';
   appData.pea.historique.forEach(function(a){
     var fr = parseFloat(a.frais || 0);
-    var txtFrais = fr > 0 ? ' (dont ' + fr.toFixed(2) + 'â¬ frais)' : '';
+    var txtFrais = fr > 0 ? ' (dont ' + fr.toFixed(2) + '€ frais)' : '';
     h += '<div class="hist-item">' +
            '<div class="hist-content">' +
-             '<b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' â¬' +
+             '<b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' €' +
              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date + txtFrais + '</div>' +
            '</div>' +
-           '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">ðï¸</button>' +
+           '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">🗑️</button>' +
          '</div>';
   });
   document.getElementById('hist-container').innerHTML = h || '<div style="text-align:center;color:var(--text-muted);padding:10px;">Aucun mouvement.</div>';
@@ -933,13 +933,13 @@ function updateCibleTotal() {
 }
 function saveCibles() {
   appData.pea.cibles = { usa: +document.getElementById('c_usa').value, eu: +document.getElementById('c_eu').value, em: +document.getElementById('c_em').value };
-  saveData(appData); alert('Cibles sauvÃ©es.');
+  saveData(appData); alert('Cibles sauvées.');
 }
 function saveSettings() {
   appData.pea.settings.alerte_seuil = +document.getElementById('alerte_seuil').value;
   appData.pea.settings.taux_fisc = +document.getElementById('taux_fisc').value;
   appData.pea.settings.frais_courtage = +document.getElementById('frais_courtage').value;
-  saveData(appData); alert('ParamÃ¨tres sauvÃ©s.');
+  saveData(appData); alert('Paramètres sauvés.');
 }
 
 function toggleFormCto() {
@@ -973,13 +973,13 @@ function updateCtoDividendsDropdown() {
   Object.keys(positions).forEach(function(nom) {
     if(positions[nom].parts > 0) {
       var opt = document.createElement('option');
-      opt.value = nom; opt.textContent = nom + ' (DÃ©tenu)';
+      opt.value = nom; opt.textContent = nom + ' (Détenu)';
       select.appendChild(opt);
     }
   });
   
   var optNew = document.createElement('option');
-  optNew.value = '__NEW__'; optNew.textContent = 'â Saisir un autre nom libre...';
+  optNew.value = '__NEW__'; optNew.textContent = '➕ Saisir un autre nom libre...';
   select.appendChild(optNew);
   handleCtoNameSelect();
 }
@@ -1016,7 +1016,7 @@ function ajouterMouvementCTO() {
   
   var dateSaisie = document.getElementById('cto_date').value;
   var dateStr = formatDateToFR(dateSaisie);
-  if(!name) { alert('SpÃ©cifiez un nom valide.'); return; }
+  if(!name) { alert('Spécifiez un nom valide.'); return; }
 
   var baseObj = { id: generateId(), type: type, actif: name, date: dateStr };
 
@@ -1039,7 +1039,7 @@ function ajouterMouvementCTO() {
     appData.cto.historique.unshift(baseObj);
   }
 
-  saveData(appData); alert('â EnregistrÃ©.');
+  saveData(appData); alert('✅ Enregistré.');
   document.getElementById('cto_name').value = ''; document.getElementById('cto_name_custom_div').value = '';
   document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = ''; document.getElementById('cto_div_montant').value = '';
   initDatesFormulaires();
@@ -1047,7 +1047,7 @@ function ajouterMouvementCTO() {
 }
 
 function supprimerMouvementCTO(id) {
-  if(confirm("Supprimer dÃ©finitivement ce mouvement du registre CTO ?")) {
+  if(confirm("Supprimer définitivement ce mouvement du registre CTO ?")) {
     appData.cto.historique = appData.cto.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
     showSubTab('cto', 'portefeuille');
@@ -1062,7 +1062,7 @@ function updateCtoCours(name, value) {
 
 function saveCtoSettings() {
   appData.cto.settings.tax_rate = parseFloat(document.getElementById('cto_tax_rate').value) || 30.0;
-  saveData(appData); alert('ParamÃ¨tres CTO sauvÃ©s.');
+  saveData(appData); alert('Paramètres CTO sauvés.');
 }
 
 function renderCTOInputsCours() {
@@ -1116,10 +1116,10 @@ function renderCTOUniverseOnly() {
       var tr = document.createElement('tr');
       tr.innerHTML = '<td><span class="tag tag-cto">'+nom+'</span></td>' +
         '<td><b>'+p.parts+'</b></td>' +
-        '<td>'+pru.toFixed(2)+' â¬</td>' +
-        '<td><b style="color:var(--usa)">'+coursActuel.toFixed(2)+' â¬</b></td>' +
-        '<td><b>'+valuation.toFixed(2)+' â¬</b></td>' +
-        '<td style="color:'+(pvLatente >= 0 ? 'var(--eu)' : 'var(--red)')+'; font-weight:bold;">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' â¬<br><small>('+pvPct.toFixed(1)+'%)</small></td>';
+        '<td>'+pru.toFixed(2)+' €</td>' +
+        '<td><b style="color:var(--usa)">'+coursActuel.toFixed(2)+' €</b></td>' +
+        '<td><b>'+valuation.toFixed(2)+' €</b></td>' +
+        '<td style="color:'+(pvLatente >= 0 ? 'var(--eu)' : 'var(--red)')+'; font-weight:bold;">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €<br><small>('+pvPct.toFixed(1)+'%)</small></td>';
       tbody.appendChild(tr);
     }
   });
@@ -1142,28 +1142,28 @@ function renderCTOUniverseOnly() {
     '<div class="card">' +
       '<h2>Performance Portefeuille CTO</h2>' +
       '<div class="sim-row" style="padding:4px 0 12px 0;">' +
-        '<span>Valeur Brute Actuelle :</span> <b style="font-size:22px; color:white;">' + globalValeurCTO.toFixed(2) + ' â¬</b>' +
+        '<span>Valeur Brute Actuelle :</span> <b style="font-size:22px; color:white;">' + globalValeurCTO.toFixed(2) + ' €</b>' +
       '</div>' +
       '<div class="fees-container-badge" style="margin-bottom:14px; margin-top:0;">' +
-        'Frais de courtage appliquÃ©s sur ce compte : <b>' + totalFeesCTO.toFixed(2) + ' â¬</b>' +
+        'Frais de courtage appliqués sur ce compte : <b>' + totalFeesCTO.toFixed(2) + ' €</b>' +
       '</div>' +
       '<div class="stat-grid">' +
         '<div class="stat-box" style="border-top: 3px solid var(--eu);">' +
-          '<div class="stat-lbl">Gain RÃ©el Absolu<br><small>(Frais inc. + Divs)</small></div>' +
-          '<div class="stat-val" style="color:'+(gainRealAbsoluCTO>=0?'var(--eu)':'var(--red)')+';">' + (gainRealAbsoluCTO>=0?'+':'') + gainRealAbsoluCTO.toFixed(2) + ' â¬<br><small style="font-size:12px;">('+gainRealPctCTO.toFixed(1)+'%)</small></div>' +
+          '<div class="stat-lbl">Gain Réel Absolu<br><small>(Frais inc. + Divs)</small></div>' +
+          '<div class="stat-val" style="color:'+(gainRealAbsoluCTO>=0?'var(--eu)':'var(--red)')+';">' + (gainRealAbsoluCTO>=0?'+':'') + gainRealAbsoluCTO.toFixed(2) + ' €<br><small style="font-size:12px;">('+gainRealPctCTO.toFixed(1)+'%)</small></div>' +
         '</div>' +
         '<div class="stat-box" style="border-top: 3px solid var(--usa);">' +
-          '<div class="stat-lbl">Plus-Value Latente<br><small>(MarchÃ© pur vs PRU)</small></div>' +
-          '<div class="stat-val" style="color:'+(pvLatenteGlobalCTO>=0?'var(--eu)':'var(--red)')+';">' + (pvLatenteGlobalCTO>=0?'+':'') + pvLatenteGlobalCTO.toFixed(2) + ' â¬<br><small style="font-size:12px;">('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</small></div>' +
+          '<div class="stat-lbl">Plus-Value Latente<br><small>(Marché pur vs PRU)</small></div>' +
+          '<div class="stat-val" style="color:'+(pvLatenteGlobalCTO>=0?'var(--eu)':'var(--red)')+';">' + (pvLatenteGlobalCTO>=0?'+':'') + pvLatenteGlobalCTO.toFixed(2) + ' €<br><small style="font-size:12px;">('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</small></div>' +
         '</div>' +
       '</div>' +
     '</div>' +
     
     '<div class="card" style="border-left:4px solid var(--red); background:rgba(244,63,94,0.03);">' +
-      '<h2>âï¸ Estimation Fiscale CTO ('+currentTaxRate+'%)</h2>' +
-      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Assiette imposable (Gain RÃ©el) :</span> <b>'+(gainRealAbsoluCTO > 0 ? gainRealAbsoluCTO.toFixed(2) : '0.00')+' â¬</b></div>' +
-      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Taxe estimÃ©e :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' â¬</b></div>' +
-      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:6px; padding-top:6px;"><span>ð° <b>Valeur Brute aprÃ¨s flat tax :</b></span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' â¬</b></div>' +
+      '<h2>⚖️ Estimation Fiscale CTO ('+currentTaxRate+'%)</h2>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Assiette imposable (Gain Réel) :</span> <b>'+(gainRealAbsoluCTO > 0 ? gainRealAbsoluCTO.toFixed(2) : '0.00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none; padding:2px 0;"><span>Taxe estimée :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' €</b></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:6px; padding-top:6px;"><span>💰 <b>Valeur Brute après flat tax :</b></span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' €</b></div>' +
     '</div>';
 }
 
@@ -1172,19 +1172,19 @@ function renderHistCTO() {
   appData.cto.historique.forEach(function(a){
     var detailHtml = '';
     if(a.type === 'dividende') {
-      detailHtml = '<div class="hist-content"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right; font-weight:bold; color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' â¬</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">PerÃ§u le '+a.date+'</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right; font-weight:bold; color:var(--div);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Perçu le '+a.date+'</div></div>';
     } else if (a.type === 'achat') {
-      detailHtml = '<div class="hist-content"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> â¢ '+a.nb+' part(s) @ '+a.prix+' â¬<span style="float:right; font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' â¬</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+' (Frais: '+parseFloat(a.frais||0).toFixed(2)+'â¬)</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+' (Frais: '+parseFloat(a.frais||0).toFixed(2)+'€)</div></div>';
     } else {
-      detailHtml = '<div class="hist-content"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> â¢ '+a.nb+' part(s) @ '+a.prix+' â¬<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' â¬</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
+      detailHtml = '<div class="hist-content"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> • '+a.nb+' part(s) @ '+a.prix+' €<span style="float:right; font-weight:bold; color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Le '+a.date+'</div></div>';
     }
     var borderStyle = a.type === 'dividende' ? 'var(--div)' : (a.type === 'achat' ? 'var(--usa)' : 'var(--red)');
     h += '<div class="hist-item" style="border-left:3px solid ' + borderStyle + ';">' +
            detailHtml +
-           '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">ðï¸</button>' +
+           '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">🗑️</button>' +
          '</div>';
   });
-  document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Ãcritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
+  document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
 }
 
 function exportJSON() {
@@ -1206,7 +1206,7 @@ function importJSON(input) {
         if(!appData.global_history) appData.global_history = [];
         if(!appData.pea) appData.pea = { historique:[], cibles:{usa:60,eu:30,em:10}, prix:{usa:56.34,eu:20.47,em:7.75}, settings:{} };
         if(!appData.cto) appData.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
-        patchMissingIds(); saveData(appData); alert("â Importation globale rÃ©ussie !"); location.reload();
+        patchMissingIds(); saveData(appData); alert("✅ Importation globale réussie !"); location.reload();
       } else { alert("Fichier non valide."); }
     } catch(err) { alert("Erreur lors de la lecture du fichier .json"); }
   };
@@ -1214,7 +1214,7 @@ function importJSON(input) {
 }
 
 function resetGlobal() {
-  if(confirm('â ï¸ ATTENTION : Cela va supprimer l\'intÃ©gralitÃ© des donnÃ©es (PEA + CTO). Continuer ?')) {
+  if(confirm('⚠️ ATTENTION : Cela va supprimer l\'intégralité des données (PEA + CTO). Continuer ?')) {
     localStorage.removeItem("patrimoine_multi_v6"); location.reload();
   }
 }
