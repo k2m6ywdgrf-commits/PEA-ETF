@@ -540,15 +540,18 @@ function obtenirDonneesConsolidees() {
   var ctoDividendes = 0;
   var ctoFraisCumules = 0;
   
+  // Lecture chronologique pour l'état des positions du portefeuille
   appData.cto.historique.slice().reverse().forEach(function(m) {
     ctoFraisCumules += parseFloat(m.frais || 0);
     var name = m.actif;
     if(!posCto[name]) posCto[name] = { parts: 0, totalCost: 0 };
     if (m.type === 'achat') {
       posCto[name].parts += parseFloat(m.nb); posCto[name].totalCost += parseFloat(m.total);
+      ctoInvestiReel += parseFloat(m.total);
     } else if (m.type === 'vente') {
       var currentPru = posCto[name].parts > 0 ? (posCto[name].totalCost / posCto[name].parts) : 0;
       posCto[name].parts -= parseFloat(m.nb); posCto[name].totalCost -= (currentPru * parseFloat(m.nb));
+      ctoInvestiReel -= parseFloat(m.total);
     } else if (m.type === 'dividende') {
       ctoDividendes += parseFloat(m.total);
     }
@@ -558,7 +561,6 @@ function obtenirDonneesConsolidees() {
   Object.keys(posCto).forEach(function(nom) {
     var cours = appData.cto.cours[nom] || 0;
     ctoValeurBrute += posCto[nom].parts * cours;
-    ctoInvestiReel += posCto[nom].totalCost;
   });
   var ctoGainGlobal = (ctoValeurBrute + ctoDividendes) - ctoInvestiReel;
   var ctoTaxRate = appData.cto.settings.tax_rate !== undefined ? appData.cto.settings.tax_rate : 30.0;
@@ -625,7 +627,6 @@ function figerSoldeGlobal() {
   alert('📸 Point sauvegardé avec succès sur la courbe !');
 }
 
-// NOUVEAU : RENDU DU GRAPHIQUE COMPACT EN LIGNES TRACÉES (SVG NATIF)
 function renderGlobalTrendChartCurve() {
   var container = document.getElementById('chart-svg-wrapper-target');
   var pts = appData.global_history || [];
@@ -635,13 +636,11 @@ function renderGlobalTrendChartCurve() {
     return; 
   }
   
-  // Si un seul point, on double l'affichage pour étirer une ligne droite minimale lisible
   var renderPts = pts.slice();
   if(renderPts.length === 1) {
     renderPts.push({ date: renderPts[0].date, investi: renderPts[0].investi, brut: renderPts[0].brut });
   }
 
-  // Échelle & Bornes
   var maxVal = 0;
   renderPts.forEach(function(o) {
     if(o.investi > maxVal) maxVal = o.investi;
@@ -665,14 +664,12 @@ function renderGlobalTrendChartCurve() {
 
   renderPts.forEach(function(p, i) {
     var x = paddingLeftRight + (i * stepX);
-    // Calcul Y inversé (0 en haut en SVG)
     var yInvesti = height - paddingTopBottom - ((p.investi / maxVal) * effectiveH);
     var yBrut = height - paddingTopBottom - ((p.brut / maxVal) * effectiveH);
 
     pathInvestiArr.push(x + ',' + yInvesti);
     pathBrutArr.push(x + ',' + yBrut);
 
-    // Préparer les zones interactives au survol
     var diff = p.brut - p.investi;
     var sign = diff >= 0 ? "+" : "";
     interactiveZonesHtml += 
@@ -692,29 +689,19 @@ function renderGlobalTrendChartCurve() {
   var html = 
     '<div class="trend-chart-wrapper">' +
       '<svg class="trend-svg" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="none">' +
-        '' +
         '<line x1="0" y1="' + (height/2) + '" x2="' + width + '" y2="' + (height/2) + '" stroke="rgba(255,255,255,0.03)" stroke-width="1" />' +
-        
-        '' +
         '<defs>' +
           '<linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">' +
             '<stop offset="0%" stop-color="#0ea5e9" />' +
             '<stop offset="100%" stop-color="#10b981" />' +
           '</linearGradient>' +
         '</defs>' +
-        
-        '' +
         '<path d="' + dInvesti + '" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="4,4" opacity="0.8" stroke-linecap="round" stroke-linejoin="round" />' +
-        
-        '' +
         '<path d="' + dBrut + '" fill="none" stroke="url(#curveGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />' +
       '</svg>' +
-      
-      '' +
       '<div class="chart-interactive-zone">' + interactiveZonesHtml + '</div>' +
     '</div>';
 
-  // Affichage des labels temporels dessous (premier et dernier pour rester propre)
   html += '<div class="chart-timeline-labels">' +
             '<span>Début (' + pts[0].date + ')</span>' +
             '<span>Fin (' + pts[pts.length - 1].date + ')</span>' +
@@ -833,10 +820,11 @@ function renderStatsPEA() {
   var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
   var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp);
   
-  var invTotal = 0, divTotal = 0, baseDenom = 0, totalFeesPEA = 0;
+  var divTotal = 0, baseDenom = 0, totalFeesPEA = 0;
   var totalPruValuePEA = 0;
 
-  appData.pea.historique.slice().reverse().forEach(function(m){
+  // Calcul direct et propre sans inversion superflue
+  appData.pea.historique.forEach(function(m){
     totalFeesPEA += parseFloat(m.frais || 0);
     if(m.type === 'achat' || !m.type) { 
       baseDenom += parseFloat(m.total); 
@@ -1050,7 +1038,9 @@ function supprimerMouvementCTO(id) {
   if(confirm("Supprimer définitivement ce mouvement du registre CTO ?")) {
     appData.cto.historique = appData.cto.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
-    showSubTab('cto', 'portefeuille');
+    // Reste sur le sous-onglet en cours sans changer d'univers
+    renderHistCTO();
+    updateCtoDividendsDropdown();
   }
 }
 
@@ -1093,10 +1083,13 @@ function renderCTOUniverseOnly() {
   tbody.innerHTML = '';
 
   var globalValeurCTO = 0, globalPrixRevient = 0, globalDividendes = 0, totalFeesCTO = 0;
+  var flowInvestiReelCTO = 0;
   
-  appData.cto.historique.slice().reverse().forEach(function(m) {
+  appData.cto.historique.forEach(function(m) {
     totalFeesCTO += parseFloat(m.frais || 0);
     if(m.type === 'dividende') globalDividendes += parseFloat(m.total);
+    if(m.type === 'achat') flowInvestiReelCTO += parseFloat(m.total);
+    if(m.type === 'vente') flowInvestiReelCTO -= parseFloat(m.total);
   });
 
   Object.keys(positions).forEach(function(nom) {
@@ -1128,8 +1121,8 @@ function renderCTOUniverseOnly() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">Aucune position ouverte.</td></tr>';
   }
 
-  var gainRealAbsoluCTO = (globalValeurCTO + globalDividendes) - globalPrixRevient;
-  var gainRealPctCTO = globalPrixRevient > 0 ? (gainRealAbsoluCTO / globalPrixRevient) * 100 : 0;
+  var gainRealAbsoluCTO = (globalValeurCTO + globalDividendes) - flowInvestiReelCTO;
+  var gainRealPctCTO = flowInvestiReelCTO > 0 ? (gainRealAbsoluCTO / flowInvestiReelCTO) * 100 : 0;
 
   var pvLatenteGlobalCTO = globalValeurCTO - globalPrixRevient;
   var pvLatenteGlobalPctCTO = globalPrixRevient > 0 ? (pvLatenteGlobalCTO / globalPrixRevient) * 100 : 0;
