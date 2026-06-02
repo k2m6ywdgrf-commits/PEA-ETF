@@ -1,1 +1,109 @@
+// ==========================================
+// MOTEUR UNIVERSEL PEA
+// ==========================================
+function recalculerQuantitesPEA() {
+  var q = { usa: 0, eu: 0, em: 0 };
+  appData.pea.historique.forEach(function(m){
+    if (m.type === 'achat' || !m.type) q[m.tag] += parseFloat(m.nb || 0);
+    else if (m.type === 'vente') q[m.tag] -= parseFloat(m.nb || 0);
+  });
+  q.usa = Math.max(0, q.usa); q.eu = Math.max(0, q.eu); q.em = Math.max(0, q.em);
+  document.getElementById('lbl_usa_q').textContent = q.usa;
+  document.getElementById('lbl_eu_q').textContent = q.eu;
+  document.getElementById('lbl_em_q').textContent = q.em;
+  return q;
+}
+
+function calculerOrdreOptimal() {
+  var q = recalculerQuantitesPEA();
+  var b = +appData.pea.settings.budget || 0;
+  var container = document.getElementById('suggestion-ordre-container');
+  if (b <= 0) { container.innerHTML = ''; return; }
+
+  var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
+  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
+  var pU = totActuel ? (u/totActuel)*100 : 0, pE = totActuel ? (e/totActuel)*100 : 0, pM = totActuel ? (m/totActuel)*100 : 0;
+  
+  var devU = appData.pea.cibles.usa - pU, devE = appData.pea.cibles.eu - pE, devM = appData.pea.cibles.em - pM;
+  var cNom = '', cTag = '', cPrix = 0, lClass = '', hCc = '', hEv = '';
+  
+  if (devE >= devU && devE >= devM) { cNom = 'BNP Stoxx 600'; cTag = 'eu'; cPrix = ep; lClass = 'tag-eu'; hCc = '10h00 - 17h00'; hEv = '09h00-10h00 / 17h00-17h30'; }
+  else if (devM >= devU && devM >= devE) { cNom = 'Amundi Émergents'; cTag = 'em'; cPrix = mp; lClass = 'tag-em'; hCc = '10h00 - 17h00'; hEv = '09h00-10h00 / 17h00-17h30'; }
+  else { cNom = 'Amundi S&P 500'; cTag = 'usa'; cPrix = up; lClass = 'tag-usa'; hCc = '15h30 - 17h00 (US)'; hEv = 'Matinée / Fin de journée'; }
+
+  var fBase = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
+  var nParts = (b > fBase && cPrix > 0) ? Math.floor((b - fBase) / cPrix) : 0;
+  var req = (nParts * cPrix) + fBase;
+
+  var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border); margin-top:10px;"><h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
+  if(nParts > 0) {
+    html += '<div style="margin:8px 0;">Acheter : <span class="tag '+lClass+'">'+cNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+    '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Détails : '+(nParts * cPrix).toFixed(2)+' € + '+fBase.toFixed(2)+' € frais</div>' +
+    '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px dashed rgba(255,255,255,0.08); padding-bottom:10px;"><span>Total : <b>'+req.toFixed(2)+' €</b></span><span style="color:var(--em);">Reste : <b>'+(b - req).toFixed(2)+' €</b></span></div>' +
+    '<div style="font-size:11px; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;"><div style="color:var(--eu);">🟢 <b>Idéal :</b> ' + hCc + '</div><div style="color:var(--red); margin-top:2px;">⚠️ <b>Éviter :</b> ' + hEv + '</div></div>';
+  } else { html += '<div style="color:var(--red);">⚠️ Budget trop faible.</div>'; }
+  container.innerHTML = html + '</div>';
+}
+
+function ajouterEvenementManuel() {
+  var type = document.getElementById('man_type').value, asset = document.getElementById('man_asset').value;
+  var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
+  var baseObj = { id: generateId(), type: type, date: formatDateToFR(document.getElementById('man_date').value), etf: names[asset], tag: asset };
+
+  if(type === 'achat' || type === 'vente') {
+    var q = +document.getElementById('man_q').value || 0, p = +document.getElementById('man_p').value || 0, f = type === 'achat' ? (+document.getElementById('man_frais').value || 0) : 0;
+    if(q <= 0 || p <= 0) { alert('Champs requis.'); return; }
+    baseObj.nb = q; baseObj.prix = p; baseObj.frais = f; baseObj.total = (type==='achat'?(q*p)+f:(q*p)).toFixed(2);
+  } else {
+    var m = +document.getElementById('man_div_montant').value || 0; if(m <= 0) return;
+    baseObj.total = m.toFixed(2); baseObj.frais = 0;
+  }
+  appData.pea.historique.unshift(baseObj); appData.pea.settings.budget = ''; document.getElementById('budget').value = '';
+  saveData(appData); renderHistPEA(); alert('✅ Validé.');
+  document.getElementById('man_q').value = ''; document.getElementById('man_p').value = ''; document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
+  initDatesFormulaires();
+}
+
+function supprimerMouvementPEA(id) {
+  if(confirm("Supprimer ce mouvement PEA ?")) { appData.pea.historique = appData.pea.historique.filter(function(m){return m.id!==id;}); saveData(appData); renderHistPEA(); }
+}
+
+function renderStatsPEA() {
+  var q = recalculerQuantitesPEA(), up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
+  var valActuelle = (q.usa*up) + (q.eu*ep) + (q.em*mp), inv = 0, divs = 0, totalFees = 0, totalPruVal = 0;
+
+  appData.pea.historique.slice().reverse().forEach(function(m){
+    totalFees += parseFloat(m.frais || 0);
+    if(m.type === 'achat' || !m.type) { inv += parseFloat(m.total); totalPruVal += parseFloat(m.nb||0) * parseFloat(m.prix||0); }
+    else if(m.type === 'vente') { inv -= parseFloat(m.total); totalPruVal -= parseFloat(m.nb||0) * parseFloat(m.prix||0); }
+    else if(m.type === 'dividende') divs += parseFloat(m.total);
+  });
+
+  var gAbs = (valActuelle + divs) - inv, gPct = inv > 0 ? (gAbs / inv) * 100 : 0;
+  var pvLat = valActuelle - totalPruVal, pvPct = totalPruVal > 0 ? (pvLat / totalPruVal) * 100 : 0;
+  var taxe = gAbs > 0 ? (gAbs * ((appData.pea.settings.taux_fisc||17.2)/100)) : 0;
+
+  document.getElementById('stats-container').innerHTML = '<div class="card"><h2>Performance Portefeuille PEA</h2><div class="sim-row" style="padding:4px 0 12px 0;"><span>Valeur Brute Actuelle :</span> <b style="font-size:22px; color:white;">'+valActuelle.toFixed(2)+' €</b></div><div class="fees-container-badge" style="margin-bottom:14px; margin-top:0;">Frais de courtage : <b>'+totalFees.toFixed(2)+' €</b></div><div class="stat-grid" style="margin-top:10px;"><div class="stat-box" style="border-top:3px solid var(--eu);"><div class="stat-lbl">Gain Réel Absolu</div><div class="stat-val" style="color:'+(gAbs>=0?'var(--eu)':'var(--red)')+';">'+(gAbs>=0?'+':'')+gAbs.toFixed(2)+' €<br><small>('+gPct.toFixed(1)+'%)</small></div></div><div class="stat-box" style="border-top:3px solid var(--usa);"><div class="stat-lbl">Plus-Value Latente</div><div class="stat-val" style="color:'+(pvLat>=0?'var(--eu)':'var(--red)')+';">'+(pvLat>=0?'+':'')+pvLat.toFixed(2)+' €<br><small>('+pvPct.toFixed(1)+'%)</small></div></div></div></div><div class="card" style="border-left:4px solid var(--div); background:rgba(168,85,247,0.03);"><h2>Estimation Fiscale PEA</h2><div class="sim-row"><span>Prélèvements Sociaux théoriques :</span> <b style="color:var(--red);">- '+taxe.toFixed(2)+' €</b></div><div class="sim-row"><span>Net théorique :</span> <b style="color:var(--eu);">'+(valActuelle - taxe).toFixed(2)+' €</b></div></div>';
+}
+
+function calcPEA() {
+  var q = recalculerQuantitesPEA(), u = q.usa*appData.pea.prix.usa, e = q.eu*appData.pea.prix.eu, m = q.em*appData.pea.prix.em, tot = u+e+m;
+  var pU = tot?(u/tot)*100:0, pE = tot?(e/tot)*100:0, pM = tot?(m/tot)*100:0;
+  var d = document.getElementById('chart-donut'); if(d) { d.style.setProperty('--u-deg', pU+'%'); d.style.setProperty('--e-deg', (pU+pE)+'%'); }
+  document.getElementById('leg-usa-pct').textContent = pU.toFixed(1) + '%'; document.getElementById('leg-usa-details').textContent = u.toFixed(2) + ' € • ' + q.usa + ' part(s)';
+  document.getElementById('leg-eu-pct').textContent = pE.toFixed(1) + '%'; document.getElementById('leg-eu-details').textContent = e.toFixed(2) + ' € • ' + q.eu + ' part(s)';
+  document.getElementById('leg-em-pct').textContent = pM.toFixed(1) + '%'; document.getElementById('leg-em-details').textContent = m.toFixed(2) + ' € • ' + q.em + ' part(s)';
+}
+
+function renderHistPEA() {
+  var h = ''; appData.pea.historique.forEach(function(a){
+    h += '<div class="hist-item"><div class="hist-content"><b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' €<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date+(parseFloat(a.frais)>0?' (dont '+a.frais+'€ frais)':'')+'</div></div><button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">🗑️</button></div>';
+  });
+  document.getElementById('hist-container').innerHTML = h || '<div style="text-align:center;color:var(--text-muted);padding:10px;">Aucun mouvement.</div>';
+}
+
+function saveInputs() { appData.pea.prix = { usa: +document.getElementById('p_usa').value||0, eu: +document.getElementById('p_eu').value||0, em: +document.getElementById('p_em').value||0 }; appData.pea.settings.budget = document.getElementById('budget').value; saveData(appData); }
+function updateCibleTotal() { var t = (+document.getElementById('c_usa').value||0) + (+document.getElementById('c_eu').value||0) + (+document.getElementById('c_em').value||0); document.getElementById('cible-total').innerHTML = 'Total : ' + t + '%'; }
+function saveCibles() { appData.pea.cibles = { usa: +document.getElementById('c_usa').value, eu: +document.getElementById('c_eu').value, em: +document.getElementById('c_em').value }; saveData(appData); alert('Cibles sauvées.'); }
+function saveSettings() { appData.pea.settings.alerte_seuil = +document.getElementById('alerte_seuil').value; appData.pea.settings.taux_fisc = +document.getElementById('taux_fisc').value; appData.pea.settings.frais_courtage = +document.getElementById('frais_courtage').value; saveData(appData); alert('Paramètres sauvés.'); }
 
