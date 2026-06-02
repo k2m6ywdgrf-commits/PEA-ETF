@@ -602,7 +602,7 @@ function calculerEtAfficherAccueilGlobal() {
   var pctPea = totalBrutGlobal > 0 ? (peaValeurBrute / totalBrutGlobal * 100) : 0;
   var pctCto = totalBrutGlobal > 0 ? (ctoValeurBrute / totalBrutGlobal * 100) : 0;
   
-  if (totalBrutGlobal === 0) { pctPea = 50; pctCto = 50; } // Remplacement propre si vide
+  if (totalBrutGlobal === 0) { pctPea = 50; pctCto = 50; }
   
   document.getElementById('macro-bar-pea').style.width = pctPea + '%';
   document.getElementById('macro-bar-cto').style.width = pctCto + '%';
@@ -639,10 +639,20 @@ function calculerOrdreOptimal() {
   
   var devU = cU - pU, devE = cE - pE, devM = cM - pM;
   var cibleNom = '', cibleTag = '', ciblePrix = 0, labelClass = '';
+  var horaireConseille = '', horaireAEviter = '';
   
-  if (devE >= devU && devE >= devM) { cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu'; }
-  else if (devM >= devU && devM >= devE) { cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em'; }
-  else { cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa'; }
+  if (devE >= devU && devE >= devM) { 
+    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
+    horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
+  }
+  else if (devM >= devU && devM >= devE) { 
+    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
+    horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
+  }
+  else { 
+    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
+    horaireConseille = '15h30 - 17h00 (Ouverture US)'; horaireAEviter = 'Matinée, 09h00-10h00 et 17h00-17h30';
+  }
 
   var fraisBase = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
   var nParts = (b > fraisBase && ciblePrix > 0) ? Math.floor((b - fraisBase) / ciblePrix) : 0;
@@ -653,9 +663,13 @@ function calculerOrdreOptimal() {
     if(nParts > 0) {
       html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
       '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Détails : '+(nParts * ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € frais</div>' +
-      '<div style="font-size:13px; display:flex; justify-content:space-between;">' +
+      '<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px dashed rgba(255,255,255,0.08); padding-bottom:10px;">' +
         '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
         '<span style="color:var(--em);">Reste : <b>'+(b - cashAchatNecessaire).toFixed(2)+' €</b></span>' +
+      '</div>' +
+      '<div style="font-size:11px; line-height:1.4; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.02);">' +
+        '<div style="color:var(--eu);">🟢 <b>Créneau idéal :</b> ' + horaireConseille + '</div>' +
+        '<div style="color:var(--red); margin-top:2px;">⚠️ <b>À éviter :</b> ' + horaireAEviter + '</div>' +
       '</div>';
     } else { html += '<div style="color:var(--red); font-size:13px;">⚠️ Budget trop bas.</div>'; }
   html += '</div>';
