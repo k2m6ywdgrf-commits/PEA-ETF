@@ -63,20 +63,17 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .btn-red{background: linear-gradient(135deg, #f43f5e, #e11d48); color:white;}
 .btn-gray{background: rgba(255,255,255,0.08); color:var(--text); font-size:13px; padding:10px;}
 
-/* RESTRUCTURATION DE LA NAVIGATION MAÎTRESSE */
 .main-nav-container { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
 .main-nav-row { display: flex; gap: 6px; width: 100%; }
 .btn-nav-main { flex: 1; padding: 14px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.02); color: var(--text-muted); border: 1px solid var(--glass-border); }
 .btn-nav-main.active { background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; border-color: #4338ca; box-shadow: 0 0 12px rgba(99, 102, 241, 0.3); }
 
-/* Sous-onglets */
 .tabs{ display:flex;gap:4px;margin-bottom:18px;background:rgba(255,255,255,0.04); padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,0.02); }
 .tab{ flex:1;padding:10px 2px;border:none;border-radius:8px;background:transparent; color:var(--text-muted);font-size:13px;cursor:pointer;font-weight:500;transition:all 0.2s; }
 .tab.active{background:rgba(255,255,255,0.12);color:white;font-weight:600;backdrop-filter:blur(5px);}
 .section{display:none;}.section.active{display:block;}
 .universe-block{display:none;}
 
-/* Badges & Graphiques */
 .tag{display:inline-block;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;text-transform: uppercase;}
 .tag-usa{background:rgba(14,165,233,0.15);color:var(--usa);}
 .tag-eu{background:rgba(16,185,129,0.15);color:var(--eu);}
@@ -102,7 +99,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;}
 
-/* Donut */
 .donut-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; gap: 16px; }
 @media(min-width: 420px) { .donut-wrapper { flex-direction: row; justify-content: center; gap: 24px; } }
 .donut { width: 100px; height: 100px; min-width: 100px; border-radius: 50%; background: conic-gradient(var(--usa) 0%, var(--usa) var(--u-deg), var(--eu) var(--u-deg), var(--eu) var(--e-deg), var(--em) var(--e-deg), var(--em) 100%); position: relative; }
@@ -114,20 +110,19 @@ button:active{transform:scale(0.97);opacity:0.9;}
 .donut-legend-right b { color: var(--text); font-size: 12px; }
 .donut-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-/* Tables CTO */
 .cto-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
 .cto-table th { text-align: left; color: var(--text-muted); font-size: 11px; padding: 8px; text-transform: uppercase; }
 .cto-table td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-/* GRAPHIC TREND DUAL BAR (Montant Investi vs Montant Instantané) */
-.trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 140px; padding: 10px 5px 0; margin: 15px 0 5px; background: rgba(255,255,255,0.01); border-bottom: 2px solid rgba(255,255,255,0.1); border-radius: 6px; gap: 10px;}
-.trend-bar-wrapper { flex: 1; display: flex; flex-direction: row; align-items: flex-end; height: 100%; justify-content: center; position: relative; gap: 3px; }
-.dual-bar { width: 45%; min-height: 4px; border-radius: 3px 3px 0 0; transition: height 0.3s ease; position: relative; }
-.bar-investi { background: linear-gradient(to top, #4b5563, #9ca3af); } /* Gris pour l'argent de poche */
-.bar-actuel { background: linear-gradient(to top, #0ea5e9, #10b981); } /* Dégradé bleu/vert pour la valeur actuelle */
-.trend-bar-wrapper:hover .trend-tooltip { display: block; }
-.trend-tooltip { display: none; position: absolute; top: -50px; background: #1e293b; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 10px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: bold; text-align: left; line-height: 1.3;}
-.trend-date { font-size: 9px; color: var(--text-muted); margin-top: 4px; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* CONTENEUR DU GRAPHIQUE EN COURBES (SVG) */
+.trend-chart-wrapper { position: relative; width: 100%; height: 150px; margin: 15px 0 5px; background: rgba(255,255,255,0.01); border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
+.trend-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.chart-interactive-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; }
+.chart-node-col { flex: 1; height: 100%; position: relative; display: flex; justify-content: center; cursor: pointer; }
+.chart-node-col:hover .chart-tooltip-v2 { display: block; }
+.chart-node-col:hover::before { content: ""; position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.15); pointer-events: none; }
+.chart-tooltip-v2 { display: none; position: absolute; bottom: 105%; background: #1e293b; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 11px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.12); z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.6); font-weight: 500; text-align: left; line-height: 1.4; }
+.chart-timeline-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); padding: 0 4px; margin-top: 4px; }
 
 .widget-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: white;}
 .widget-perf { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; float: right; margin-top: -2px;}
@@ -158,13 +153,13 @@ button:active{transform:scale(0.97);opacity:0.9;}
   </div>
 
   <div class="card">
-    <h2>📊 Suivi Temporel : Investi vs Actuel Brut</h2>
-    <div id="global-trend-container"></div>
-    <div style="display:flex; justify-content:center; gap:16px; font-size:11px; margin-top:5px; color:var(--text-muted);">
-      <span><span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:2px; margin-right:4px;"></span>Investi</span>
-      <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border-radius:2px; margin-right:4px;"></span>Valeur Marché</span>
+    <h2>📊 Courbe d'Évolution : Investi vs Valeur Marché</h2>
+    <div id="chart-svg-wrapper-target"></div>
+    <div style="display:flex; justify-content:center; gap:20px; font-size:11px; margin-top:8px; color:var(--text-muted);">
+      <span><span style="display:inline-block; width:12px; height:2px; border-top:2px dashed #94a3b8; margin-right:6px; vertical-align:middle;"></span>Montant Investi</span>
+      <span><span style="display:inline-block; width:12px; height:3px; background:linear-gradient(to right, #0ea5e9, #10b981); border-radius:1px; margin-right:6px; vertical-align:middle;"></span>Valeur Marché</span>
     </div>
-    <button class="btn-gray" style="margin-top:14px; background:rgba(99, 102, 241, 0.15); color:#a5b4fc; font-weight:600; width:100%;" onclick="figerSoldeGlobal()">📸 Figer la situation globale aujourd'hui</button>
+    <button class="btn-gray" style="margin-top:14px; background:rgba(99, 102, 241, 0.15); color:#a5b4fc; font-weight:600; width:100%;" onclick="figerSoldeGlobal()">📸 Enregistrer la situation actuelle sur le graphique</button>
   </div>
 
   <div class="card">
@@ -201,7 +196,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     </div>
   </div>
 </div>
-
 
 <div id="univers-pea" class="universe-block">
   <div class="tabs">
@@ -251,7 +245,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
         </div>
       </div>
     </div>
-    
     <div id="stats-container"></div>
   </div>
 
@@ -319,7 +312,6 @@ button:active{transform:scale(0.97);opacity:0.9;}
     </div>
   </div>
 </div>
-
 
 <div id="univers-cto" class="universe-block">
   <div class="tabs">
@@ -432,8 +424,6 @@ function loadData() {
       if(!parsed.cto) parsed.cto = { historique: [], cours: {}, settings: { tax_rate: 30.0 } };
       if(!parsed.cto.settings) parsed.cto.settings = { tax_rate: 30.0 };
       if(!parsed.pea.historique) parsed.pea.historique = [];
-      
-      // Assurer la présence des points d'histoire globaux
       if(!parsed.global_history) parsed.global_history = [];
       return parsed;
     } catch(e) {}
@@ -528,9 +518,6 @@ function showSubTab(univ, section) {
   }
 }
 
-// =========================================================
-//            FONCTION TECHNIQUE DE PRE-CALCUL GLOBAL
-// =========================================================
 function obtenirDonneesConsolidees() {
   var qPea = { usa: 0, eu: 0, em: 0 };
   var peaInvestiReel = 0;
@@ -584,9 +571,6 @@ function obtenirDonneesConsolidees() {
   };
 }
 
-// =========================================================
-//            CALCULS DE CONSOLIDATION ACCUEIL GLOBAL
-// =========================================================
 function calculerEtAfficherAccueilGlobal() {
   var c = obtenirDonneesConsolidees();
 
@@ -620,11 +604,9 @@ function calculerEtAfficherAccueilGlobal() {
   document.getElementById('macro-txt-pea').textContent = (totalBrutGlobal > 0 ? pctPea.toFixed(1) : '0') + '%';
   document.getElementById('macro-txt-cto').textContent = (totalBrutGlobal > 0 ? pctCto.toFixed(1) : '0') + '%';
 
-  // Charger le nouveau graphique comparatif
-  renderGlobalTrendChart();
+  renderGlobalTrendChartCurve();
 }
 
-// NOUVEAU : ENREGISTREMENT HISTORIQUE DOUBLE SÉRIE (Accueil Global)
 function figerSoldeGlobal() {
   var c = obtenirDonneesConsolidees();
   var totalBrut = c.peaBrut + c.ctoBrut;
@@ -639,59 +621,108 @@ function figerSoldeGlobal() {
   });
   
   saveData(appData);
-  renderGlobalTrendChart();
-  alert('📸 Situation consolidée archivée avec succès !');
+  renderGlobalTrendChartCurve();
+  alert('📸 Point sauvegardé avec succès sur la courbe !');
 }
 
-// NOUVEAU : RENDU DU GRAPHIQUE COMPARATIF DOUBLE BARRE
-function renderGlobalTrendChart() {
-  var container = document.getElementById('global-trend-container');
+// NOUVEAU : RENDU DU GRAPHIQUE COMPACT EN LIGNES TRACÉES (SVG NATIF)
+function renderGlobalTrendChartCurve() {
+  var container = document.getElementById('chart-svg-wrapper-target');
   var pts = appData.global_history || [];
   
   if(pts.length < 1) { 
-    container.innerHTML = '<div style="text-align:center;padding:25px;color:var(--text-muted);font-size:13px;">Aucun point figé pour le moment. Cliquez sur le bouton ci-dessous pour créer le premier repère historique.</div>'; 
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;border:1px dashed rgba(255,255,255,0.05);border-radius:12px;">Aucun point enregistré. Cliquez sur le bouton ci-dessous pour démarrer votre historique de courbes.</div>'; 
     return; 
   }
   
-  // Trouver le max pour fixer l'échelle de hauteur du CSS
+  // Si un seul point, on double l'affichage pour étirer une ligne droite minimale lisible
+  var renderPts = pts.slice();
+  if(renderPts.length === 1) {
+    renderPts.push({ date: renderPts[0].date, investi: renderPts[0].investi, brut: renderPts[0].brut });
+  }
+
+  // Échelle & Bornes
   var maxVal = 0;
-  pts.forEach(function(o) {
+  renderPts.forEach(function(o) {
     if(o.investi > maxVal) maxVal = o.investi;
     if(o.brut > maxVal) maxVal = o.brut;
   });
-  maxVal = maxVal * 1.15; // Marge de sécurité haute
+  maxVal = maxVal * 1.12; 
   if(maxVal === 0) maxVal = 100;
 
-  var html = '<div class="trend-chart">';
-  pts.forEach(function(p) {
-    var hInvesti = (p.investi / maxVal * 100);
-    var hBrut = (p.brut / maxVal * 100);
+  var width = 500;
+  var height = 130;
+  var paddingLeftRight = 20;
+  var paddingTopBottom = 15;
+
+  var effectiveW = width - (paddingLeftRight * 2);
+  var effectiveH = height - (paddingTopBottom * 2);
+  var stepX = effectiveW / (renderPts.length - 1);
+
+  var pathInvestiArr = [];
+  var pathBrutArr = [];
+  var interactiveZonesHtml = '';
+
+  renderPts.forEach(function(p, i) {
+    var x = paddingLeftRight + (i * stepX);
+    // Calcul Y inversé (0 en haut en SVG)
+    var yInvesti = height - paddingTopBottom - ((p.investi / maxVal) * effectiveH);
+    var yBrut = height - paddingTopBottom - ((p.brut / maxVal) * effectiveH);
+
+    pathInvestiArr.push(x + ',' + yInvesti);
+    pathBrutArr.push(x + ',' + yBrut);
+
+    // Préparer les zones interactives au survol
     var diff = p.brut - p.investi;
     var sign = diff >= 0 ? "+" : "";
-
-    html += '<div class="trend-bar-wrapper">' +
-              '' +
-              '<div class="dual-bar bar-investi" style="height:' + hInvesti + '%;"></div>' +
-              '' +
-              '<div class="dual-bar bar-actuel" style="height:' + hBrut + '%;"></div>' +
-              
-              '' +
-              '<div class="trend-tooltip">' +
-                '📅 Date : <b>' + p.date + '</b><br>' +
-                '💰 Investi : ' + p.investi.toFixed(2) + ' €<br>' +
-                '📈 Valeur : ' + p.brut.toFixed(2) + ' €<br>' +
-                '✨ Perf : <span style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + diff.toFixed(2) + ' €</span>' +
-              '</div>' +
-              '<div class="trend-date">' + p.date + '</div>' +
-            '</div>';
+    interactiveZonesHtml += 
+      '<div class="chart-node-col">' +
+        '<div class="chart-tooltip-v2">' +
+          '📅 Date : <b>' + p.date + '</b><br>' +
+          '<span style="color:#94a3b8;">⚪ Investi :</span> ' + p.investi.toFixed(2) + ' €<br>' +
+          '<span style="color:#10b981;">🟢 Valeur :</span> ' + p.brut.toFixed(2) + ' €<br>' +
+          '✨ Performance : <b style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + diff.toFixed(2) + ' €</b>' +
+        '</div>' +
+      '</div>';
   });
-  html += '</div>';
+
+  var dInvesti = "M " + pathInvestiArr.join(" L ");
+  var dBrut = "M " + pathBrutArr.join(" L ");
+
+  var html = 
+    '<div class="trend-chart-wrapper">' +
+      '<svg class="trend-svg" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="none">' +
+        '' +
+        '<line x1="0" y1="' + (height/2) + '" x2="' + width + '" y2="' + (height/2) + '" stroke="rgba(255,255,255,0.03)" stroke-width="1" />' +
+        
+        '' +
+        '<defs>' +
+          '<linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">' +
+            '<stop offset="0%" stop-color="#0ea5e9" />' +
+            '<stop offset="100%" stop-color="#10b981" />' +
+          '</linearGradient>' +
+        '</defs>' +
+        
+        '' +
+        '<path d="' + dInvesti + '" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="4,4" opacity="0.8" stroke-linecap="round" stroke-linejoin="round" />' +
+        
+        '' +
+        '<path d="' + dBrut + '" fill="none" stroke="url(#curveGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />' +
+      '</svg>' +
+      
+      '' +
+      '<div class="chart-interactive-zone">' + interactiveZonesHtml + '</div>' +
+    '</div>';
+
+  // Affichage des labels temporels dessous (premier et dernier pour rester propre)
+  html += '<div class="chart-timeline-labels">' +
+            '<span>Début (' + pts[0].date + ')</span>' +
+            '<span>Fin (' + pts[pts.length - 1].date + ')</span>' +
+          '</div>';
+
   container.innerHTML = html;
 }
 
-// =========================================================
-//                      MOTEUR PEA 
-// =========================================================
 function recalculerQuantitesPEA() {
   var q = { usa: 0, eu: 0, em: 0 };
   appData.pea.historique.forEach(function(m){
@@ -911,10 +942,6 @@ function saveSettings() {
   saveData(appData); alert('Paramètres sauvés.');
 }
 
-
-// =========================================================
-//                      MOTEUR CTO 
-// =========================================================
 function toggleFormCto() {
   var type = document.getElementById('cto_type').value;
   if (type === 'dividende') {
@@ -1160,9 +1187,6 @@ function renderHistCTO() {
   document.getElementById('cto-hist-container').innerHTML = h ? '<div class="card" style="margin-top:14px;"><h2>Livre des Écritures CTO</h2>'+h+'</div>' : '<div class="card" style="margin-top:14px; text-align:center; color:var(--text-muted);">Aucune transaction.</div>';
 }
 
-// =========================================================
-//             SAUVEGARDE & LOGISTIQUE
-// =========================================================
 function exportJSON() {
   var cleanData = JSON.stringify(appData, null, 2);
   var blob = new Blob([cleanData], {type: "application/json;charset=utf-8;"});
