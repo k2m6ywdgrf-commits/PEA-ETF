@@ -894,50 +894,109 @@ function recalculerQuantitesPEA() {
 
 function calculerOrdreOptimal() {
   var q = recalculerQuantitesPEA();
-  var b = +appData.pea.settings.budget || 0;
+  var budget = +appData.pea.settings.budget || 0;
   var container = document.getElementById('suggestion-ordre-container');
-  if (b <= 0) { container.innerHTML = ''; return; }
+  if(budget <= 0) { container.innerHTML = ''; return; }
 
-  var up = appData.pea.prix.usa, ep = appData.pea.prix.eu, mp = appData.pea.prix.em;
-  var u = q.usa*up, e = q.eu*ep, m = q.em*mp, totActuel = u+e+m;
-  var pU = totActuel ? (u/totActuel)*100 : 0;
-  var pE = totActuel ? (e/totActuel)*100 : 0;
-  var pM = totActuel ? (m/totActuel)*100 : 0;
-  var cU = appData.pea.cibles.usa, cE = appData.pea.cibles.eu, cM = appData.pea.cibles.em;
-  var devU = cU - pU, devE = cE - pE, devM = cM - pM;
+  var prix = { usa: appData.pea.prix.usa, eu: appData.pea.prix.eu, em: appData.pea.prix.em };
+  var valsActuelles = { usa: q.usa*prix.usa, eu: q.eu*prix.eu, em: q.em*prix.em };
+  var totalActuel = valsActuelles.usa + valsActuelles.eu + valsActuelles.em;
+  var nouveauTotal = totalActuel + budget; // total après versement
 
-  var cibleNom, cibleTag, ciblePrix, labelClass, horaireConseille, horaireAEviter;
-  if (devE >= devU && devE >= devM) {
-    cibleNom = 'BNP Stoxx 600'; cibleTag = 'eu'; ciblePrix = ep; labelClass = 'tag-eu';
-    horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
-  } else if (devM >= devU && devM >= devE) {
-    cibleNom = 'Amundi Émergents'; cibleTag = 'em'; ciblePrix = mp; labelClass = 'tag-em';
-    horaireConseille = '10h00 - 17h00'; horaireAEviter = '09h00-10h00 et 17h00-17h30';
-  } else {
-    cibleNom = 'Amundi S&P 500'; cibleTag = 'usa'; ciblePrix = up; labelClass = 'tag-usa';
-    horaireConseille = '15h30 - 17h00'; horaireAEviter = 'Matinée, 09h00-10h00 et 17h00-17h30';
+  var cibles = appData.pea.cibles;
+  var frais = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
+
+  var meta = {
+    usa: { nom: 'Amundi S&P 500',  label: 'tag-usa', horaire: '15h30 - 17h00',   eviter: 'Matinée, 09h-10h et 17h-17h30' },
+    eu:  { nom: 'BNP Stoxx 600',   label: 'tag-eu',  horaire: '10h00 - 17h00',   eviter: '09h-10h et 17h-17h30' },
+    em:  { nom: 'Amundi Émergents', label: 'tag-em',  horaire: '10h00 - 17h00',   eviter: '09h-10h et 17h-17h30' }
+  };
+
+  // ── Sélection de l'ETF : le plus sous-pondéré par rapport au nouveau total ──
+  var meilleurTag = 'usa', meilleurDelta = -Infinity;
+  ['usa','eu','em'].forEach(function(tag) {
+    var valCible = nouveauTotal * (cibles[tag] / 100);
+    var manque = valCible - valsActuelles[tag]; // € manquants pour atteindre la cible
+    if(manque > meilleurDelta) { meilleurDelta = manque; meilleurTag = tag; }
+  });
+
+  var p = prix[meilleurTag];
+  var m = meta[meilleurTag];
+
+  // ── Calcul du plafond : parts nécessaires pour atteindre exactement la cible ──
+  var valCibleEtf = nouveauTotal * (cibles[meilleurTag] / 100);
+  var deltaEuros = valCibleEtf - valsActuelles[meilleurTag];
+  var partsMaxCible  = deltaEuros > 0 ? Math.floor(deltaEuros / p) : 0;
+  var partsMaxBudget = budget > frais ? Math.floor((budget - frais) / p) : 0;
+
+  // On prend le minimum : pas la peine d'acheter plus que ce qu'il faut
+  var nParts = Math.min(partsMaxCible, partsMaxBudget);
+  var plafonnéParCible = partsMaxCible < partsMaxBudget && partsMaxCible > 0;
+
+  var cout = (nParts * p) + frais;
+  var reste = budget - cout;
+
+  // ── Allocation projetée après achat ──
+  var valsApres = Object.assign({}, valsActuelles);
+  valsApres[meilleurTag] += nParts * p;
+  var totalApres = valsApres.usa + valsApres.eu + valsApres.em;
+  function pct(tag) { return totalApres > 0 ? (valsApres[tag] / totalApres * 100).toFixed(1) : '0.0'; }
+
+  // ── Prochain ETF à acheter avec le reste (si budget plafonné) ──
+  var prochainTag = null, prochainDelta = -Infinity;
+  if(plafonnéParCible && reste > frais) {
+    ['usa','eu','em'].forEach(function(tag) {
+      if(tag === meilleurTag) return;
+      var valCibleApres = totalApres * (cibles[tag] / 100);
+      var manqueApres = valCibleApres - valsApres[tag];
+      if(manqueApres > prochainDelta) { prochainDelta = manqueApres; prochainTag = tag; }
+    });
   }
 
-  var fraisBase = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
-  var nParts = (b > fraisBase && ciblePrix > 0) ? Math.floor((b - fraisBase) / ciblePrix) : 0;
-  var cashAchatNecessaire = (nParts * ciblePrix) + fraisBase;
+  var html = '<div style="border-top:3px solid var(--usa);background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid var(--glass-border);">' +
+    '<h2 style="color:#7dd3fc;margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
 
-  var html = '<div style="border-top:3px solid var(--usa); background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid var(--glass-border);">' +
-    '<h2 style="color:#7dd3fc; margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
   if(nParts > 0) {
-    html += '<div style="margin:8px 0; font-size:15px;">Acheter : <span class="tag '+labelClass+'">'+cibleNom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
-    '<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Détails : '+(nParts*ciblePrix).toFixed(2)+' € + '+fraisBase.toFixed(2)+' € frais</div>' +
-    '<div style="font-size:13px;display:flex;justify-content:space-between;margin-bottom:12px;border-bottom:1px dashed rgba(255,255,255,0.08);padding-bottom:10px;">' +
-      '<span>Total : <b>'+cashAchatNecessaire.toFixed(2)+' €</b></span>' +
-      '<span style="color:var(--em);">Reste : <b>'+(b - cashAchatNecessaire).toFixed(2)+' €</b></span>' +
-    '</div>' +
-    '<div style="font-size:11px;line-height:1.4;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">' +
-      '<div style="color:var(--eu);">🟢 <b>Créneau idéal :</b> '+horaireConseille+'</div>' +
-      '<div style="color:var(--red);margin-top:2px;">⚠️ <b>À éviter :</b> '+horaireAEviter+'</div>' +
+    html +=
+      '<div style="margin:8px 0;font-size:15px;">Acheter : <span class="tag '+m.label+'">'+m.nom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
+      '<div style="color:var(--text-muted);font-size:12px;margin-bottom:10px;">'+(nParts*p).toFixed(2)+' € + '+frais.toFixed(2)+' € frais</div>' +
+
+      // Ligne coût / reste
+      '<div style="font-size:13px;display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:10px;">' +
+        '<span>Total ordre : <b>'+cout.toFixed(2)+' €</b></span>' +
+        '<span style="color:'+(plafonnéParCible?'var(--em)':'var(--text-muted)')+';">Reste : <b>'+reste.toFixed(2)+' €</b></span>' +
+      '</div>' +
+
+      // Allocation projetée
+      '<div style="font-size:11px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;margin-bottom:10px;">' +
+        '<div style="color:var(--text-muted);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Allocation après achat</div>' +
+        '<div style="display:flex;justify-content:space-between;">' +
+          '<span style="color:var(--usa);">S&P500 <b>'+pct('usa')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.usa+'%</small></span>' +
+          '<span style="color:var(--eu);">Stoxx <b>'+pct('eu')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.eu+'%</small></span>' +
+          '<span style="color:var(--em);">EM <b>'+pct('em')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.em+'%</small></span>' +
+        '</div>' +
+      '</div>';
+
+    // Message si plafonné par la cible
+    if(plafonnéParCible && prochainTag) {
+      html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);">' +
+        '💡 Cible atteinte pour cet ETF. Avec les <b>'+reste.toFixed(2)+' €</b> restants, prochain ordre conseillé : <b>'+meta[prochainTag].nom+'</b>' +
+      '</div>';
+    } else if(plafonnéParCible) {
+      html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);">' +
+        '💡 Cible atteinte. Les <b>'+reste.toFixed(2)+' €</b> restants peuvent être placés au prochain versement.' +
+      '</div>';
+    }
+
+    html += '<div style="font-size:11px;line-height:1.4;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">' +
+      '<div style="color:var(--eu);">🟢 <b>Créneau idéal :</b> '+m.horaire+'</div>' +
+      '<div style="color:var(--red);margin-top:2px;">⚠️ <b>À éviter :</b> '+m.eviter+'</div>' +
     '</div>';
+
   } else {
-    html += '<div style="color:var(--red);font-size:13px;">⚠️ Budget trop bas.</div>';
+    html += '<div style="color:var(--red);font-size:13px;">⚠️ Budget insuffisant pour cet ETF (cours : '+p.toFixed(2)+' €).</div>';
   }
+
   html += '</div>';
   container.innerHTML = html;
 }
