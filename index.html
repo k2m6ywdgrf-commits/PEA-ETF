@@ -145,8 +145,9 @@ button:active{transform:scale(0.97);opacity:0.9;}
 <div class="main-nav-container">
   <button id="btn-main-home" class="btn-nav-main active" onclick="switchUnivers('home')">🏠 Accueil Global</button>
   <div class="main-nav-row">
-    <button id="btn-main-pea" class="btn-nav-main" onclick="switchUnivers('pea')">📈 Compte PEA</button>
-    <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 Compte CTO</button>
+    <button id="btn-main-pea" class="btn-nav-main" onclick="switchUnivers('pea')">📈 PEA</button>
+    <button id="btn-main-cto" class="btn-nav-main" onclick="switchUnivers('cto')">💼 CTO</button>
+    <button id="btn-main-cours" class="btn-nav-main" onclick="switchUnivers('cours')">💱 Cours</button>
   </div>
 </div>
 
@@ -188,15 +189,25 @@ button:active{transform:scale(0.97);opacity:0.9;}
     <div id="snapshots-list-container" style="margin-top:10px;"></div>
   </div>
 
-  <div class="card">
+  <div class="card" style="background:rgba(15,19,34,0.6);border-color:rgba(255,255,255,0.06);">
     <h2>⚖️ Répartition Macro du Capital</h2>
-    <div class="bar-container" style="height: 18px; border-radius: 6px;">
-      <div id="macro-bar-pea" class="bar" style="background: linear-gradient(to right, #10b981, #059669); width: 50%;"></div>
-      <div id="macro-bar-cto" class="bar" style="background: linear-gradient(to right, #0ea5e9, #0284c7); width: 50%;"></div>
+    <div style="position:relative;height:22px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);margin:10px 0;">
+      <div id="macro-bar-pea" style="position:absolute;left:0;top:0;height:100%;width:50%;background:linear-gradient(to right,rgba(16,185,129,0.55),rgba(5,150,105,0.45));box-shadow:0 0 12px rgba(16,185,129,0.3);border-radius:10px 0 0 10px;transition:width 0.6s ease;"></div>
+      <div id="macro-bar-cto" style="position:absolute;right:0;top:0;height:100%;width:50%;background:linear-gradient(to left,rgba(14,165,233,0.55),rgba(2,132,199,0.45));box-shadow:0 0 12px rgba(14,165,233,0.3);border-radius:0 10px 10px 0;transition:width 0.6s ease;"></div>
     </div>
-    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
-      <span style="color: var(--eu);">🟢 PEA : <span id="macro-txt-pea">0%</span></span>
-      <span style="color: var(--usa);">🔵 CTO : <span id="macro-txt-cto">0%</span></span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(16,185,129,0.8);box-shadow:0 0 6px rgba(16,185,129,0.5);"></div>
+        <span style="font-size:12px;font-weight:600;color:var(--eu);">PEA</span>
+        <span style="font-size:15px;font-weight:800;color:white;" id="macro-txt-pea">0%</span>
+        <span style="font-size:11px;color:var(--text-muted);" id="macro-val-pea"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="font-size:11px;color:var(--text-muted);" id="macro-val-cto"></span>
+        <span style="font-size:15px;font-weight:800;color:white;" id="macro-txt-cto">0%</span>
+        <span style="font-size:12px;font-weight:600;color:var(--usa);">CTO</span>
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(14,165,233,0.8);box-shadow:0 0 6px rgba(14,165,233,0.5);"></div>
+      </div>
     </div>
   </div>
 
@@ -234,27 +245,12 @@ button:active{transform:scale(0.97);opacity:0.9;}
 
   <div id="pea-portefeuille" class="section active">
     <div class="card">
-      <h2>1. Valeurs des Cours (€)</h2>
-      <div class="row"><label><span class="tag tag-usa">S&P 500</span></label><input id="p_usa" type="number" inputmode="decimal" pattern="[0-9]*" value="56.34" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-      <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="p_eu" type="number" inputmode="decimal" pattern="[0-9]*" value="20.47" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-      <div class="row"><label><span class="tag tag-em">Emergents</span></label><input id="p_em" type="number" inputmode="decimal" pattern="[0-9]*" value="7.75" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-    </div>
-    <div class="card" style="background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(0,0,0,0.3)); border-color: rgba(99,102,241,0.25);">
-      <h2 style="color:#a5b4fc;">📸 Enregistrer la situation du jour</h2>
-      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
-        Met à jour les cours ci-dessus, puis clique ici pour créer un point sur le graphique d'évolution. Les cours CTO sont pris tels qu'ils sont saisis dans l'onglet Positions.
-      </div>
-      <button class="btn-gray" style="background:rgba(99,102,241,0.2); color:#a5b4fc; font-weight:700; border:1px solid rgba(99,102,241,0.3);" onclick="figerSoldeGlobal()">📊 Valider les cours &amp; enregistrer dans le suivi</button>
-      <div id="snapshot-confirm-msg" style="display:none; margin-top:10px; font-size:12px; color:var(--eu); font-weight:600;">✅ Point enregistré avec succès !</div>
-    </div>
-
-    <div class="card">
-      <h2>2. Vos Positions (Calculées)</h2>
+      <h2>Vos Positions (Calculées)</h2>
       <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
       <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
       <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
       <hr class="divider">
-      <h2>3. Nouveau versement</h2>
+      <h2>Nouveau versement</h2>
       <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
       <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
     </div>
@@ -358,11 +354,7 @@ button:active{transform:scale(0.97);opacity:0.9;}
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
     <div class="card">
-      <h2>1. Valeurs des Cours CTO (€)</h2>
-      <div id="cto-cours-inputs-container"></div>
-    </div>
-    <div class="card">
-      <h2>2. Positions Actuelles (Stock-Picking)</h2>
+      <h2>Positions Actuelles (Stock-Picking)</h2>
       <div style="overflow-x:auto;">
         <table class="cto-table">
           <thead>
@@ -428,6 +420,34 @@ button:active{transform:scale(0.97);opacity:0.9;}
       <input type="file" id="global_json_input_cto" accept=".json" style="display:none;" onchange="importJSON(this)">
       <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
     </div>
+  </div>
+</div>
+
+<div id="univers-cours" class="universe-block">
+  <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(0,0,0,0.4));border-color:rgba(99,102,241,0.3);text-align:center;padding:20px 14px;">
+    <div style="font-size:13px;color:#a5b4fc;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💱 Mise à jour des cours</div>
+    <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Renseignez les cours actuels de vos ETF et titres puis enregistrez un point de suivi.</div>
+  </div>
+
+  <div class="card">
+    <h2>📈 ETF PEA</h2>
+    <div class="row"><label><span class="tag tag-usa">S&amp;P 500</span></label><input id="cours_usa" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
+    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="cours_eu" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
+    <div class="row"><label><span class="tag tag-em">Émergents</span></label><input id="cours_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
+  </div>
+
+  <div class="card">
+    <h2>💼 Titres CTO</h2>
+    <div id="cours-cto-inputs-container">
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">Aucun titre en portefeuille.</div>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(0,0,0,0.3));border-color:rgba(99,102,241,0.25);">
+    <h2 style="color:#a5b4fc;">📸 Snapshot</h2>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Enregistre la situation actuelle sur le graphique d'évolution de l'accueil.</div>
+    <button class="btn-gray" style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;border:1px solid rgba(99,102,241,0.3);" onclick="figerSoldeGlobal()">📊 Enregistrer dans le suivi</button>
+    <div id="snapshot-confirm-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--eu);font-weight:600;">✅ Point enregistré !</div>
   </div>
 </div>
 
@@ -516,15 +536,19 @@ function switchUnivers(u) {
   document.getElementById('btn-main-home').classList.toggle('active', u === 'home');
   document.getElementById('btn-main-pea').classList.toggle('active', u === 'pea');
   document.getElementById('btn-main-cto').classList.toggle('active', u === 'cto');
+  document.getElementById('btn-main-cours').classList.toggle('active', u === 'cours');
   document.getElementById('univers-home').style.display = (u === 'home') ? 'block' : 'none';
   document.getElementById('univers-pea').style.display = (u === 'pea') ? 'block' : 'none';
   document.getElementById('univers-cto').style.display = (u === 'cto') ? 'block' : 'none';
+  document.getElementById('univers-cours').style.display = (u === 'cours') ? 'block' : 'none';
   if(u === 'home') {
     calculerEtAfficherAccueilGlobal();
   } else if(u === 'pea') {
     showSubTab('pea', 'portefeuille');
-  } else {
+  } else if(u === 'cto') {
     showSubTab('cto', 'portefeuille');
+  } else if(u === 'cours') {
+    renderCoursPage();
   }
 }
 
@@ -676,6 +700,8 @@ function calculerEtAfficherAccueilGlobal() {
   document.getElementById('macro-bar-cto').style.width = pctCto + '%';
   document.getElementById('macro-txt-pea').textContent = (totalBrutGlobal > 0 ? pctPea.toFixed(1) : '0') + '%';
   document.getElementById('macro-txt-cto').textContent = (totalBrutGlobal > 0 ? pctCto.toFixed(1) : '0') + '%';
+  document.getElementById('macro-val-pea').textContent = c.peaBrut > 0 ? c.peaBrut.toFixed(0) + ' €' : '';
+  document.getElementById('macro-val-cto').textContent = c.ctoBrut > 0 ? c.ctoBrut.toFixed(0) + ' €' : '';
 
   renderGlobalTrendChartCurve();
 }
@@ -1141,7 +1167,6 @@ function renderHistPEA() {
 }
 
 function saveInputs() {
-  appData.pea.prix = { usa: +document.getElementById('p_usa').value||0, eu: +document.getElementById('p_eu').value||0, em: +document.getElementById('p_em').value||0 };
   appData.pea.settings.budget = document.getElementById('budget').value;
   saveData(appData);
 }
@@ -1267,6 +1292,43 @@ function updateCtoCours(name, value) {
   appData.cto.cours[name] = parseFloat(value) || 0;
   saveData(appData);
   renderCTOUniverseOnly();
+}
+
+// Sauvegarde des cours ETF PEA depuis l'onglet Cours
+function saveCoursFromPage() {
+  var u = +document.getElementById('cours_usa').value || 0;
+  var e = +document.getElementById('cours_eu').value || 0;
+  var m = +document.getElementById('cours_em').value || 0;
+  if(u > 0) appData.pea.prix.usa = u;
+  if(e > 0) appData.pea.prix.eu = e;
+  if(m > 0) appData.pea.prix.em = m;
+  saveData(appData);
+  calculerOrdreOptimal();
+}
+
+// Rendu de l'onglet Cours centralisé
+function renderCoursPage() {
+  document.getElementById('cours_usa').value = appData.pea.prix.usa || '';
+  document.getElementById('cours_eu').value = appData.pea.prix.eu || '';
+  document.getElementById('cours_em').value = appData.pea.prix.em || '';
+
+  var positions = calculerPositionsCTO();
+  var container = document.getElementById('cours-cto-inputs-container');
+  var actifs = Object.keys(positions).filter(function(n) { return positions[n].parts > 0; });
+  if(actifs.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">Aucun titre en portefeuille.</div>';
+    return;
+  }
+  var html = '';
+  actifs.forEach(function(nom) {
+    var cours = appData.cto.cours[nom] || '';
+    html += '<div class="row">'
+      + '<label><span class="tag tag-cto">' + nom + '</span></label>'
+      + '<input type="number" inputmode="decimal" pattern="[0-9]*" value="' + cours + '"'
+      + ' oninput="updateCtoCours(\'" + nom + "\', this.value)">'
+      + '</div>';
+  });
+  container.innerHTML = html;
 }
 
 function saveCtoSettings() {
@@ -1464,9 +1526,7 @@ function resetGlobal() {
 // INIT
 // ══════════════════════════════════════════════
 function init() {
-  document.getElementById('p_usa').value = appData.pea.prix.usa;
-  document.getElementById('p_eu').value = appData.pea.prix.eu;
-  document.getElementById('p_em').value = appData.pea.prix.em;
+  // cours initialisés dans renderCoursPage()
   document.getElementById('budget').value = appData.pea.settings.budget || '';
   document.getElementById('c_usa').value = appData.pea.cibles.usa;
   document.getElementById('c_eu').value = appData.pea.cibles.eu;
