@@ -898,106 +898,122 @@ function calculerOrdreOptimal() {
   var container = document.getElementById('suggestion-ordre-container');
   if(budget <= 0) { container.innerHTML = ''; return; }
 
-  var prix = { usa: appData.pea.prix.usa, eu: appData.pea.prix.eu, em: appData.pea.prix.em };
-  var valsActuelles = { usa: q.usa*prix.usa, eu: q.eu*prix.eu, em: q.em*prix.em };
-  var totalActuel = valsActuelles.usa + valsActuelles.eu + valsActuelles.em;
-  var nouveauTotal = totalActuel + budget; // total après versement
-
+  var prix  = { usa: appData.pea.prix.usa, eu: appData.pea.prix.eu, em: appData.pea.prix.em };
+  var vals  = { usa: q.usa*prix.usa, eu: q.eu*prix.eu, em: q.em*prix.em };
+  var totalActuel = vals.usa + vals.eu + vals.em;
+  var frais  = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
   var cibles = appData.pea.cibles;
-  var frais = appData.pea.settings.frais_courtage !== undefined ? appData.pea.settings.frais_courtage : 1.00;
-
-  var meta = {
-    usa: { nom: 'Amundi S&P 500',  label: 'tag-usa', horaire: '15h30 - 17h00',   eviter: 'Matinée, 09h-10h et 17h-17h30' },
-    eu:  { nom: 'BNP Stoxx 600',   label: 'tag-eu',  horaire: '10h00 - 17h00',   eviter: '09h-10h et 17h-17h30' },
-    em:  { nom: 'Amundi Émergents', label: 'tag-em',  horaire: '10h00 - 17h00',   eviter: '09h-10h et 17h-17h30' }
+  var tags   = ['usa','eu','em'];
+  var meta   = {
+    usa: { nom:'Amundi S\u0026P 500',   label:'tag-usa', horaire:'15h30 - 17h00', eviter:'Matin\u00e9e, 09h-10h et 17h-17h30' },
+    eu:  { nom:'BNP Stoxx 600',    label:'tag-eu',  horaire:'10h00 - 17h00', eviter:'09h-10h et 17h-17h30' },
+    em:  { nom:'Amundi \u00c9mergents', label:'tag-em',  horaire:'10h00 - 17h00', eviter:'09h-10h et 17h-17h30' }
   };
 
-  // ── Sélection de l'ETF : le plus sous-pondéré par rapport au nouveau total ──
-  var meilleurTag = 'usa', meilleurDelta = -Infinity;
-  ['usa','eu','em'].forEach(function(tag) {
-    var valCible = nouveauTotal * (cibles[tag] / 100);
-    var manque = valCible - valsActuelles[tag]; // € manquants pour atteindre la cible
-    if(manque > meilleurDelta) { meilleurDelta = manque; meilleurTag = tag; }
-  });
+  // 1. ETF cible : le plus sous-pond\u00e9r\u00e9, SANS condition d'affordabilit\u00e9
+  var meilleurTag = tags.slice().sort(function(a, b) {
+    var pA = totalActuel > 0 ? (vals[a] / totalActuel * 100) : 0;
+    var pB = totalActuel > 0 ? (vals[b] / totalActuel * 100) : 0;
+    return (cibles[b] - pB) - (cibles[a] - pA);
+  })[0];
 
   var p = prix[meilleurTag];
+  var v = vals[meilleurTag];
+  var c = cibles[meilleurTag] / 100;
   var m = meta[meilleurTag];
+  var pctActuelle = totalActuel > 0 ? (v / totalActuel * 100) : 0;
+  var ecartActuel = cibles[meilleurTag] - pctActuelle;
 
-  // ── Calcul du plafond : parts nécessaires pour atteindre exactement la cible ──
-  var valCibleEtf = nouveauTotal * (cibles[meilleurTag] / 100);
-  var deltaEuros = valCibleEtf - valsActuelles[meilleurTag];
-  var partsMaxCible  = deltaEuros > 0 ? Math.floor(deltaEuros / p) : 0;
-  var partsMaxBudget = budget > frais ? Math.floor((budget - frais) / p) : 0;
+  var html = '<div style="border-top:3px solid var(--usa);background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid var(--glass-border);">'
+    + '<h2 style="color:#7dd3fc;margin-bottom:10px;">\uD83C\uDFAF Suggestion d\'ordre unique</h2>'
+    + '<div style="margin:8px 0;font-size:15px;">ETF cible\u00a0: <span class="tag ' + m.label + '">' + m.nom + '</span>'
+    + '<span style="float:right;font-size:12px;color:' + (ecartActuel > 0 ? 'var(--em)' : 'var(--red)') + ';">'
+    + (ecartActuel > 0 ? 'sous-pond\u00e9r\u00e9 ' : 'sur-pond\u00e9r\u00e9 ') + (ecartActuel > 0 ? '+' : '') + ecartActuel.toFixed(1) + '%'
+    + '</span></div>';
 
-  // On prend le minimum : pas la peine d'acheter plus que ce qu'il faut
+  // 2. Budget insuffisant : message bloqu\u00e9, pas de fallback
+  if(budget < p + frais) {
+    html += '<div style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.25);border-radius:8px;padding:10px;margin-top:8px;font-size:13px;line-height:1.6;">'
+      + '<span style="color:var(--red);font-weight:700;">\u26a0\ufe0f Budget insuffisant</span><br>'
+      + '<span style="color:var(--text-muted);">Il vous faut <b style="color:white;">' + (p + frais).toFixed(2) + ' \u20ac</b> minimum.<br>'
+      + 'Budget actuel\u00a0: ' + budget.toFixed(2) + ' \u20ac \u00b7 Manque\u00a0: <b style="color:var(--red);">' + (p + frais - budget).toFixed(2) + ' \u20ac</b></span>'
+      + '</div></div>';
+    container.innerHTML = html;
+    return;
+  }
+
+  // 3. Plafond : (v + n*p) / (T + n*p) <= c  =>  n <= (c*T - v) / (p*(1-c))
+  var partsMaxBudget = Math.floor((budget - frais) / p);
+  var partsMaxCible;
+  if(totalActuel === 0) {
+    partsMaxCible = Math.max(1, Math.floor(budget * c / p));
+  } else {
+    var num = c * totalActuel - v;
+    var den = p * (1 - c);
+    if(num <= 0) {
+      partsMaxCible = 1;
+    } else {
+      partsMaxCible = Math.floor(num / den);
+      if(partsMaxCible === 0) partsMaxCible = 1;
+    }
+  }
+
   var nParts = Math.min(partsMaxCible, partsMaxBudget);
-  var plafonnéParCible = partsMaxCible < partsMaxBudget && partsMaxCible > 0;
-
-  var cout = (nParts * p) + frais;
+  var plafonne = partsMaxCible < partsMaxBudget;
+  var cout = nParts * p + frais;
   var reste = budget - cout;
 
-  // ── Allocation projetée après achat ──
-  var valsApres = Object.assign({}, valsActuelles);
-  valsApres[meilleurTag] += nParts * p;
-  var totalApres = valsApres.usa + valsApres.eu + valsApres.em;
-  function pct(tag) { return totalApres > 0 ? (valsApres[tag] / totalApres * 100).toFixed(1) : '0.0'; }
+  // 4. Allocation projet\u00e9e
+  var vA = { usa: vals.usa, eu: vals.eu, em: vals.em };
+  vA[meilleurTag] += nParts * p;
+  var tA = vA.usa + vA.eu + vA.em;
+  function pct(tag) { return tA > 0 ? (vA[tag] / tA * 100).toFixed(1) : '0.0'; }
+  function ecouleur(tag) {
+    var e = cibles[tag] - parseFloat(pct(tag));
+    var col = Math.abs(e) < 2 ? 'var(--eu)' : Math.abs(e) < 5 ? 'var(--em)' : 'var(--red)';
+    return '<span style="color:' + col + ';font-size:10px;">' + (e > 0 ? '+' : '') + e.toFixed(1) + '%</span>';
+  }
 
-  // ── Prochain ETF à acheter avec le reste (si budget plafonné) ──
-  var prochainTag = null, prochainDelta = -Infinity;
-  if(plafonnéParCible && reste > frais) {
-    ['usa','eu','em'].forEach(function(tag) {
-      if(tag === meilleurTag) return;
-      var valCibleApres = totalApres * (cibles[tag] / 100);
-      var manqueApres = valCibleApres - valsApres[tag];
-      if(manqueApres > prochainDelta) { prochainDelta = manqueApres; prochainTag = tag; }
+  // 5. Prochain ETF si plafonn\u00e9 par la cible
+  var prochainTag = null, prochainEcart = -Infinity;
+  if(plafonne && reste > frais) {
+    tags.forEach(function(tag) {
+      if(tag === meilleurTag || prix[tag] > reste - frais) return;
+      var e = cibles[tag] - (tA > 0 ? vA[tag] / tA * 100 : 0);
+      if(e > prochainEcart) { prochainEcart = e; prochainTag = tag; }
     });
   }
 
-  var html = '<div style="border-top:3px solid var(--usa);background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid var(--glass-border);">' +
-    '<h2 style="color:#7dd3fc;margin-bottom:10px;">🎯 Suggestion d\'ordre unique</h2>';
+  // 6. Affichage
+  html +=
+    '<div style="font-size:13px;font-weight:600;margin:10px 0 4px;">\u00d7 <b>' + nParts + '</b> part(s) \u00b7 ' + (nParts * p).toFixed(2) + ' \u20ac + ' + frais.toFixed(2) + ' \u20ac frais</div>'
+    + '<div style="font-size:13px;display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:10px;">'
+    +   '<span>Total ordre\u00a0: <b>' + cout.toFixed(2) + ' \u20ac</b></span>'
+    +   '<span style="color:' + (plafonne ? 'var(--em)' : 'var(--text-muted)') + ';">Reste\u00a0: <b>' + reste.toFixed(2) + ' \u20ac</b></span>'
+    + '</div>'
+    + '<div style="font-size:11px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;margin-bottom:10px;">'
+    +   '<div style="color:var(--text-muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Allocation apr\u00e8s achat</div>'
+    +   '<div style="display:flex;justify-content:space-between;text-align:center;">'
+    +     '<div><div style="color:var(--usa);font-weight:700;">' + pct('usa') + '%</div>' + ecouleur('usa') + '<div style="color:rgba(255,255,255,0.2);font-size:9px;">/' + cibles.usa + '%</div></div>'
+    +     '<div><div style="color:var(--eu);font-weight:700;">' + pct('eu') + '%</div>' + ecouleur('eu') + '<div style="color:rgba(255,255,255,0.2);font-size:9px;">/' + cibles.eu + '%</div></div>'
+    +     '<div><div style="color:var(--em);font-weight:700;">' + pct('em') + '%</div>' + ecouleur('em') + '<div style="color:rgba(255,255,255,0.2);font-size:9px;">/' + cibles.em + '%</div></div>'
+    +   '</div>'
+    + '</div>';
 
-  if(nParts > 0) {
-    html +=
-      '<div style="margin:8px 0;font-size:15px;">Acheter : <span class="tag '+m.label+'">'+m.nom+'</span> × <b>'+nParts+'</b> part(s)</div>' +
-      '<div style="color:var(--text-muted);font-size:12px;margin-bottom:10px;">'+(nParts*p).toFixed(2)+' € + '+frais.toFixed(2)+' € frais</div>' +
-
-      // Ligne coût / reste
-      '<div style="font-size:13px;display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:10px;">' +
-        '<span>Total ordre : <b>'+cout.toFixed(2)+' €</b></span>' +
-        '<span style="color:'+(plafonnéParCible?'var(--em)':'var(--text-muted)')+';">Reste : <b>'+reste.toFixed(2)+' €</b></span>' +
-      '</div>' +
-
-      // Allocation projetée
-      '<div style="font-size:11px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;margin-bottom:10px;">' +
-        '<div style="color:var(--text-muted);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Allocation après achat</div>' +
-        '<div style="display:flex;justify-content:space-between;">' +
-          '<span style="color:var(--usa);">S&P500 <b>'+pct('usa')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.usa+'%</small></span>' +
-          '<span style="color:var(--eu);">Stoxx <b>'+pct('eu')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.eu+'%</small></span>' +
-          '<span style="color:var(--em);">EM <b>'+pct('em')+'%</b> <small style="color:rgba(255,255,255,0.3);">/'+cibles.em+'%</small></span>' +
-        '</div>' +
-      '</div>';
-
-    // Message si plafonné par la cible
-    if(plafonnéParCible && prochainTag) {
-      html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);">' +
-        '💡 Cible atteinte pour cet ETF. Avec les <b>'+reste.toFixed(2)+' €</b> restants, prochain ordre conseillé : <b>'+meta[prochainTag].nom+'</b>' +
-      '</div>';
-    } else if(plafonnéParCible) {
-      html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);">' +
-        '💡 Cible atteinte. Les <b>'+reste.toFixed(2)+' €</b> restants peuvent être placés au prochain versement.' +
-      '</div>';
-    }
-
-    html += '<div style="font-size:11px;line-height:1.4;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">' +
-      '<div style="color:var(--eu);">🟢 <b>Créneau idéal :</b> '+m.horaire+'</div>' +
-      '<div style="color:var(--red);margin-top:2px;">⚠️ <b>À éviter :</b> '+m.eviter+'</div>' +
-    '</div>';
-
-  } else {
-    html += '<div style="color:var(--red);font-size:13px;">⚠️ Budget insuffisant pour cet ETF (cours : '+p.toFixed(2)+' €).</div>';
+  if(plafonne) {
+    html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);line-height:1.5;">'
+      + '\ud83d\udca1 Cible atteinte pour cet ETF. '
+      + (prochainTag
+          ? 'Avec les <b>' + reste.toFixed(2) + ' \u20ac</b> restants \u2192 prochain ordre\u00a0: <b>' + meta[prochainTag].nom + '</b>'
+          : 'Les <b>' + reste.toFixed(2) + ' \u20ac</b> restants au prochain versement.')
+      + '</div>';
   }
 
-  html += '</div>';
+  html += '<div style="font-size:11px;line-height:1.5;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px;">'
+    + '<div style="color:var(--eu);">\ud83d\udfe2 <b>Cr\u00e9neau id\u00e9al\u00a0:</b> ' + m.horaire + '</div>'
+    + '<div style="color:var(--red);margin-top:2px;">\u26a0\ufe0f <b>\u00c0 \u00e9viter\u00a0:</b> ' + m.eviter + '</div>'
+    + '</div></div>';
+
   container.innerHTML = html;
 }
 
