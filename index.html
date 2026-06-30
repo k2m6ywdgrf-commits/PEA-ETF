@@ -6,7 +6,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mon Patrimoine">
+<meta name="theme-color" content="#050508">
 <title>Mon Assistant Patrimoine Global</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -531,6 +535,30 @@ function showConfirm(msg, onYes) {
   m.classList.add('show');
 }
 
+// ── Compteur animé (count-up avec easing) ──
+function animateCounter(el, newVal, opts) {
+  if(!el) return;
+  opts = opts || {};
+  var suffix = opts.suffix !== undefined ? opts.suffix : ' €';
+  var decimals = opts.decimals !== undefined ? opts.decimals : 2;
+  var showSign = !!opts.showSign;
+  function format(v) { return (showSign && v >= 0 ? '+' : '') + v.toFixed(decimals) + suffix; }
+  var prevVal = parseFloat(el.getAttribute('data-raw-val'));
+  var firstRender = isNaN(prevVal);
+  el.setAttribute('data-raw-val', newVal);
+  if(firstRender || prevVal === newVal) { el.textContent = format(newVal); return; }
+  var start = null, duration = 650;
+  function step(ts) {
+    if(!start) start = ts;
+    var p = Math.min((ts - start) / duration, 1);
+    var eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = format(prevVal + (newVal - prevVal) * eased);
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = format(newVal);
+  }
+  requestAnimationFrame(step);
+}
+
 // ── Smooth SVG curve (Catmull-Rom → Cubic Bezier) ──
 function smoothPath(pts) {
   if(!pts || pts.length < 2) return '';
@@ -646,6 +674,29 @@ function switchUnivers(u) {
   }
 }
 
+// ── Navigation par swipe tactile ──
+(function() {
+  var startX = 0, startY = 0, startTime = 0;
+  var order = ['home', 'pea', 'cto', 'cours'];
+  document.addEventListener('touchstart', function(e) {
+    if(e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    if(!e.changedTouches || e.changedTouches.length !== 1) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    var dy = e.changedTouches[0].clientY - startY;
+    if(Date.now() - startTime > 600) return;
+    if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    var idx = order.indexOf(universActuel);
+    if(idx === -1) return;
+    if(dx < 0 && idx < order.length - 1) switchUnivers(order[idx + 1]);
+    else if(dx > 0 && idx > 0) switchUnivers(order[idx - 1]);
+  }, { passive: true });
+})();
+
 function showSubTab(univ, section) {
   var tabs = univ === 'pea' ? ['portefeuille','analyse','historique','config'] : ['portefeuille','historique','config'];
   tabs.forEach(function(t) {
@@ -753,15 +804,15 @@ function calculerEtAfficherAccueilGlobal() {
   var totalDividendes = c.peaDiv + c.ctoDiv;
   var totalFrais = c.peaFrais + c.ctoFrais;
 
-  document.getElementById('global-total-net').textContent = patrimoineNetGlobal.toFixed(2) + ' €';
-  document.getElementById('global-dividendes-total').textContent = totalDividendes.toFixed(2) + ' €';
-  document.getElementById('global-fees-total').textContent = totalFrais.toFixed(2) + ' €';
+  animateCounter(document.getElementById('global-total-net'), patrimoineNetGlobal);
+  animateCounter(document.getElementById('global-dividendes-total'), totalDividendes);
+  animateCounter(document.getElementById('global-fees-total'), totalFrais);
 
   var gainEl = document.getElementById('global-gain-val');
-  gainEl.textContent = (totalGainGlobal >= 0 ? '+' : '') + totalGainGlobal.toFixed(2) + ' €';
+  animateCounter(gainEl, totalGainGlobal, { showSign: true });
   gainEl.style.color = totalGainGlobal >= 0 ? 'var(--eu)' : 'var(--red)';
 
-  document.getElementById('global-investi-val').textContent = Math.max(0, totalInvestiGlobal).toFixed(2) + ' €';
+  animateCounter(document.getElementById('global-investi-val'), Math.max(0, totalInvestiGlobal));
 
   // CAGR
   var cagrData = calculerCAGR(totalBrutGlobal, totalInvestiGlobal);
@@ -775,16 +826,16 @@ function calculerEtAfficherAccueilGlobal() {
   }
 
   // Widgets PEA / CTO
-  document.getElementById('widget-pea-val').textContent = c.peaBrut.toFixed(2) + ' €';
-  document.getElementById('widget-pea-investi').textContent = Math.max(0, c.peaInvesti).toFixed(2) + ' €';
+  animateCounter(document.getElementById('widget-pea-val'), c.peaBrut);
+  animateCounter(document.getElementById('widget-pea-investi'), Math.max(0, c.peaInvesti));
   var badgePea = document.getElementById('widget-pea-perf');
-  badgePea.textContent = (c.peaGain >= 0 ? '+' : '') + c.peaGain.toFixed(2) + ' €';
+  animateCounter(badgePea, c.peaGain, { showSign: true });
   badgePea.className = 'widget-perf ' + (c.peaGain >= 0 ? 'perf-up' : 'perf-down');
 
-  document.getElementById('widget-cto-val').textContent = c.ctoBrut.toFixed(2) + ' €';
-  document.getElementById('widget-cto-investi').textContent = Math.max(0, c.ctoInvesti).toFixed(2) + ' €';
+  animateCounter(document.getElementById('widget-cto-val'), c.ctoBrut);
+  animateCounter(document.getElementById('widget-cto-investi'), Math.max(0, c.ctoInvesti));
   var badgeCto = document.getElementById('widget-cto-perf');
-  badgeCto.textContent = (c.ctoGain >= 0 ? '+' : '') + c.ctoGain.toFixed(2) + ' €';
+  animateCounter(badgeCto, c.ctoGain, { showSign: true });
   badgeCto.className = 'widget-perf ' + (c.ctoGain >= 0 ? 'perf-up' : 'perf-down');
 
   // Barre macro
@@ -1634,6 +1685,13 @@ function init() {
   calculerEtAfficherAccueilGlobal();
 }
 init();
+
+// ── PWA : enregistrement du service worker ──
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  });
+}
 </script>
 </body>
 </html>
