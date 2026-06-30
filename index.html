@@ -379,28 +379,16 @@ button:active{transform:scale(.96);opacity:.85;}
 <!-- ══════════════ PEA ══════════════ -->
 <div id="univers-pea" class="universe-block">
   <div class="tabs">
-    <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Saisie</button>
-    <button class="tab" id="subtab-pea-a" onclick="showSubTab('pea', 'analyse')">Tableau de Bord</button>
+    <button class="tab active" id="subtab-pea-p" onclick="showSubTab('pea', 'portefeuille')">Positions</button>
     <button class="tab" id="subtab-pea-h" onclick="showSubTab('pea', 'historique')">Mouvements</button>
     <button class="tab" id="subtab-pea-c" onclick="showSubTab('pea', 'config')">Paramètres</button>
   </div>
 
   <div id="pea-portefeuille" class="section active">
-    <div class="card">
-      <h2>Vos Positions (Calculées)</h2>
-      <div class="bento2-row">
-        <div class="bento2-cell" data-c="usa"><div class="bento2-clbl">S&amp;P 500</div><div class="bento2-cval" id="lbl_usa_q">0</div></div>
-        <div class="bento2-cell" data-c="eu"><div class="bento2-clbl">Stoxx 600</div><div class="bento2-cval" id="lbl_eu_q">0</div></div>
-        <div class="bento2-cell" data-c="gold"><div class="bento2-clbl">Émergents</div><div class="bento2-cval" id="lbl_em_q">0</div></div>
-      </div>
-      <hr class="divider">
-      <h2>Nouveau versement</h2>
-      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
-      <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
-    </div>
-  </div>
+    <div id="pea-dashboard-container"></div>
+    <h2 style="margin:18px 4px 10px;">Positions Actuelles</h2>
+    <div id="pea-positions-body"></div>
 
-  <div id="pea-analyse" class="section">
     <div class="card">
       <h2>Structure de l'allocation</h2>
       <div class="donut-wrapper">
@@ -428,7 +416,12 @@ button:active{transform:scale(.96);opacity:.85;}
       </div>
       <div class="alert-badge" id="alloc-alert"></div>
     </div>
-    <div id="stats-container"></div>
+
+    <div class="card">
+      <h2>Nouveau versement</h2>
+      <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
+      <div id="suggestion-ordre-container" style="margin-top:14px;"></div>
+    </div>
   </div>
 
   <div id="pea-historique" class="section">
@@ -918,7 +911,7 @@ function switchUnivers(u, dir) {
 })();
 
 function showSubTab(univ, section) {
-  var tabs = univ === 'pea' ? ['portefeuille','analyse','historique','config'] : ['portefeuille','historique','config'];
+  var tabs = ['portefeuille','historique','config'];
   tabs.forEach(function(t) {
     var el = document.getElementById(univ + '-' + t);
     if(el) el.classList.toggle('active', t === section);
@@ -926,8 +919,7 @@ function showSubTab(univ, section) {
     if(btn) btn.classList.toggle('active', t === section);
   });
   if(univ === 'pea') {
-    if(section === 'portefeuille') { recalculerQuantitesPEA(); calculerOrdreOptimal(); }
-    if(section === 'analyse') { renderStatsPEA(); calcPEA(); }
+    if(section === 'portefeuille') { renderPositionsPEA(); renderStatsPEA(); calcPEA(); calculerOrdreOptimal(); }
     if(section === 'historique') { renderHistPEA(); initDatesFormulaires(); }
     if(section === 'config') updateCibleTotal();
   } else {
@@ -1292,10 +1284,60 @@ function recalculerQuantitesPEA() {
     else if (m.type === 'vente') q[m.tag] -= parseFloat(m.nb || 0);
   });
   q.usa = Math.max(0, q.usa); q.eu = Math.max(0, q.eu); q.em = Math.max(0, q.em);
-  document.getElementById('lbl_usa_q').textContent = q.usa;
-  document.getElementById('lbl_eu_q').textContent = q.eu;
-  document.getElementById('lbl_em_q').textContent = q.em;
   return q;
+}
+
+function calculerPositionsPEAParTag() {
+  var pos = { usa: { parts: 0, totalCost: 0 }, eu: { parts: 0, totalCost: 0 }, em: { parts: 0, totalCost: 0 } };
+  appData.pea.historique.slice().reverse().forEach(function(m) {
+    var tag = m.tag;
+    if(!tag || !pos[tag] || m.type === 'dividende') return;
+    if(m.type === 'achat' || !m.type) {
+      pos[tag].parts += parseFloat(m.nb || 0);
+      pos[tag].totalCost += parseFloat(m.total || 0);
+    } else if(m.type === 'vente') {
+      var currentPru = pos[tag].parts > 0 ? (pos[tag].totalCost / pos[tag].parts) : 0;
+      pos[tag].parts -= parseFloat(m.nb || 0);
+      pos[tag].totalCost -= (currentPru * parseFloat(m.nb || 0));
+    }
+  });
+  return pos;
+}
+
+function renderPositionsPEA() {
+  var container = document.getElementById('pea-positions-body');
+  if(!container) return;
+  var pos = calculerPositionsPEAParTag();
+  var meta = {
+    usa: { nom: 'Amundi S&P 500', icon: '🇺🇸', color: 'usa' },
+    eu:  { nom: 'BNP Stoxx 600', icon: '🇪🇺', color: 'eu' },
+    em:  { nom: 'Amundi Émergents', icon: '🌍', color: 'em' }
+  };
+  var html = '';
+  ['usa','eu','em'].forEach(function(tag) {
+    var p = pos[tag];
+    if(p.parts <= 0) return;
+    var m = meta[tag];
+    var cours = appData.pea.prix[tag] || 0;
+    var valuation = p.parts * cours;
+    var pru = p.parts > 0 ? (p.totalCost / p.parts) : 0;
+    var pvLatente = valuation - p.totalCost;
+    html += '<div class="asset-card" style="cursor:default;">' +
+        '<div class="asset-top">' +
+          '<div class="asset-icon pea" style="font-size:19px;">'+m.icon+'</div>' +
+          '<div class="asset-info">' +
+            '<div class="asset-name">'+m.nom+'</div>' +
+            '<div class="asset-sub">'+p.parts+' parts · <span class="info-tag" onclick="event.stopPropagation();showInfo(\'pru\')">PRU<svg class="info-ico" viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.15" fill="currentColor"/></svg></span> '+fmtMontant(pru)+' €</div>' +
+          '</div>' +
+          '<span class="asset-perf '+(pvLatente>=0?'perf-up':'perf-down')+'">'+(pvLatente>=0?'+':'')+fmtMontant(pvLatente)+' €</span>' +
+        '</div>' +
+        '<div class="asset-bottom">' +
+          '<span>Cours actuel</span><b style="color:var(--'+m.color+')">'+fmtMontant(cours)+' €</b>' +
+          '<span>Valeur</span><b>'+fmtMontant(valuation)+' €</b>' +
+        '</div>' +
+      '</div>';
+  });
+  container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">Aucune position ouverte.</div>';
 }
 
 function calculerOrdreOptimal() {
@@ -1537,7 +1579,7 @@ function renderStatsPEA() {
   var pvLatentePct = totalPruValue > 0 ? (pvLatentePure / totalPruValue) * 100 : 0;
   var taxe = gainRealAbsolu > 0 ? (gainRealAbsolu * ((appData.pea.settings.taux_fisc||17.2)/100)) : 0;
 
-  document.getElementById('stats-container').innerHTML =
+  document.getElementById('pea-dashboard-container').innerHTML =
     '<div class="bento2">' +
       '<div class="bento2-top">' +
         '<div class="bento2-top-left">' +
