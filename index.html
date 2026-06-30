@@ -31,20 +31,20 @@
   --nav-h: 70px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);}
+html{background:var(--bg);}
+/* Pas de verrouillage de hauteur (height:100%/100dvh) ni d'overflow:hidden sur
+   html/body : le document défile normalement, comme une page web classique.
+   C'est ce qui évite les bugs de calcul de hauteur de viewport propres au
+   mode standalone iOS (la bottom-nav fixe n'atteignait pas le vrai bas de
+   l'écran avec l'ancienne architecture "app shell" à hauteur verrouillée). */
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:var(--bg);color:var(--text);margin:0;font-size:15px;
   background-image:radial-gradient(ellipse at 50% -10%,rgba(99,102,241,.13) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(52,211,153,.04) 0%,transparent 40%);
   background-attachment:fixed;
-  height:100%;overflow:hidden;overscroll-behavior:none;
+  overflow-x:hidden;
 }
-/* Conteneur interne unique pour le scroll : évite que la barre d'adresse mobile
-   apparaisse/disparaisse (et fasse "sauter" la bottom-nav fixe) quand on change d'onglet.
-   overscroll-behavior:contain empêche le rebond élastique iOS de "détacher"
-   visuellement la bottom-nav fixe du bas réel de l'écran. */
 #scroll-area{
-  height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
   padding:max(16px, env(safe-area-inset-top)) 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);
 }
 .card{
@@ -73,7 +73,7 @@ button:active{transform:scale(.96);opacity:.85;}
 .btn-gray{background:rgba(255,255,255,.06);color:var(--text);font-size:13px;padding:10px;border:1px solid rgba(255,255,255,.07);}
 
 /* ── Bottom Nav ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:rgba(5,5,12,.94);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-around;padding:8px 8px env(safe-area-inset-bottom);z-index:100;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;min-height:var(--nav-h);background:rgba(5,5,12,.94);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-around;padding:8px 8px env(safe-area-inset-bottom);z-index:100;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 18px;border-radius:14px;background:transparent;border:none;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;transition:color .2s,background .2s,transform .15s;width:auto;min-width:64px;font-family:'Inter',sans-serif;}
 .nav-item svg{width:22px;height:22px;transition:transform .2s;}
 .nav-item.active{color:white;background:rgba(99,102,241,.14);}
@@ -860,8 +860,7 @@ function initDatesFormulaires() {
 // ══════════════════════════════════════════════
 function switchUnivers(u, dir) {
   universActuel = u;
-  var scrollArea = document.getElementById('scroll-area');
-  if(scrollArea) scrollArea.scrollTop = 0; else window.scrollTo(0, 0);
+  window.scrollTo(0, 0);
   var anim = dir === 'left' ? 'slideInFromRight .32s cubic-bezier(.22,.61,.36,1)'
            : dir === 'right' ? 'slideInFromLeft .32s cubic-bezier(.22,.61,.36,1)'
            : 'fadeUp .22s ease-out';
@@ -2109,6 +2108,20 @@ if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function() {});
   });
 }
+
+// ── iOS PWA (standalone) : au lancement à froid, WebKit calcule parfois mal
+// les safe-area-insets pour les éléments position:fixed (bug WKWebView connu),
+// ce qui peut laisser un espace sous la bottom-nav fixe. Un micro-scroll force
+// WebKit à recalculer la géométrie réelle de l'écran.
+(function() {
+  function nudgeIOSLayout() {
+    var y = window.scrollY;
+    window.scrollTo(0, y + 1);
+    requestAnimationFrame(function() { window.scrollTo(0, y); });
+  }
+  window.addEventListener('load', nudgeIOSLayout);
+  window.addEventListener('pageshow', nudgeIOSLayout);
+})();
 </script>
 </body>
 </html>
