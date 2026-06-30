@@ -45,24 +45,31 @@
   --nav-h: 70px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{height:100%;height:var(--vh, 100dvh);overflow:hidden;overscroll-behavior:none;background:var(--bg);}
+html{
+  height:100%;height:var(--vh, 100dvh);height:-webkit-fill-available;
+  overflow:hidden;overscroll-behavior:none;background:var(--bg);
+}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:var(--bg);color:var(--text);margin:0;font-size:15px;
   background-image:radial-gradient(ellipse at 50% -10%,rgba(99,102,241,.13) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(52,211,153,.04) 0%,transparent 40%);
   background-attachment:fixed;
-  height:100%;overflow:hidden;overscroll-behavior:none;
+  height:100%;height:var(--vh, 100dvh);height:-webkit-fill-available;
+  min-height:-webkit-fill-available;
+  overflow:hidden;overscroll-behavior:none;
 }
 /* Conteneur interne unique pour le scroll : évite que la barre d'adresse mobile
    apparaisse/disparaisse (et fasse "sauter" la bottom-nav fixe) quand on change d'onglet.
    overscroll-behavior:contain empêche le rebond élastique iOS de "détacher"
    visuellement la bottom-nav fixe du bas réel de l'écran.
-   --vh est fixé en JS depuis window.innerHeight (cf. <head>) car 100dvh
-   n'est pas fiable dans la WKWebView standalone iOS et peut laisser
-   tout le conteneur (donc la bottom-nav fixe) flotter au-dessus du vrai
-   bas de l'écran. */
+   -webkit-fill-available est résolu par le moteur WebKit lui-même (au layout),
+   contrairement à --vh (calculé en JS, donc figé à la valeur lue au lancement :
+   en PWA standalone iOS cette valeur peut être prise avant que la fenêtre
+   n'atteigne sa taille finale tenant compte de la zone sous l'indicateur
+   d'accueil). On le déclare en dernier pour qu'il prenne le dessus sur Safari/WebKit. */
 #scroll-area{
-  height:100%;height:var(--vh, 100dvh);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+  height:100%;height:var(--vh, 100dvh);height:-webkit-fill-available;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
   padding:max(16px, env(safe-area-inset-top)) 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);
 }
 .card{
