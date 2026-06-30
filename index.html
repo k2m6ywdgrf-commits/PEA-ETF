@@ -89,16 +89,7 @@ button:active{transform:scale(.96);opacity:.85;}
 /* ── Grids & Stats ── */
 .bar-container{background:rgba(255,255,255,.05);border-radius:9px;height:10px;overflow:hidden;display:flex;margin:10px 0;}
 .bar{height:100%;transition:width .6s cubic-bezier(.4,0,.2,1);}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.stat-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
-.stat-box{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:14px 10px;text-align:center;transition:background .2s,border-color .2s;}
-.stat-box:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.09);}
-.stat-val{font-size:16px;font-weight:700;margin-top:6px;letter-spacing:-.4px;}
-.stat-lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;line-height:1.4;font-weight:600;}
 .fees-container-badge{display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:5px 12px;border-radius:10px;font-size:11px;color:var(--text-muted);margin-top:8px;}
-.hist-item{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:14px;padding:12px;margin-bottom:8px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:background .15s;}
-.hist-item:hover{background:rgba(255,255,255,.035);}
-.hist-content{flex:1;}
 .btn-delete-item{background:transparent;color:var(--red);width:auto;padding:6px 10px;font-size:14px;border-radius:8px;border:1px solid rgba(251,113,133,.15);transition:background .15s;}
 .btn-delete-item:hover{background:rgba(251,113,133,.1);}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
@@ -117,10 +108,6 @@ button:active{transform:scale(.96);opacity:.85;}
 .donut-legend-right b{color:var(--text);font-size:12px;}
 .donut-dot{width:10px;height:10px;border-radius:50%;}
 
-/* ── CTO Table ── */
-.cto-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;}
-.cto-table th{text-align:left;color:var(--text-muted);font-size:10px;padding:8px;text-transform:uppercase;letter-spacing:.5px;}
-.cto-table td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.04);}
 
 /* ── Chart ── */
 .trend-chart-wrapper{position:relative;width:100%;height:150px;margin:15px 0 5px;background:rgba(255,255,255,.01);border-radius:12px;border:1px solid rgba(255,255,255,.04);}
@@ -157,13 +144,39 @@ button:active{transform:scale(.96);opacity:.85;}
 .bento2-lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700;}
 .bento2-val{font-size:21px;font-weight:800;letter-spacing:-.5px;margin-top:3px;color:#fff;}
 .bento2-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.bento2-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .bento2-cell{border-radius:16px;padding:12px 10px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);text-align:center;}
 .bento2-cell[data-c="gold"]{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);}
 .bento2-cell[data-c="red"]{background:rgba(251,113,133,.06);border:1px solid rgba(251,113,133,.18);}
+.bento2-cell[data-c="usa"]{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);}
+.bento2-cell[data-c="eu"]{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);}
 .bento2-clbl{font-size:9.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;}
 .bento2-cval{font-size:15px;font-weight:800;margin-top:5px;letter-spacing:-.3px;}
 .bento2-cell[data-c="indigo"] .bento2-cval{color:#a5b4fc;}
 .bento2-cell[data-c="red"] .bento2-cval{color:var(--red);}
+.bento2-cell[data-c="usa"] .bento2-cval{color:var(--usa);}
+.bento2-cell[data-c="eu"] .bento2-cval{color:var(--eu);}
+
+/* ── Donut center overlay (réutilisable) ── */
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.donut-center-lbl{font-size:8.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;}
+.donut-center-val{font-size:13px;font-weight:800;margin-top:2px;}
+
+/* ── Transactions (Mouvements PEA/CTO) ── */
+.txn-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:12px 14px;margin-bottom:8px;transition:background .15s;}
+.txn-item:active{background:rgba(255,255,255,.045);}
+.txn-icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.txn-info{flex:1;min-width:0;}
+.txn-title{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.txn-sub{font-size:11px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.txn-amount{font-weight:800;font-size:13.5px;white-space:nowrap;flex-shrink:0;}
+
+/* ── Cours (lignes avec icône) ── */
+.cours-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cours-row:last-child{border-bottom:none;}
+.cours-row-icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;letter-spacing:-.3px;}
+.cours-row-label{flex:0 0 auto;width:92px;font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cours-row input{flex:1;}
 
 /* ── Asset cards (Accueil) ── */
 .asset-card{border-radius:22px;padding:16px;margin-bottom:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .15s,border-color .15s;}
@@ -349,9 +362,11 @@ button:active{transform:scale(.96);opacity:.85;}
   <div id="pea-portefeuille" class="section active">
     <div class="card">
       <h2>Vos Positions (Calculées)</h2>
-      <div class="sim-row"><span><span class="tag tag-usa">S&P 500</span> Parts détenues</span> <b id="lbl_usa_q">0</b></div>
-      <div class="sim-row"><span><span class="tag tag-eu">Stoxx 600</span> Parts détenues</span> <b id="lbl_eu_q">0</b></div>
-      <div class="sim-row"><span><span class="tag tag-em">Emergents</span> Parts détenues</span> <b id="lbl_em_q">0</b></div>
+      <div class="bento2-row">
+        <div class="bento2-cell" data-c="usa"><div class="bento2-clbl">S&amp;P 500</div><div class="bento2-cval" id="lbl_usa_q">0</div></div>
+        <div class="bento2-cell" data-c="eu"><div class="bento2-clbl">Stoxx 600</div><div class="bento2-cval" id="lbl_eu_q">0</div></div>
+        <div class="bento2-cell" data-c="gold"><div class="bento2-clbl">Émergents</div><div class="bento2-cval" id="lbl_em_q">0</div></div>
+      </div>
       <hr class="divider">
       <h2>Nouveau versement</h2>
       <div class="row"><label>Budget PEA</label><input id="budget" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant en euros (€)" oninput="saveInputs(); calculerOrdreOptimal();"></div>
@@ -363,7 +378,13 @@ button:active{transform:scale(.96);opacity:.85;}
     <div class="card">
       <h2>Structure de l'allocation</h2>
       <div class="donut-wrapper">
-        <div class="donut" id="chart-donut"></div>
+        <div style="position:relative;">
+          <div class="donut" id="chart-donut"></div>
+          <div class="donut-center">
+            <div class="donut-center-lbl">Brut</div>
+            <div class="donut-center-val" id="chart-donut-total">0 €</div>
+          </div>
+        </div>
         <div class="donut-legends">
           <div class="donut-legend-item">
             <div class="donut-legend-left"><div class="donut-dot" style="background:var(--usa)"></div>S&P 500</div>
@@ -456,19 +477,8 @@ button:active{transform:scale(.96);opacity:.85;}
 
   <div id="cto-portefeuille" class="section active">
     <div id="cto-dashboard-container"></div>
-    <div class="card">
-      <h2>Positions Actuelles (Stock-Picking)</h2>
-      <div style="overflow-x:auto;">
-        <table class="cto-table">
-          <thead>
-            <tr>
-              <th>Actif</th><th>Parts</th><th>PRU</th><th>Cours</th><th>Valeur</th><th>PV Latente</th>
-            </tr>
-          </thead>
-          <tbody id="cto-positions-body"></tbody>
-        </table>
-      </div>
-    </div>
+    <h2 style="margin:18px 4px 10px;">Positions Actuelles</h2>
+    <div id="cto-positions-body"></div>
   </div>
 
   <div id="cto-historique" class="section">
@@ -534,9 +544,21 @@ button:active{transform:scale(.96);opacity:.85;}
 
   <div class="card">
     <h2>📈 ETF PEA</h2>
-    <div class="row"><label><span class="tag tag-usa">S&amp;P 500</span></label><input id="cours_usa" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
-    <div class="row"><label><span class="tag tag-eu">Stoxx 600</span></label><input id="cours_eu" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
-    <div class="row"><label><span class="tag tag-em">Émergents</span></label><input id="cours_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();"></div>
+    <div class="cours-row">
+      <div class="cours-row-icon" style="background:rgba(56,189,248,.16);color:var(--usa);">🇺🇸</div>
+      <div class="cours-row-label">S&amp;P 500</div>
+      <input id="cours_usa" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();">
+    </div>
+    <div class="cours-row">
+      <div class="cours-row-icon" style="background:rgba(52,211,153,.16);color:var(--eu);">🇪🇺</div>
+      <div class="cours-row-label">Stoxx 600</div>
+      <input id="cours_eu" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();">
+    </div>
+    <div class="cours-row">
+      <div class="cours-row-icon" style="background:rgba(251,191,36,.16);color:var(--em);">🌍</div>
+      <div class="cours-row-label">Émergents</div>
+      <input id="cours_em" type="number" inputmode="decimal" pattern="[0-9]*" oninput="saveCoursFromPage();">
+    </div>
   </div>
 
   <div class="card">
@@ -1355,18 +1377,27 @@ function renderStatsPEA() {
   var taxe = gainRealAbsolu > 0 ? (gainRealAbsolu * ((appData.pea.settings.taux_fisc||17.2)/100)) : 0;
 
   document.getElementById('stats-container').innerHTML =
-    '<div class="card">' +
-      '<h2>Performance Portefeuille PEA</h2>' +
-      '<div class="sim-row" style="padding:4px 0 12px 0;"><span>Valeur Brute :</span> <b style="font-size:22px;color:white;">'+valActuelle.toFixed(2)+' €</b></div>' +
-      '<div class="fees-container-badge" style="margin-bottom:14px;">Frais de courtage : <b>'+totalFeesPEA.toFixed(2)+' €</b></div>' +
-      '<div class="stat-grid">' +
-        '<div class="stat-box" style="border-top:3px solid var(--eu);">' +
-          '<div class="stat-lbl">Gain Réel<br><small>(Frais inc. + Divs)</small></div>' +
-          '<div class="stat-val" style="color:'+(gainRealAbsolu>=0?'var(--eu)':'var(--red)')+';">'+(gainRealAbsolu>=0?'+':'')+gainRealAbsolu.toFixed(2)+' €<br><small>('+gainRealPct.toFixed(1)+'%)</small></div>' +
+    '<div class="bento2">' +
+      '<div class="bento2-top">' +
+        '<div class="bento2-top-left">' +
+          '<div class="bento2-icon">📊</div>' +
+          '<div>' +
+            '<div class="bento2-lbl">Valeur Brute PEA</div>' +
+            '<div class="bento2-val">'+valActuelle.toFixed(2)+' €</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="stat-box" style="border-top:3px solid var(--usa);">' +
-          '<div class="stat-lbl">PV Latente Pure<br><small>(Cours vs PRU)</small></div>' +
-          '<div class="stat-val" style="color:'+(pvLatentePure>=0?'var(--eu)':'var(--red)')+';">'+(pvLatentePure>=0?'+':'')+pvLatentePure.toFixed(2)+' €<br><small>('+pvLatentePct.toFixed(1)+'%)</small></div>' +
+        '<div class="fees-container-badge">Frais : <b>'+totalFeesPEA.toFixed(2)+' €</b></div>' +
+      '</div>' +
+      '<div class="bento2-row-2">' +
+        '<div class="bento2-cell" data-c="'+(gainRealAbsolu>=0?'eu':'red')+'">' +
+          '<div class="bento2-clbl">Gain Réel</div>' +
+          '<div class="bento2-cval">'+(gainRealAbsolu>=0?'+':'')+gainRealAbsolu.toFixed(2)+' €</div>' +
+          '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPct.toFixed(1)+'%)</div>' +
+        '</div>' +
+        '<div class="bento2-cell" data-c="'+(pvLatentePure>=0?'usa':'red')+'">' +
+          '<div class="bento2-clbl">PV Latente Pure</div>' +
+          '<div class="bento2-cval">'+(pvLatentePure>=0?'+':'')+pvLatentePure.toFixed(2)+' €</div>' +
+          '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatentePct.toFixed(1)+'%)</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -1384,6 +1415,8 @@ function calcPEA() {
   var pU = tot ? (u/tot)*100 : 0, pE = tot ? (e/tot)*100 : 0, pM = tot ? (m/tot)*100 : 0;
   var donut = document.getElementById('chart-donut');
   if(donut) { donut.style.setProperty('--u-deg', pU+'%'); donut.style.setProperty('--e-deg', (pU+pE)+'%'); }
+  var donutTotalEl = document.getElementById('chart-donut-total');
+  if(donutTotalEl) donutTotalEl.textContent = tot.toFixed(0)+' €';
   document.getElementById('leg-usa-pct').textContent = pU.toFixed(1)+'%';
   document.getElementById('leg-usa-details').textContent = u.toFixed(2)+' € • '+q.usa+' part(s)';
   document.getElementById('leg-eu-pct').textContent = pE.toFixed(1)+'%';
@@ -1394,13 +1427,21 @@ function calcPEA() {
 
 function renderHistPEA() {
   var h = '';
+  var icons = { usa:'🇺🇸', eu:'🇪🇺', em:'🌍' };
   appData.pea.historique.forEach(function(a){
     var fr = parseFloat(a.frais || 0);
-    var txtFrais = fr > 0 ? ' (dont '+fr.toFixed(2)+'€ frais)' : '';
-    var borderColor = a.type === 'vente' ? 'var(--red)' : a.type === 'dividende' ? 'var(--div)' : 'var(--usa)';
-    h += '<div class="hist-item" style="border-left:3px solid '+borderColor+';">' +
-           '<div class="hist-content"><b>'+a.type.toUpperCase()+'</b> | '+a.etf+' | '+a.total+' €' +
-           '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date+txtFrais+'</div></div>' +
+    var txtFrais = fr > 0 ? ' · '+fr.toFixed(2)+'€ frais' : '';
+    var isVente = a.type === 'vente', isDiv = a.type === 'dividende';
+    var color = isDiv ? 'var(--div)' : (isVente ? 'var(--red)' : 'var(--eu)');
+    var bg = isDiv ? 'rgba(192,132,252,.14)' : (isVente ? 'rgba(251,113,133,.14)' : 'rgba(52,211,153,.14)');
+    var icon = isDiv ? '💰' : (icons[a.tag] || '📈');
+    h += '<div class="txn-item">' +
+           '<div class="txn-icon" style="background:'+bg+';">'+icon+'</div>' +
+           '<div class="txn-info">' +
+             '<div class="txn-title">'+a.type.toUpperCase()+' · '+a.etf+'</div>' +
+             '<div class="txn-sub">Le '+a.date+txtFrais+'</div>' +
+           '</div>' +
+           '<div class="txn-amount" style="color:'+color+';">'+parseFloat(a.total).toFixed(2)+' €</div>' +
            '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">🗑️</button>' +
          '</div>';
   });
@@ -1563,10 +1604,12 @@ function renderCoursPage() {
   var html = '';
   actifs.forEach(function(nom) {
     var cours = appData.cto.cours[nom] || '';
-    html += '<div class="row">'
-      + '<label><span class="tag tag-cto">' + nom + '</span></label>'
+    var initials = nom.slice(0, 2).toUpperCase();
+    html += '<div class="cours-row">'
+      + '<div class="cours-row-icon" style="background:rgba(56,189,248,.16);color:var(--usa);">' + initials + '</div>'
+      + '<div class="cours-row-label">' + nom + '</div>'
       + '<input type="number" inputmode="decimal" pattern="[0-9]*" value="' + cours + '"'
-      + ' oninput="updateCtoCours(\'" + nom + "\', this.value)">'
+      + ' oninput="updateCtoCours(\'' + nom + '\', this.value)">'
       + '</div>';
   });
   container.innerHTML = html;
@@ -1600,7 +1643,7 @@ function renderCTOUniverseOnly() {
   var positions = calculerPositionsCTO();
   var tbody = document.getElementById('cto-positions-body');
   if(!tbody) return;
-  tbody.innerHTML = '';
+  var posHtml = '';
 
   var globalValeurCTO = 0;
   var globalPrixRevient = 0; // coût de revient restant (pour PV latente pure)
@@ -1627,20 +1670,25 @@ function renderCTOUniverseOnly() {
       var pru = p.parts > 0 ? (p.totalCost / p.parts) : 0;
       var pvLatente = valuation - p.totalCost;
       var pvPct = p.totalCost > 0 ? (pvLatente / p.totalCost * 100) : 0;
-      var tr = document.createElement('tr');
-      tr.innerHTML = '<td><span class="tag tag-cto">'+nom+'</span></td>' +
-        '<td><b>'+p.parts+'</b></td>' +
-        '<td>'+pru.toFixed(2)+' €</td>' +
-        '<td><b style="color:var(--usa)">'+cours.toFixed(2)+' €</b></td>' +
-        '<td><b>'+valuation.toFixed(2)+' €</b></td>' +
-        '<td style="color:'+(pvLatente>=0?'var(--eu)':'var(--red)')+';font-weight:bold;">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €<br><small>('+pvPct.toFixed(1)+'%)</small></td>';
-      tbody.appendChild(tr);
+      var initials = nom.slice(0, 2).toUpperCase();
+      posHtml += '<div class="asset-card" style="cursor:default;">' +
+          '<div class="asset-top">' +
+            '<div class="asset-icon cto" style="font-size:13px;font-weight:800;">'+initials+'</div>' +
+            '<div class="asset-info">' +
+              '<div class="asset-name">'+nom+'</div>' +
+              '<div class="asset-sub">'+p.parts+' parts · PRU '+pru.toFixed(2)+' €</div>' +
+            '</div>' +
+            '<span class="asset-perf '+(pvLatente>=0?'perf-up':'perf-down')+'">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €</span>' +
+          '</div>' +
+          '<div class="asset-bottom">' +
+            '<span>Cours actuel</span><b style="color:var(--usa)">'+cours.toFixed(2)+' €</b>' +
+            '<span>Valeur</span><b>'+valuation.toFixed(2)+' €</b>' +
+          '</div>' +
+        '</div>';
     }
   });
 
-  if(tbody.innerHTML === '') {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Aucune position ouverte.</td></tr>';
-  }
+  tbody.innerHTML = posHtml || '<div style="text-align:center;color:var(--text-muted);padding:20px;">Aucune position ouverte.</div>';
 
   // Gain réel = valeur actuelle + dividendes - flux nets investis (inclut PV réalisées)
   var netCashInvested = totalAchatsCTO - totalVentesCTO;
@@ -1659,22 +1707,31 @@ function renderCTOUniverseOnly() {
   var netApresFlatTax = globalValeurCTO - flatTaxEstimee;
 
   document.getElementById('cto-dashboard-container').innerHTML =
-    '<div class="card">' +
-      '<h2>Performance Portefeuille CTO</h2>' +
-      '<div class="sim-row" style="padding:4px 0 12px 0;"><span>Valeur Brute :</span> <b style="font-size:22px;color:white;">'+globalValeurCTO.toFixed(2)+' €</b></div>' +
-      '<div class="fees-container-badge" style="margin-bottom:14px;">Frais de courtage : <b>'+totalFeesCTO.toFixed(2)+' €</b></div>' +
-      '<div class="stat-grid">' +
-        '<div class="stat-box" style="border-top:3px solid var(--eu);">' +
-          '<div class="stat-lbl">Gain Réel Global<br><small>(PV réalisées + latentes + divs)</small></div>' +
-          '<div class="stat-val" style="color:'+(gainRealAbsoluCTO>=0?'var(--eu)':'var(--red)')+';">'+(gainRealAbsoluCTO>=0?'+':'')+gainRealAbsoluCTO.toFixed(2)+' €<br><small>('+gainRealPctCTO.toFixed(1)+'%)</small></div>' +
+    '<div class="bento2">' +
+      '<div class="bento2-top">' +
+        '<div class="bento2-top-left">' +
+          '<div class="bento2-icon" style="background:rgba(56,189,248,.16);">💼</div>' +
+          '<div>' +
+            '<div class="bento2-lbl">Valeur Brute CTO</div>' +
+            '<div class="bento2-val">'+globalValeurCTO.toFixed(2)+' €</div>' +
+          '</div>' +
         '</div>' +
-        '<div class="stat-box" style="border-top:3px solid var(--usa);">' +
-          '<div class="stat-lbl">PV Latente<br><small>(Cours actuel vs PRU)</small></div>' +
-          '<div class="stat-val" style="color:'+(pvLatenteGlobalCTO>=0?'var(--eu)':'var(--red)')+';">'+(pvLatenteGlobalCTO>=0?'+':'')+pvLatenteGlobalCTO.toFixed(2)+' €<br><small>('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</small></div>' +
+        '<div class="fees-container-badge">Frais : <b>'+totalFeesCTO.toFixed(2)+' €</b></div>' +
+      '</div>' +
+      '<div class="bento2-row-2">' +
+        '<div class="bento2-cell" data-c="'+(gainRealAbsoluCTO>=0?'eu':'red')+'">' +
+          '<div class="bento2-clbl">Gain Réel Global</div>' +
+          '<div class="bento2-cval">'+(gainRealAbsoluCTO>=0?'+':'')+gainRealAbsoluCTO.toFixed(2)+' €</div>' +
+          '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPctCTO.toFixed(1)+'%)</div>' +
+        '</div>' +
+        '<div class="bento2-cell" data-c="'+(pvLatenteGlobalCTO>=0?'usa':'red')+'">' +
+          '<div class="bento2-clbl">PV Latente</div>' +
+          '<div class="bento2-cval">'+(pvLatenteGlobalCTO>=0?'+':'')+pvLatenteGlobalCTO.toFixed(2)+' €</div>' +
+          '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</div>' +
         '</div>' +
       '</div>' +
       // FIX #11 : affichage PV réalisées séparées
-      (pvRealiseesCTO !== 0 ? '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.05); padding-top:10px; margin-top:4px;">' +
+      (pvRealiseesCTO !== 0 ? '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.05); padding-top:10px; margin-top:10px;">' +
         '<span style="font-size:12px;color:var(--text-muted);">dont PV réalisées (ventes clôturées) :</span>' +
         '<b style="color:'+(pvRealiseesCTO>=0?'var(--eu)':'var(--red)')+';font-size:13px;">'+(pvRealiseesCTO>=0?'+':'')+pvRealiseesCTO.toFixed(2)+' €</b>' +
       '</div>' : '') +
@@ -1691,17 +1748,20 @@ function renderCTOUniverseOnly() {
 function renderHistCTO() {
   var h = '';
   appData.cto.historique.forEach(function(a){
-    var borderStyle = a.type === 'dividende' ? 'var(--div)' : (a.type === 'achat' ? 'var(--usa)' : 'var(--red)');
-    var detailHtml = '';
-    if(a.type === 'dividende') {
-      detailHtml = '<div class="hist-content"><span class="tag tag-div">Dividende</span> <b>'+a.actif+'</b> <span style="float:right;font-weight:bold;color:var(--div);">+'+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Perçu le '+a.date+'</div></div>';
-    } else if(a.type === 'achat') {
-      detailHtml = '<div class="hist-content"><span class="tag tag-usa">ACHAT</span> <b>'+a.actif+'</b> · '+a.nb+' p. @ '+a.prix+' €<span style="float:right;font-weight:bold;">- '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date+' (Frais: '+parseFloat(a.frais||0).toFixed(2)+'€)</div></div>';
-    } else {
-      detailHtml = '<div class="hist-content"><span class="tag tag-red">VENTE</span> <b>'+a.actif+'</b> · '+a.nb+' p. @ '+a.prix+' €<span style="float:right;font-weight:bold;color:var(--eu);">+ '+parseFloat(a.total).toFixed(2)+' €</span><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Le '+a.date+'</div></div>';
-    }
-    h += '<div class="hist-item" style="border-left:3px solid '+borderStyle+';">' +
-           detailHtml +
+    var isDiv = a.type === 'dividende', isAchat = a.type === 'achat';
+    var color = isDiv ? 'var(--div)' : (isAchat ? 'var(--text)' : 'var(--eu)');
+    var bg = isDiv ? 'rgba(192,132,252,.14)' : (isAchat ? 'rgba(56,189,248,.14)' : 'rgba(251,113,133,.14)');
+    var icon = isDiv ? '💰' : (isAchat ? '🛒' : '🔻');
+    var title = isDiv ? ('Dividende · '+a.actif) : ((isAchat ? 'ACHAT' : 'VENTE')+' · '+a.actif);
+    var sub = isDiv ? ('Perçu le '+a.date) : (a.nb+' p. @ '+a.prix+' € · Le '+a.date+(isAchat?' · '+parseFloat(a.frais||0).toFixed(2)+'€ frais':''));
+    var sign = (isDiv || !isAchat) ? '+' : '−';
+    h += '<div class="txn-item">' +
+           '<div class="txn-icon" style="background:'+bg+';">'+icon+'</div>' +
+           '<div class="txn-info">' +
+             '<div class="txn-title">'+title+'</div>' +
+             '<div class="txn-sub">'+sub+'</div>' +
+           '</div>' +
+           '<div class="txn-amount" style="color:'+color+';">'+sign+' '+parseFloat(a.total).toFixed(2)+' €</div>' +
            '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">🗑️</button>' +
          '</div>';
   });
