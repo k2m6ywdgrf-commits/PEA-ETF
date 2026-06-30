@@ -235,6 +235,8 @@ button:active{transform:scale(.96);opacity:.85;}
 
 /* ── Fade-in animation ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInFromRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInFromLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
 </style>
 </head>
 <body>
@@ -792,8 +794,12 @@ function initDatesFormulaires() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-function switchUnivers(u) {
+function switchUnivers(u, dir) {
   universActuel = u;
+  window.scrollTo(0, 0);
+  var anim = dir === 'left' ? 'slideInFromRight .32s cubic-bezier(.22,.61,.36,1)'
+           : dir === 'right' ? 'slideInFromLeft .32s cubic-bezier(.22,.61,.36,1)'
+           : 'fadeUp .22s ease-out';
   ['home','pea','cto','cours'].forEach(function(id) {
     var btn = document.getElementById('btn-main-' + id);
     var el  = document.getElementById('univers-' + id);
@@ -801,7 +807,7 @@ function switchUnivers(u) {
     if(el) {
       var show = id === u;
       el.style.display = show ? 'block' : 'none';
-      if(show) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'fadeUp .22s ease-out'; }
+      if(show) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = anim; }
     }
   });
   if(u === 'home') {
@@ -833,8 +839,8 @@ function switchUnivers(u) {
     if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
     var idx = order.indexOf(universActuel);
     if(idx === -1) return;
-    if(dx < 0 && idx < order.length - 1) switchUnivers(order[idx + 1]);
-    else if(dx > 0 && idx > 0) switchUnivers(order[idx - 1]);
+    if(dx < 0 && idx < order.length - 1) switchUnivers(order[idx + 1], 'left');
+    else if(dx > 0 && idx > 0) switchUnivers(order[idx - 1], 'right');
   }, { passive: true });
 })();
 
