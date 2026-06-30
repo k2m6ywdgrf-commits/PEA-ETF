@@ -92,6 +92,8 @@ button:active{transform:scale(.96);opacity:.85;}
 .fees-container-badge{display:inline-block;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:5px 12px;border-radius:10px;font-size:11px;color:var(--text-muted);margin-top:8px;}
 .btn-delete-item{background:transparent;color:var(--red);width:auto;padding:6px 10px;font-size:14px;border-radius:8px;border:1px solid rgba(251,113,133,.15);transition:background .15s;}
 .btn-delete-item:hover{background:rgba(251,113,133,.1);}
+.btn-edit-item{background:transparent;color:var(--text-muted);width:auto;padding:6px 10px;font-size:14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);transition:background .15s;margin-right:6px;}
+.btn-edit-item:hover{background:rgba(255,255,255,.08);}
 .sim-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
 .divider{border:none;border-top:1px solid rgba(255,255,255,.07);margin:14px 0;}
 
@@ -135,6 +137,9 @@ button:active{transform:scale(.96);opacity:.85;}
 .hero-pill{font-size:11px;font-weight:700;background:rgba(52,211,153,.14);color:var(--eu);padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,.25);white-space:nowrap;}
 .hero-value{font-size:38px;font-weight:800;letter-spacing:-1.5px;color:white;margin:12px 0 4px;line-height:1;position:relative;z-index:1;}
 .hero-sub{font-size:11px;color:rgba(255,255,255,.32);position:relative;z-index:1;}
+.app-title-wrap{padding:18px 4px 14px;}
+.app-title-overline{font-size:11px;color:#7dd3fc;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.app-title-main{font-size:30px;font-weight:800;letter-spacing:-0.5px;color:white;margin-top:4px;}
 
 /* ── Bento Dense (Accueil) ── */
 .bento2{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
@@ -237,6 +242,10 @@ button:active{transform:scale(.96);opacity:.85;}
 
 <!-- ══════════════ ACCUEIL GLOBAL ══════════════ -->
 <div id="univers-home" class="universe-block" style="display:block;">
+  <div class="app-title-wrap">
+    <div class="app-title-overline">Gestion PEA &amp; CTO</div>
+    <div class="app-title-main">Mon Patrimoine</div>
+  </div>
   <div class="hero-card">
     <div class="hero-top">
       <span class="hero-label">Patrimoine Net</span>
@@ -400,13 +409,14 @@ button:active{transform:scale(.96);opacity:.85;}
           </div>
         </div>
       </div>
+      <div class="alert-badge" id="alloc-alert"></div>
     </div>
     <div id="stats-container"></div>
   </div>
 
   <div id="pea-historique" class="section">
     <div class="card" id="formulaire-mouvement">
-      <h2>✍️ Enregistrer un mouvement PEA</h2>
+      <h2 id="formulaire-mouvement-titre">✍️ Enregistrer un mouvement PEA</h2>
       <div class="row"><label>Date</label><input id="man_date" type="date"></div>
       <div class="row">
         <label>Opération</label>
@@ -432,7 +442,8 @@ button:active{transform:scale(.96);opacity:.85;}
       <div id="form-dividende" style="display:none;">
         <div class="row"><label>Montant net (€)</label><input id="man_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Ex: 45.50"></div>
       </div>
-      <button class="btn-purple" style="margin-top:8px;" onclick="ajouterEvenementManuel()">Enregistrer au registre</button>
+      <button class="btn-purple" id="btn-man-submit" style="margin-top:8px;" onclick="ajouterEvenementManuel()">Enregistrer au registre</button>
+      <button class="btn-gray" id="btn-man-cancel" style="margin-top:8px;display:none;" onclick="annulerEditionPEA()">Annuler la modification</button>
     </div>
     <div id="hist-container"></div>
   </div>
@@ -455,15 +466,6 @@ button:active{transform:scale(.96);opacity:.85;}
       <div class="row"><label>Frais de base (€)</label><input id="frais_courtage" type="number" step="0.01" inputmode="decimal" pattern="[0-9]*"></div>
       <button class="btn-gray" style="margin-top:6px;" onclick="saveSettings()">Valider</button>
     </div>
-    <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale</h2>
-      <div style="display:flex; gap:8px;">
-        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
-        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_pea').click()">📥 Importer .json</button>
-      </div>
-      <input type="file" id="global_json_input_pea" accept=".json" style="display:none;" onchange="importJSON(this)">
-      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
-    </div>
   </div>
 </div>
 
@@ -482,8 +484,8 @@ button:active{transform:scale(.96);opacity:.85;}
   </div>
 
   <div id="cto-historique" class="section">
-    <div class="card">
-      <h2>✍️ Enregistrer une opération CTO</h2>
+    <div class="card" id="formulaire-mouvement-cto">
+      <h2 id="formulaire-mouvement-cto-titre">✍️ Enregistrer une opération CTO</h2>
       <div class="row"><label>Date</label><input id="cto_date" type="date"></div>
       <div class="row">
         <label>Type</label>
@@ -513,7 +515,8 @@ button:active{transform:scale(.96);opacity:.85;}
       <div id="cto-form-dividende" style="display:none;">
         <div class="row"><label>Montant Brut (€)</label><input id="cto_div_montant" type="number" inputmode="decimal" pattern="[0-9]*" placeholder="Montant avant Flat Tax"></div>
       </div>
-      <button class="btn-blue" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
+      <button class="btn-blue" id="btn-cto-submit" style="margin-top:10px;" onclick="ajouterMouvementCTO()">⚡ Confirmer l'inscription</button>
+      <button class="btn-gray" id="btn-cto-cancel" style="margin-top:10px;display:none;" onclick="annulerEditionCTO()">Annuler la modification</button>
     </div>
     <div id="cto-hist-container"></div>
   </div>
@@ -523,15 +526,6 @@ button:active{transform:scale(.96);opacity:.85;}
       <h2>Réglementation & Impôts CTO</h2>
       <div class="row"><label>Taux Flat Tax (%)</label><input id="cto_tax_rate" type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" value="30.0"></div>
       <button class="btn-blue" style="margin-top:6px;" onclick="saveCtoSettings()">Enregistrer les paramètres CTO</button>
-    </div>
-    <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
-      <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale</h2>
-      <div style="display:flex; gap:8px;">
-        <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
-        <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input_cto').click()">📥 Importer .json</button>
-      </div>
-      <input type="file" id="global_json_input_cto" accept=".json" style="display:none;" onchange="importJSON(this)">
-      <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
     </div>
   </div>
 </div>
@@ -573,6 +567,16 @@ button:active{transform:scale(.96);opacity:.85;}
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Enregistre la situation actuelle sur le graphique d'évolution de l'accueil.</div>
     <button class="btn-gray" style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;border:1px solid rgba(99,102,241,0.3);" onclick="figerSoldeGlobal()">📊 Enregistrer dans le suivi</button>
     <div id="snapshot-confirm-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--eu);font-weight:600;">✅ Point enregistré !</div>
+  </div>
+
+  <div class="card" style="background: linear-gradient(135deg, rgba(9, 60, 123, 0.4), rgba(0,0,0,0.5)); border-color: rgba(14, 165, 233, 0.3);">
+    <h2 style="color:#7dd3fc;">☁️ Sauvegarde Générale</h2>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-blue" style="padding:10px; font-size:13px; flex:1;" onclick="exportJSON()">📤 Exporter .json</button>
+      <button class="btn-gray" style="padding:10px; font-size:13px; flex:1; border: 1px dashed rgba(255,255,255,0.2);" onclick="document.getElementById('global_json_input').click()">📥 Importer .json</button>
+    </div>
+    <input type="file" id="global_json_input" accept=".json" style="display:none;" onchange="importJSON(this)">
+    <button class="btn-red" style="padding:8px; font-size:12px; margin-top:10px; background:none; border:1px solid var(--red); color:var(--red);" onclick="resetGlobal()">🗑️ Reset Global de l'Application</button>
   </div>
 </div>
 
@@ -645,7 +649,7 @@ function animateCounter(el, newVal, opts) {
   var suffix = opts.suffix !== undefined ? opts.suffix : ' €';
   var decimals = opts.decimals !== undefined ? opts.decimals : 2;
   var showSign = !!opts.showSign;
-  function format(v) { return (showSign && v >= 0 ? '+' : '') + v.toFixed(decimals) + suffix; }
+  function format(v) { return (showSign && v >= 0 ? '+' : '') + fmtMontant(v, decimals) + suffix; }
   var prevVal = parseFloat(el.getAttribute('data-raw-val'));
   var firstRender = isNaN(prevVal);
   el.setAttribute('data-raw-val', newVal);
@@ -713,9 +717,35 @@ function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringif
 
 var appData = loadData();
 var universActuel = 'home';
+var peaEditId = null;
+var ctoEditId = null;
 
 function generateId() {
   return '_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Pour les valeurs interpolées dans un attribut oninput="fn('...')" :
+// échappe d'abord pour rester une chaîne JS valide, puis pour l'attribut HTML.
+function escapeForInlineJs(str) {
+  var jsEscaped = String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return escapeHtml(jsEscaped);
+}
+
+// Formate un montant pour l'affichage avec séparateurs de milliers (ex: "12 345,67")
+function fmtMontant(n, decimals) {
+  if(decimals === undefined) decimals = 2;
+  var num = parseFloat(n);
+  if(isNaN(num)) num = 0;
+  return num.toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
 
 function patchMissingIds() {
@@ -734,6 +764,14 @@ function formatDateToFR(dateString) {
   if(!dateString) return new Date().toLocaleDateString('fr-FR');
   var parts = dateString.split('-');
   if(parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+  return dateString;
+}
+
+// Convertit une date DD/MM/YYYY en YYYY-MM-DD pour <input type="date">
+function formatDateToISO(dateString) {
+  if(!dateString) return '';
+  var parts = dateString.split('/');
+  if(parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
   return dateString;
 }
 
@@ -814,7 +852,7 @@ function showSubTab(univ, section) {
     if(section === 'historique') { renderHistPEA(); initDatesFormulaires(); }
     if(section === 'config') updateCibleTotal();
   } else {
-    if(section === 'portefeuille') { renderCTOInputsCours(); renderCTOUniverse(); }
+    if(section === 'portefeuille') { renderCTOUniverse(); }
     // FIX #2 : renderHistCTO reste sur l'onglet historique
     if(section === 'historique') { renderHistCTO(); updateCtoDividendsDropdown(); toggleFormCto(); initDatesFormulaires(); }
     if(section === 'config') { document.getElementById('cto_tax_rate').value = appData.cto.settings.tax_rate || 30.0; }
@@ -956,13 +994,13 @@ function calculerEtAfficherAccueilGlobal() {
   var pctCto = totalBrutGlobal > 0 ? (c.ctoBrut / totalBrutGlobal * 100) : 50;
   document.getElementById('home-macro-donut').style.background =
     'conic-gradient(var(--eu) 0%, var(--eu) ' + pctPea + '%, var(--usa) ' + pctPea + '%, var(--usa) 100%)';
-  document.getElementById('home-macro-total').textContent = totalBrutGlobal.toFixed(0) + ' €';
+  document.getElementById('home-macro-total').textContent = fmtMontant(totalBrutGlobal, 0) + ' €';
   document.getElementById('asset-bar-pea-fill').style.width = pctPea + '%';
   document.getElementById('asset-bar-cto-fill').style.width = pctCto + '%';
   document.getElementById('macro-txt-pea').textContent = (totalBrutGlobal > 0 ? pctPea.toFixed(1) : '0') + '%';
   document.getElementById('macro-txt-cto').textContent = (totalBrutGlobal > 0 ? pctCto.toFixed(1) : '0') + '%';
-  document.getElementById('macro-val-pea').textContent = c.peaBrut > 0 ? c.peaBrut.toFixed(0) + ' €' : '';
-  document.getElementById('macro-val-cto').textContent = c.ctoBrut > 0 ? c.ctoBrut.toFixed(0) + ' €' : '';
+  document.getElementById('macro-val-pea').textContent = c.peaBrut > 0 ? fmtMontant(c.peaBrut, 0) + ' €' : '';
+  document.getElementById('macro-val-cto').textContent = c.ctoBrut > 0 ? fmtMontant(c.ctoBrut, 0) + ' €' : '';
 
   renderGlobalTrendChartCurve();
 }
@@ -1028,10 +1066,10 @@ function renderGlobalTrendChartCurve() {
       sItems += '<div class="snapshot-item">' +
         '<div>' +
           '<span style="font-weight:600; font-size:12px;">📅 ' + p.date + '</span><br>' +
-          '<span class="snapshot-info">Investi : ' + p.investi.toFixed(0) + ' € · Marché : ' + p.brut.toFixed(0) + ' €</span>' +
+          '<span class="snapshot-info">Investi : ' + fmtMontant(p.investi, 0) + ' € · Marché : ' + fmtMontant(p.brut, 0) + ' €</span>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
-          '<span style="font-size:12px;font-weight:700;color:' + (diff>=0?'var(--eu)':'var(--red)') + ';">' + s + diff.toFixed(0) + ' € (' + s + pct + '%)</span>' +
+          '<span style="font-size:12px;font-weight:700;color:' + (diff>=0?'var(--eu)':'var(--red)') + ';">' + s + fmtMontant(diff, 0) + ' € (' + s + pct + '%)</span>' +
           '<button class="btn-delete-item" onclick="supprimerSnapshot(' + i + ')">🗑️</button>' +
         '</div>' +
       '</div>';
@@ -1041,7 +1079,7 @@ function renderGlobalTrendChartCurve() {
       // Ligne résumé cliquable
       '<div onclick="toggleSnapshotList()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;margin-top:8px;">' +
         '<span style="font-size:12px;color:var(--text-muted);">📋 <b style="color:white;">' + pts.length + '</b> point' + (pts.length > 1 ? 's' : '') + ' enregistré' + (pts.length > 1 ? 's' : '') + ' · dernier : <b>' + lastPt.date + '</b></span>' +
-        '<span style="font-size:12px;font-weight:700;color:' + (lastDiff>=0?'var(--eu)':'var(--red)') + ';">' + sign + lastDiff.toFixed(0) + ' € (' + sign + lastDiffPct + '%) <span id="snapshot-chevron" style="font-style:normal;">▼</span></span>' +
+        '<span style="font-size:12px;font-weight:700;color:' + (lastDiff>=0?'var(--eu)':'var(--red)') + ';">' + sign + fmtMontant(lastDiff, 0) + ' € (' + sign + lastDiffPct + '%) <span id="snapshot-chevron" style="font-style:normal;">▼</span></span>' +
       '</div>' +
       // Liste masquée
       '<div id="snapshot-list-body" style="display:none;margin-top:6px;max-height:280px;overflow-y:auto;">' + sItems + '</div>';
@@ -1125,9 +1163,9 @@ function renderGlobalTrendChartCurve() {
       '<div class="chart-node-col">' +
         '<div class="chart-tooltip-v2">' +
           '📅 ' + p.date + '<br>' +
-          '<span style="color:#94a3b8;">⚪ Investi :</span> ' + p.investi.toFixed(2) + ' €<br>' +
-          '<span style="color:#10b981;">🟢 Valeur :</span> <b>' + p.brut.toFixed(2) + ' €</b><br>' +
-          '<b style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + diff.toFixed(2) + ' € (' + sign + diffPct + '%)</b>' +
+          '<span style="color:#94a3b8;">⚪ Investi :</span> ' + fmtMontant(p.investi) + ' €<br>' +
+          '<span style="color:#10b981;">🟢 Valeur :</span> <b>' + fmtMontant(p.brut) + ' €</b><br>' +
+          '<b style="color:' + (diff >= 0 ? 'var(--eu)' : 'var(--red)') + ';">' + sign + fmtMontant(diff) + ' € (' + sign + diffPct + '%)</b>' +
         '</div>' +
       '</div>';
   });
@@ -1224,8 +1262,8 @@ function calculerOrdreOptimal() {
   if(budget < p + frais) {
     html += '<div style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.25);border-radius:8px;padding:10px;margin-top:8px;font-size:13px;line-height:1.6;">'
       + '<span style="color:var(--red);font-weight:700;">\u26a0\ufe0f Budget insuffisant</span><br>'
-      + '<span style="color:var(--text-muted);">Il vous faut <b style="color:white;">' + (p + frais).toFixed(2) + ' \u20ac</b> minimum.<br>'
-      + 'Budget actuel\u00a0: ' + budget.toFixed(2) + ' \u20ac \u00b7 Manque\u00a0: <b style="color:var(--red);">' + (p + frais - budget).toFixed(2) + ' \u20ac</b></span>'
+      + '<span style="color:var(--text-muted);">Il vous faut <b style="color:white;">' + fmtMontant(p + frais) + ' \u20ac</b> minimum.<br>'
+      + 'Budget actuel\u00a0: ' + fmtMontant(budget) + ' \u20ac \u00b7 Manque\u00a0: <b style="color:var(--red);">' + fmtMontant(p + frais - budget) + ' \u20ac</b></span>'
       + '</div></div>';
     container.innerHTML = html;
     return;
@@ -1275,10 +1313,10 @@ function calculerOrdreOptimal() {
 
   // 6. Affichage
   html +=
-    '<div style="font-size:13px;font-weight:600;margin:10px 0 4px;">\u00d7 <b>' + nParts + '</b> part(s) \u00b7 ' + (nParts * p).toFixed(2) + ' \u20ac + ' + frais.toFixed(2) + ' \u20ac frais</div>'
+    '<div style="font-size:13px;font-weight:600;margin:10px 0 4px;">\u00d7 <b>' + nParts + '</b> part(s) \u00b7 ' + fmtMontant(nParts * p) + ' \u20ac + ' + fmtMontant(frais) + ' \u20ac frais</div>'
     + '<div style="font-size:13px;display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.07);margin-bottom:10px;">'
-    +   '<span>Total ordre\u00a0: <b>' + cout.toFixed(2) + ' \u20ac</b></span>'
-    +   '<span style="color:' + (plafonne ? 'var(--em)' : 'var(--text-muted)') + ';">Reste\u00a0: <b>' + reste.toFixed(2) + ' \u20ac</b></span>'
+    +   '<span>Total ordre\u00a0: <b>' + fmtMontant(cout) + ' \u20ac</b></span>'
+    +   '<span style="color:' + (plafonne ? 'var(--em)' : 'var(--text-muted)') + ';">Reste\u00a0: <b>' + fmtMontant(reste) + ' \u20ac</b></span>'
     + '</div>'
     + '<div style="font-size:11px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;margin-bottom:10px;">'
     +   '<div style="color:var(--text-muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Allocation apr\u00e8s achat</div>'
@@ -1293,8 +1331,8 @@ function calculerOrdreOptimal() {
     html += '<div style="font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;margin-bottom:10px;color:var(--em);line-height:1.5;">'
       + '\ud83d\udca1 Cible atteinte pour cet ETF. '
       + (prochainTag
-          ? 'Avec les <b>' + reste.toFixed(2) + ' \u20ac</b> restants \u2192 prochain ordre\u00a0: <b>' + meta[prochainTag].nom + '</b>'
-          : 'Les <b>' + reste.toFixed(2) + ' \u20ac</b> restants au prochain versement.')
+          ? 'Avec les <b>' + fmtMontant(reste) + ' \u20ac</b> restants \u2192 prochain ordre\u00a0: <b>' + meta[prochainTag].nom + '</b>'
+          : 'Les <b>' + fmtMontant(reste) + ' \u20ac</b> restants au prochain versement.')
       + '</div>';
   }
 
@@ -1318,7 +1356,8 @@ function ajouterEvenementManuel() {
   var asset = document.getElementById('man_asset').value;
   var dateStr = formatDateToFR(document.getElementById('man_date').value);
   var names = {usa:'Amundi S&P 500', eu:'BNP Stoxx 600', em:'Amundi Émergents'};
-  var baseObj = { id: generateId(), type: type, date: dateStr, etf: names[asset], tag: asset };
+  var isEdit = !!peaEditId;
+  var baseObj = { id: isEdit ? peaEditId : generateId(), type: type, date: dateStr, etf: names[asset], tag: asset };
 
   if(type === 'achat' || type === 'vente') {
     var q = +document.getElementById('man_q').value || 0;
@@ -1332,12 +1371,54 @@ function ajouterEvenementManuel() {
     if(m <= 0) { showToast('Montant requis', 'error'); return; }
     baseObj.total = m.toFixed(2); baseObj.frais = 0;
   }
-  appData.pea.historique.unshift(baseObj);
-  appData.pea.settings.budget = '';
-  document.getElementById('budget').value = '';
-  saveData(appData);
-  renderHistPEA();
-  showToast('Mouvement enregistré', 'success');
+
+  if(isEdit) {
+    var idx = appData.pea.historique.findIndex(function(x){ return x.id === peaEditId; });
+    if(idx !== -1) appData.pea.historique[idx] = baseObj;
+    saveData(appData);
+    renderHistPEA();
+    showToast('Mouvement mis à jour', 'success');
+    annulerEditionPEA();
+  } else {
+    appData.pea.historique.unshift(baseObj);
+    appData.pea.settings.budget = '';
+    document.getElementById('budget').value = '';
+    saveData(appData);
+    renderHistPEA();
+    showToast('Mouvement enregistré', 'success');
+    document.getElementById('man_q').value = ''; document.getElementById('man_p').value = '';
+    document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
+    initDatesFormulaires();
+  }
+}
+
+function editerMouvementPEA(id) {
+  var m = appData.pea.historique.find(function(x){ return x.id === id; });
+  if(!m) return;
+  peaEditId = id;
+  showSubTab('pea', 'historique');
+  document.getElementById('man_date').value = formatDateToISO(m.date);
+  document.getElementById('man_type').value = m.type;
+  document.getElementById('man_asset').value = m.tag || 'usa';
+  toggleFormType();
+  if(m.type === 'achat' || m.type === 'vente') {
+    document.getElementById('man_q').value = m.nb;
+    document.getElementById('man_p').value = m.prix;
+    document.getElementById('man_frais').value = m.frais || '';
+  } else {
+    document.getElementById('man_div_montant').value = m.total;
+  }
+  document.getElementById('formulaire-mouvement-titre').textContent = '✏️ Modifier le mouvement PEA';
+  document.getElementById('btn-man-submit').textContent = 'Mettre à jour';
+  document.getElementById('btn-man-cancel').style.display = 'block';
+  document.getElementById('formulaire-mouvement').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function annulerEditionPEA() {
+  peaEditId = null;
+  document.getElementById('formulaire-mouvement-titre').textContent = '✍️ Enregistrer un mouvement PEA';
+  document.getElementById('btn-man-submit').textContent = 'Enregistrer au registre';
+  document.getElementById('btn-man-cancel').style.display = 'none';
   document.getElementById('man_q').value = ''; document.getElementById('man_p').value = '';
   document.getElementById('man_frais').value = ''; document.getElementById('man_div_montant').value = '';
   initDatesFormulaires();
@@ -1348,6 +1429,7 @@ function supprimerMouvementPEA(id) {
     appData.pea.historique = appData.pea.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
     renderHistPEA();
+    if(peaEditId === id) annulerEditionPEA();
   });
 }
 
@@ -1383,28 +1465,28 @@ function renderStatsPEA() {
           '<div class="bento2-icon">📊</div>' +
           '<div>' +
             '<div class="bento2-lbl">Valeur Brute PEA</div>' +
-            '<div class="bento2-val">'+valActuelle.toFixed(2)+' €</div>' +
+            '<div class="bento2-val">'+fmtMontant(valActuelle)+' €</div>' +
           '</div>' +
         '</div>' +
-        '<div class="fees-container-badge">Frais : <b>'+totalFeesPEA.toFixed(2)+' €</b></div>' +
+        '<div class="fees-container-badge">Frais : <b>'+fmtMontant(totalFeesPEA)+' €</b></div>' +
       '</div>' +
       '<div class="bento2-row-2">' +
         '<div class="bento2-cell" data-c="'+(gainRealAbsolu>=0?'eu':'red')+'">' +
           '<div class="bento2-clbl">Gain Réel</div>' +
-          '<div class="bento2-cval">'+(gainRealAbsolu>=0?'+':'')+gainRealAbsolu.toFixed(2)+' €</div>' +
+          '<div class="bento2-cval">'+(gainRealAbsolu>=0?'+':'')+fmtMontant(gainRealAbsolu)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPct.toFixed(1)+'%)</div>' +
         '</div>' +
         '<div class="bento2-cell" data-c="'+(pvLatentePure>=0?'usa':'red')+'">' +
           '<div class="bento2-clbl">PV Latente Pure</div>' +
-          '<div class="bento2-cval">'+(pvLatentePure>=0?'+':'')+pvLatentePure.toFixed(2)+' €</div>' +
+          '<div class="bento2-cval">'+(pvLatentePure>=0?'+':'')+fmtMontant(pvLatentePure)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatentePct.toFixed(1)+'%)</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
     '<div class="card" style="border-left:4px solid var(--div);">' +
       '<h2>Estimation Fiscale PEA ('+(appData.pea.settings.taux_fisc||17.2)+'%)</h2>' +
-      '<div class="sim-row"><span>Prélèvements Sociaux théoriques :</span> <b style="color:var(--red);">- '+taxe.toFixed(2)+' €</b></div>' +
-      '<div class="sim-row"><span>Net après retrait théorique :</span> <b style="color:var(--eu);">'+(valActuelle-taxe).toFixed(2)+' €</b></div>' +
+      '<div class="sim-row"><span>Prélèvements Sociaux théoriques :</span> <b style="color:var(--red);">- '+fmtMontant(taxe)+' €</b></div>' +
+      '<div class="sim-row"><span>Net après retrait théorique :</span> <b style="color:var(--eu);">'+fmtMontant(valActuelle-taxe)+' €</b></div>' +
     '</div>';
 }
 
@@ -1416,13 +1498,33 @@ function calcPEA() {
   var donut = document.getElementById('chart-donut');
   if(donut) { donut.style.setProperty('--u-deg', pU+'%'); donut.style.setProperty('--e-deg', (pU+pE)+'%'); }
   var donutTotalEl = document.getElementById('chart-donut-total');
-  if(donutTotalEl) donutTotalEl.textContent = tot.toFixed(0)+' €';
+  if(donutTotalEl) donutTotalEl.textContent = fmtMontant(tot, 0)+' €';
   document.getElementById('leg-usa-pct').textContent = pU.toFixed(1)+'%';
-  document.getElementById('leg-usa-details').textContent = u.toFixed(2)+' € • '+q.usa+' part(s)';
+  document.getElementById('leg-usa-details').textContent = fmtMontant(u)+' € • '+q.usa+' part(s)';
   document.getElementById('leg-eu-pct').textContent = pE.toFixed(1)+'%';
-  document.getElementById('leg-eu-details').textContent = e.toFixed(2)+' € • '+q.eu+' part(s)';
+  document.getElementById('leg-eu-details').textContent = fmtMontant(e)+' € • '+q.eu+' part(s)';
   document.getElementById('leg-em-pct').textContent = pM.toFixed(1)+'%';
-  document.getElementById('leg-em-details').textContent = m.toFixed(2)+' € • '+q.em+' part(s)';
+  document.getElementById('leg-em-details').textContent = fmtMontant(m)+' € • '+q.em+' part(s)';
+
+  var alertEl = document.getElementById('alloc-alert');
+  if(alertEl) {
+    var seuil = appData.pea.settings.alerte_seuil !== undefined ? +appData.pea.settings.alerte_seuil : 5;
+    var cibles = appData.pea.cibles || { usa:0, eu:0, em:0 };
+    var ecarts = {
+      usa: { lbl: 'S&P 500', val: cibles.usa - pU },
+      eu: { lbl: 'Stoxx 600', val: cibles.eu - pE },
+      em: { lbl: 'Émergents', val: cibles.em - pM }
+    };
+    var pireTag = 'usa';
+    Object.keys(ecarts).forEach(function(k){ if(Math.abs(ecarts[k].val) > Math.abs(ecarts[pireTag].val)) pireTag = k; });
+    var pire = ecarts[pireTag];
+    if(tot > 0 && seuil > 0 && Math.abs(pire.val) > seuil) {
+      alertEl.innerHTML = '⚠️ Allocation déséquilibrée : <b>'+pire.lbl+'</b> est '+(pire.val > 0 ? 'sous-pondéré' : 'sur-pondéré')+' de <b>'+Math.abs(pire.val).toFixed(1)+' pts</b> (seuil : '+seuil+'%)';
+      alertEl.classList.add('show');
+    } else {
+      alertEl.classList.remove('show');
+    }
+  }
 }
 
 function renderHistPEA() {
@@ -1430,7 +1532,7 @@ function renderHistPEA() {
   var icons = { usa:'🇺🇸', eu:'🇪🇺', em:'🌍' };
   appData.pea.historique.forEach(function(a){
     var fr = parseFloat(a.frais || 0);
-    var txtFrais = fr > 0 ? ' · '+fr.toFixed(2)+'€ frais' : '';
+    var txtFrais = fr > 0 ? ' · '+fmtMontant(fr)+'€ frais' : '';
     var isVente = a.type === 'vente', isDiv = a.type === 'dividende';
     var color = isDiv ? 'var(--div)' : (isVente ? 'var(--red)' : 'var(--eu)');
     var bg = isDiv ? 'rgba(192,132,252,.14)' : (isVente ? 'rgba(251,113,133,.14)' : 'rgba(52,211,153,.14)');
@@ -1438,11 +1540,12 @@ function renderHistPEA() {
     h += '<div class="txn-item">' +
            '<div class="txn-icon" style="background:'+bg+';">'+icon+'</div>' +
            '<div class="txn-info">' +
-             '<div class="txn-title">'+a.type.toUpperCase()+' · '+a.etf+'</div>' +
+             '<div class="txn-title">'+escapeHtml(a.type.toUpperCase())+' · '+escapeHtml(a.etf)+'</div>' +
              '<div class="txn-sub">Le '+a.date+txtFrais+'</div>' +
            '</div>' +
-           '<div class="txn-amount" style="color:'+color+';">'+parseFloat(a.total).toFixed(2)+' €</div>' +
-           '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+a.id+'\')">🗑️</button>' +
+           '<div class="txn-amount" style="color:'+color+';">'+fmtMontant(a.total)+' €</div>' +
+           '<button class="btn-edit-item" onclick="editerMouvementPEA(\''+escapeForInlineJs(a.id)+'\')">✏️</button>' +
+           '<button class="btn-delete-item" onclick="supprimerMouvementPEA(\''+escapeForInlineJs(a.id)+'\')">🗑️</button>' +
          '</div>';
   });
   document.getElementById('hist-container').innerHTML = h || '<div style="text-align:center;color:var(--text-muted);padding:10px;">Aucun mouvement.</div>';
@@ -1532,7 +1635,8 @@ function ajouterMouvementCTO() {
   var dateStr = formatDateToFR(document.getElementById('cto_date').value);
   if(!name) { showToast('Spécifiez un nom valide', 'error'); return; }
 
-  var baseObj = { id: generateId(), type: type, actif: name, date: dateStr };
+  var isEdit = !!ctoEditId;
+  var baseObj = { id: isEdit ? ctoEditId : generateId(), type: type, actif: name, date: dateStr };
 
   if(type === 'achat' || type === 'vente') {
     var q = parseFloat(document.getElementById('cto_q').value) || 0;
@@ -1541,23 +1645,74 @@ function ajouterMouvementCTO() {
     if(q <= 0 || p <= 0) { showToast('Champs requis', 'error'); return; }
     var totalLigne = type === 'achat' ? (q * p) + f : (q * p);
     baseObj.nb = q; baseObj.prix = p; baseObj.frais = f; baseObj.total = totalLigne.toFixed(2);
-    appData.cto.historique.unshift(baseObj);
     // FIX #3 : n'écrase pas le cours si déjà renseigné manuellement
     if(appData.cto.cours[name] === undefined) appData.cto.cours[name] = p;
   } else {
     var m = parseFloat(document.getElementById('cto_div_montant').value) || 0;
     if(m <= 0) { showToast('Montant requis', 'error'); return; }
     baseObj.total = m.toFixed(2); baseObj.frais = 0;
-    appData.cto.historique.unshift(baseObj);
   }
 
-  saveData(appData);
-  showToast('Opération enregistrée', 'success');
+  if(isEdit) {
+    var idx = appData.cto.historique.findIndex(function(x){ return x.id === ctoEditId; });
+    if(idx !== -1) appData.cto.historique[idx] = baseObj;
+    saveData(appData);
+    showToast('Opération mise à jour', 'success');
+    annulerEditionCTO();
+    showSubTab('cto', 'historique');
+  } else {
+    appData.cto.historique.unshift(baseObj);
+    saveData(appData);
+    showToast('Opération enregistrée', 'success');
+    document.getElementById('cto_name').value = ''; document.getElementById('cto_name_custom_div').value = '';
+    document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = '';
+    document.getElementById('cto_div_montant').value = '';
+    initDatesFormulaires();
+    showSubTab('cto', 'portefeuille');
+  }
+}
+
+function editerMouvementCTO(id) {
+  var m = appData.cto.historique.find(function(x){ return x.id === id; });
+  if(!m) return;
+  ctoEditId = id;
+  showSubTab('cto', 'historique');
+  updateCtoDividendsDropdown();
+  document.getElementById('cto_date').value = formatDateToISO(m.date);
+  document.getElementById('cto_type').value = m.type;
+  toggleFormCto();
+  if(m.type === 'achat' || m.type === 'vente') {
+    document.getElementById('cto_name').value = m.actif;
+    document.getElementById('cto_q').value = m.nb;
+    document.getElementById('cto_p').value = m.prix;
+    document.getElementById('cto_frais').value = m.frais || '';
+  } else {
+    var select = document.getElementById('cto_name_select');
+    var hasOption = Array.prototype.some.call(select.options, function(o){ return o.value === m.actif; });
+    if(hasOption) {
+      select.value = m.actif;
+    } else {
+      select.value = '__NEW__';
+      document.getElementById('cto_name_custom_div').value = m.actif;
+    }
+    handleCtoNameSelect();
+    document.getElementById('cto_div_montant').value = m.total;
+  }
+  document.getElementById('formulaire-mouvement-cto-titre').textContent = '✏️ Modifier l\'opération CTO';
+  document.getElementById('btn-cto-submit').textContent = 'Mettre à jour';
+  document.getElementById('btn-cto-cancel').style.display = 'block';
+  document.getElementById('formulaire-mouvement-cto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function annulerEditionCTO() {
+  ctoEditId = null;
+  document.getElementById('formulaire-mouvement-cto-titre').textContent = '✍️ Enregistrer une opération CTO';
+  document.getElementById('btn-cto-submit').textContent = '⚡ Confirmer l\'inscription';
+  document.getElementById('btn-cto-cancel').style.display = 'none';
   document.getElementById('cto_name').value = ''; document.getElementById('cto_name_custom_div').value = '';
   document.getElementById('cto_q').value = ''; document.getElementById('cto_p').value = '';
   document.getElementById('cto_div_montant').value = '';
   initDatesFormulaires();
-  showSubTab('cto', 'portefeuille');
 }
 
 // FIX #2 : reste sur l'onglet historique après suppression
@@ -1565,6 +1720,7 @@ function supprimerMouvementCTO(id) {
   showConfirm('Supprimer définitivement ce mouvement CTO ?', function() {
     appData.cto.historique = appData.cto.historique.filter(function(m) { return m.id !== id; });
     saveData(appData);
+    if(ctoEditId === id) annulerEditionCTO();
     renderHistCTO();
     renderCTOUniverse();
   });
@@ -1604,12 +1760,12 @@ function renderCoursPage() {
   var html = '';
   actifs.forEach(function(nom) {
     var cours = appData.cto.cours[nom] || '';
-    var initials = nom.slice(0, 2).toUpperCase();
+    var initials = escapeHtml(nom.slice(0, 2).toUpperCase());
     html += '<div class="cours-row">'
       + '<div class="cours-row-icon" style="background:rgba(56,189,248,.16);color:var(--usa);">' + initials + '</div>'
-      + '<div class="cours-row-label">' + nom + '</div>'
+      + '<div class="cours-row-label">' + escapeHtml(nom) + '</div>'
       + '<input type="number" inputmode="decimal" pattern="[0-9]*" value="' + cours + '"'
-      + ' oninput="updateCtoCours(\'' + nom + '\', this.value)">'
+      + ' oninput="updateCtoCours(\'' + escapeForInlineJs(nom) + '\', this.value)">'
       + '</div>';
   });
   container.innerHTML = html;
@@ -1620,21 +1776,7 @@ function saveCtoSettings() {
   saveData(appData); showToast('Paramètres CTO sauvegardés', 'success');
 }
 
-function renderCTOInputsCours() {
-  var positions = calculerPositionsCTO();
-  var container = document.getElementById('cto-cours-inputs-container');
-  if(!container) return;
-  var html = '';
-  Object.keys(positions).filter(function(n) { return positions[n].parts > 0; }).forEach(function(nom) {
-    var coursActuel = appData.cto.cours[nom] || 0;
-    html += '<div class="row"><label><span class="tag tag-cto">'+nom+'</span></label>' +
-            '<input type="number" inputmode="decimal" pattern="[0-9]*" value="'+coursActuel+'" oninput="updateCtoCours(\''+nom+'\', this.value)"></div>';
-  });
-  container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">Aucun actif en portefeuille.</div>';
-}
-
 function renderCTOUniverse() {
-  renderCTOInputsCours();
   renderCTOUniverseOnly();
 }
 
@@ -1670,19 +1812,19 @@ function renderCTOUniverseOnly() {
       var pru = p.parts > 0 ? (p.totalCost / p.parts) : 0;
       var pvLatente = valuation - p.totalCost;
       var pvPct = p.totalCost > 0 ? (pvLatente / p.totalCost * 100) : 0;
-      var initials = nom.slice(0, 2).toUpperCase();
+      var initials = escapeHtml(nom.slice(0, 2).toUpperCase());
       posHtml += '<div class="asset-card" style="cursor:default;">' +
           '<div class="asset-top">' +
             '<div class="asset-icon cto" style="font-size:13px;font-weight:800;">'+initials+'</div>' +
             '<div class="asset-info">' +
-              '<div class="asset-name">'+nom+'</div>' +
-              '<div class="asset-sub">'+p.parts+' parts · PRU '+pru.toFixed(2)+' €</div>' +
+              '<div class="asset-name">'+escapeHtml(nom)+'</div>' +
+              '<div class="asset-sub">'+p.parts+' parts · PRU '+fmtMontant(pru)+' €</div>' +
             '</div>' +
-            '<span class="asset-perf '+(pvLatente>=0?'perf-up':'perf-down')+'">'+(pvLatente>=0?'+':'')+pvLatente.toFixed(2)+' €</span>' +
+            '<span class="asset-perf '+(pvLatente>=0?'perf-up':'perf-down')+'">'+(pvLatente>=0?'+':'')+fmtMontant(pvLatente)+' €</span>' +
           '</div>' +
           '<div class="asset-bottom">' +
-            '<span>Cours actuel</span><b style="color:var(--usa)">'+cours.toFixed(2)+' €</b>' +
-            '<span>Valeur</span><b>'+valuation.toFixed(2)+' €</b>' +
+            '<span>Cours actuel</span><b style="color:var(--usa)">'+fmtMontant(cours)+' €</b>' +
+            '<span>Valeur</span><b>'+fmtMontant(valuation)+' €</b>' +
           '</div>' +
         '</div>';
     }
@@ -1713,35 +1855,35 @@ function renderCTOUniverseOnly() {
           '<div class="bento2-icon" style="background:rgba(56,189,248,.16);">💼</div>' +
           '<div>' +
             '<div class="bento2-lbl">Valeur Brute CTO</div>' +
-            '<div class="bento2-val">'+globalValeurCTO.toFixed(2)+' €</div>' +
+            '<div class="bento2-val">'+fmtMontant(globalValeurCTO)+' €</div>' +
           '</div>' +
         '</div>' +
-        '<div class="fees-container-badge">Frais : <b>'+totalFeesCTO.toFixed(2)+' €</b></div>' +
+        '<div class="fees-container-badge">Frais : <b>'+fmtMontant(totalFeesCTO)+' €</b></div>' +
       '</div>' +
       '<div class="bento2-row-2">' +
         '<div class="bento2-cell" data-c="'+(gainRealAbsoluCTO>=0?'eu':'red')+'">' +
           '<div class="bento2-clbl">Gain Réel Global</div>' +
-          '<div class="bento2-cval">'+(gainRealAbsoluCTO>=0?'+':'')+gainRealAbsoluCTO.toFixed(2)+' €</div>' +
+          '<div class="bento2-cval">'+(gainRealAbsoluCTO>=0?'+':'')+fmtMontant(gainRealAbsoluCTO)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPctCTO.toFixed(1)+'%)</div>' +
         '</div>' +
         '<div class="bento2-cell" data-c="'+(pvLatenteGlobalCTO>=0?'usa':'red')+'">' +
           '<div class="bento2-clbl">PV Latente</div>' +
-          '<div class="bento2-cval">'+(pvLatenteGlobalCTO>=0?'+':'')+pvLatenteGlobalCTO.toFixed(2)+' €</div>' +
+          '<div class="bento2-cval">'+(pvLatenteGlobalCTO>=0?'+':'')+fmtMontant(pvLatenteGlobalCTO)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</div>' +
         '</div>' +
       '</div>' +
       // FIX #11 : affichage PV réalisées séparées
       (pvRealiseesCTO !== 0 ? '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.05); padding-top:10px; margin-top:10px;">' +
         '<span style="font-size:12px;color:var(--text-muted);">dont PV réalisées (ventes clôturées) :</span>' +
-        '<b style="color:'+(pvRealiseesCTO>=0?'var(--eu)':'var(--red)')+';font-size:13px;">'+(pvRealiseesCTO>=0?'+':'')+pvRealiseesCTO.toFixed(2)+' €</b>' +
+        '<b style="color:'+(pvRealiseesCTO>=0?'var(--eu)':'var(--red)')+';font-size:13px;">'+(pvRealiseesCTO>=0?'+':'')+fmtMontant(pvRealiseesCTO)+' €</b>' +
       '</div>' : '') +
     '</div>' +
 
     '<div class="card" style="border-left:4px solid var(--red);">' +
       '<h2>⚖️ Estimation Fiscale CTO ('+currentTaxRate+'%)</h2>' +
-      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Assiette imposable :</span> <b>'+(gainRealAbsoluCTO>0?gainRealAbsoluCTO.toFixed(2):'0.00')+' €</b></div>' +
-      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Flat Tax estimée :</span> <b style="color:var(--red);">- '+flatTaxEstimee.toFixed(2)+' €</b></div>' +
-      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1);margin-top:6px;padding-top:6px;"><span>💰 Valeur nette après flat tax :</span> <b style="color:var(--eu);">'+netApresFlatTax.toFixed(2)+' €</b></div>' +
+      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Assiette imposable :</span> <b>'+(gainRealAbsoluCTO>0?fmtMontant(gainRealAbsoluCTO):'0,00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Flat Tax estimée :</span> <b style="color:var(--red);">- '+fmtMontant(flatTaxEstimee)+' €</b></div>' +
+      '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1);margin-top:6px;padding-top:6px;"><span>💰 Valeur nette après flat tax :</span> <b style="color:var(--eu);">'+fmtMontant(netApresFlatTax)+' €</b></div>' +
     '</div>';
 }
 
@@ -1752,8 +1894,8 @@ function renderHistCTO() {
     var color = isDiv ? 'var(--div)' : (isAchat ? 'var(--text)' : 'var(--eu)');
     var bg = isDiv ? 'rgba(192,132,252,.14)' : (isAchat ? 'rgba(56,189,248,.14)' : 'rgba(251,113,133,.14)');
     var icon = isDiv ? '💰' : (isAchat ? '🛒' : '🔻');
-    var title = isDiv ? ('Dividende · '+a.actif) : ((isAchat ? 'ACHAT' : 'VENTE')+' · '+a.actif);
-    var sub = isDiv ? ('Perçu le '+a.date) : (a.nb+' p. @ '+a.prix+' € · Le '+a.date+(isAchat?' · '+parseFloat(a.frais||0).toFixed(2)+'€ frais':''));
+    var title = isDiv ? ('Dividende · '+escapeHtml(a.actif)) : ((isAchat ? 'ACHAT' : 'VENTE')+' · '+escapeHtml(a.actif));
+    var sub = isDiv ? ('Perçu le '+a.date) : (a.nb+' p. @ '+fmtMontant(a.prix)+' € · Le '+a.date+(isAchat?' · '+fmtMontant(a.frais||0)+'€ frais':''));
     var sign = (isDiv || !isAchat) ? '+' : '−';
     h += '<div class="txn-item">' +
            '<div class="txn-icon" style="background:'+bg+';">'+icon+'</div>' +
@@ -1761,8 +1903,9 @@ function renderHistCTO() {
              '<div class="txn-title">'+title+'</div>' +
              '<div class="txn-sub">'+sub+'</div>' +
            '</div>' +
-           '<div class="txn-amount" style="color:'+color+';">'+sign+' '+parseFloat(a.total).toFixed(2)+' €</div>' +
-           '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+a.id+'\')">🗑️</button>' +
+           '<div class="txn-amount" style="color:'+color+';">'+sign+' '+fmtMontant(a.total)+' €</div>' +
+           '<button class="btn-edit-item" onclick="editerMouvementCTO(\''+escapeForInlineJs(a.id)+'\')">✏️</button>' +
+           '<button class="btn-delete-item" onclick="supprimerMouvementCTO(\''+escapeForInlineJs(a.id)+'\')">🗑️</button>' +
          '</div>';
   });
   document.getElementById('cto-hist-container').innerHTML = h
