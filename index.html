@@ -233,6 +233,10 @@ button:active{transform:scale(.96);opacity:.85;}
 .modal-actions{display:flex;gap:10px;}
 .modal-actions button{flex:1;}
 
+/* ── Info tag (jargon explicatif) ── */
+.info-tag{cursor:pointer;display:inline-flex;align-items:center;gap:3px;}
+.info-ico{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.14);color:var(--text-muted);font-size:9px;font-style:normal;font-weight:800;flex-shrink:0;line-height:1;}
+
 /* ── Fade-in animation ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideInFromRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
@@ -270,7 +274,7 @@ button:active{transform:scale(.96);opacity:.85;}
     </div>
     <div class="bento2-row">
       <div class="bento2-cell" data-c="indigo">
-        <div class="bento2-clbl">TRIG</div>
+        <div class="bento2-clbl info-tag" onclick="showInfo('trig')">TRIG<span class="info-ico">i</span></div>
         <div class="bento2-cval" id="global-cagr-val">–</div>
       </div>
       <div class="bento2-cell" data-c="gold">
@@ -619,6 +623,17 @@ button:active{transform:scale(.96);opacity:.85;}
   </div>
 </div>
 
+<!-- ── Info Modal (explication du jargon financier) ── -->
+<div class="modal-overlay" id="info-modal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="info-modal-title"></div>
+    <div class="modal-msg" id="info-modal-msg"></div>
+    <div class="modal-actions">
+      <button class="btn-blue" id="info-modal-close">Compris</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── Toast ─────────────────────────────────────
 function showToast(msg, type) {
@@ -643,6 +658,52 @@ function showConfirm(msg, onYes) {
   document.getElementById('confirm-no').onclick  = function(){ m.classList.remove('show'); };
   m.classList.add('show');
 }
+
+// ── Info Sheet (explication du jargon financier) ──
+var INFO_DEFS = {
+  trig: {
+    title: 'TRIG (Taux de Rendement Interne Global)',
+    text: "Une estimation du rendement annuel moyen de l'ensemble de votre patrimoine, calculée à partir de la date de votre tout premier versement (PEA + CTO confondus). C'est l'équivalent d'un taux d'intérêt composé qui résume toute la performance de vos investissements en un seul chiffre par an."
+  },
+  gainReel: {
+    title: 'Gain Réel',
+    text: "L'écart entre la valeur actuelle de votre portefeuille (dividendes perçus inclus) et le total des sommes que vous y avez réellement investies, frais déduits. Il regroupe à la fois les plus-values encore latentes et celles déjà réalisées sur vos ventes."
+  },
+  pvLatente: {
+    title: 'Plus-Value Latente',
+    text: "La plus ou moins-value calculée uniquement sur les positions que vous détenez encore aujourd'hui : la différence entre leur valeur de marché actuelle et leur prix de revient. Elle n'est pas encaissée tant que vous n'avez pas vendu."
+  },
+  pru: {
+    title: 'PRU (Prix de Revient Unitaire)',
+    text: "Le prix moyen, frais inclus, auquel vous avez acquis les parts que vous détenez encore sur cette ligne. C'est la référence utilisée pour calculer votre plus ou moins-value."
+  },
+  pvRealisees: {
+    title: 'Plus-Values Réalisées',
+    text: "Le gain ou la perte déjà encaissé sur les titres que vous avez entièrement revendus (positions clôturées), calculé par différence entre le prix de vente et le prix de revient."
+  },
+  assietteImposable: {
+    title: 'Assiette Imposable',
+    text: "Le montant sur lequel l'impôt est calculé : ici, le gain réel total de votre CTO. Le PEA suit des règles fiscales différentes et n'est pas concerné par cette assiette."
+  },
+  flatTax: {
+    title: 'Flat Tax (PFU)',
+    text: "Le Prélèvement Forfaitaire Unique : un impôt à taux fixe (30% par défaut, modifiable dans les paramètres CTO) appliqué aux gains d'un compte-titres ordinaire. Il regroupe en un seul taux l'impôt sur le revenu et les prélèvements sociaux."
+  },
+  prelevSociaux: {
+    title: 'Prélèvements Sociaux',
+    text: "Les cotisations sociales (CSG, CRDS...) appliquées aux gains d'un PEA. Sur un PEA ouvert depuis plus de 5 ans, seuls les prélèvements sociaux s'appliquent en cas de retrait — il n'y a pas d'impôt sur le revenu."
+  }
+};
+function showInfo(key) {
+  var d = INFO_DEFS[key];
+  if(!d) return;
+  document.getElementById('info-modal-title').textContent = d.title;
+  document.getElementById('info-modal-msg').textContent = d.text;
+  document.getElementById('info-modal').classList.add('show');
+}
+document.getElementById('info-modal-close').onclick = function(){
+  document.getElementById('info-modal').classList.remove('show');
+};
 
 // ── Compteur animé (count-up avec easing) ──
 function animateCounter(el, newVal, opts) {
@@ -1478,12 +1539,12 @@ function renderStatsPEA() {
       '</div>' +
       '<div class="bento2-row-2">' +
         '<div class="bento2-cell" data-c="'+(gainRealAbsolu>=0?'eu':'red')+'">' +
-          '<div class="bento2-clbl">Gain Réel</div>' +
+          '<div class="bento2-clbl info-tag" onclick="showInfo(\'gainReel\')">Gain Réel<span class="info-ico">i</span></div>' +
           '<div class="bento2-cval">'+(gainRealAbsolu>=0?'+':'')+fmtMontant(gainRealAbsolu)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPct.toFixed(1)+'%)</div>' +
         '</div>' +
         '<div class="bento2-cell" data-c="'+(pvLatentePure>=0?'usa':'red')+'">' +
-          '<div class="bento2-clbl">PV Latente Pure</div>' +
+          '<div class="bento2-clbl info-tag" onclick="showInfo(\'pvLatente\')">PV Latente Pure<span class="info-ico">i</span></div>' +
           '<div class="bento2-cval">'+(pvLatentePure>=0?'+':'')+fmtMontant(pvLatentePure)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatentePct.toFixed(1)+'%)</div>' +
         '</div>' +
@@ -1491,7 +1552,7 @@ function renderStatsPEA() {
     '</div>' +
     '<div class="card" style="border-left:4px solid var(--div);">' +
       '<h2>Estimation Fiscale PEA ('+(appData.pea.settings.taux_fisc||17.2)+'%)</h2>' +
-      '<div class="sim-row"><span>Prélèvements Sociaux théoriques :</span> <b style="color:var(--red);">- '+fmtMontant(taxe)+' €</b></div>' +
+      '<div class="sim-row"><span class="info-tag" onclick="showInfo(\'prelevSociaux\')">Prélèvements Sociaux théoriques<span class="info-ico">i</span></span> <b style="color:var(--red);">- '+fmtMontant(taxe)+' €</b></div>' +
       '<div class="sim-row"><span>Net après retrait théorique :</span> <b style="color:var(--eu);">'+fmtMontant(valActuelle-taxe)+' €</b></div>' +
     '</div>';
 }
@@ -1824,7 +1885,7 @@ function renderCTOUniverseOnly() {
             '<div class="asset-icon cto" style="font-size:13px;font-weight:800;">'+initials+'</div>' +
             '<div class="asset-info">' +
               '<div class="asset-name">'+escapeHtml(nom)+'</div>' +
-              '<div class="asset-sub">'+p.parts+' parts · PRU '+fmtMontant(pru)+' €</div>' +
+              '<div class="asset-sub">'+p.parts+' parts · <span class="info-tag" onclick="event.stopPropagation();showInfo(\'pru\')">PRU<span class="info-ico">i</span></span> '+fmtMontant(pru)+' €</div>' +
             '</div>' +
             '<span class="asset-perf '+(pvLatente>=0?'perf-up':'perf-down')+'">'+(pvLatente>=0?'+':'')+fmtMontant(pvLatente)+' €</span>' +
           '</div>' +
@@ -1868,27 +1929,27 @@ function renderCTOUniverseOnly() {
       '</div>' +
       '<div class="bento2-row-2">' +
         '<div class="bento2-cell" data-c="'+(gainRealAbsoluCTO>=0?'eu':'red')+'">' +
-          '<div class="bento2-clbl">Gain Réel Global</div>' +
+          '<div class="bento2-clbl info-tag" onclick="showInfo(\'gainReel\')">Gain Réel Global<span class="info-ico">i</span></div>' +
           '<div class="bento2-cval">'+(gainRealAbsoluCTO>=0?'+':'')+fmtMontant(gainRealAbsoluCTO)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+gainRealPctCTO.toFixed(1)+'%)</div>' +
         '</div>' +
         '<div class="bento2-cell" data-c="'+(pvLatenteGlobalCTO>=0?'usa':'red')+'">' +
-          '<div class="bento2-clbl">PV Latente</div>' +
+          '<div class="bento2-clbl info-tag" onclick="showInfo(\'pvLatente\')">PV Latente<span class="info-ico">i</span></div>' +
           '<div class="bento2-cval">'+(pvLatenteGlobalCTO>=0?'+':'')+fmtMontant(pvLatenteGlobalCTO)+' €</div>' +
           '<div class="bento2-clbl" style="margin-top:2px;">('+pvLatenteGlobalPctCTO.toFixed(1)+'%)</div>' +
         '</div>' +
       '</div>' +
       // FIX #11 : affichage PV réalisées séparées
       (pvRealiseesCTO !== 0 ? '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.05); padding-top:10px; margin-top:10px;">' +
-        '<span style="font-size:12px;color:var(--text-muted);">dont PV réalisées (ventes clôturées) :</span>' +
+        '<span style="font-size:12px;color:var(--text-muted);" class="info-tag" onclick="showInfo(\'pvRealisees\')">dont PV réalisées (ventes clôturées) :<span class="info-ico">i</span></span>' +
         '<b style="color:'+(pvRealiseesCTO>=0?'var(--eu)':'var(--red)')+';font-size:13px;">'+(pvRealiseesCTO>=0?'+':'')+fmtMontant(pvRealiseesCTO)+' €</b>' +
       '</div>' : '') +
     '</div>' +
 
     '<div class="card" style="border-left:4px solid var(--red);">' +
       '<h2>⚖️ Estimation Fiscale CTO ('+currentTaxRate+'%)</h2>' +
-      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Assiette imposable :</span> <b>'+(gainRealAbsoluCTO>0?fmtMontant(gainRealAbsoluCTO):'0,00')+' €</b></div>' +
-      '<div class="sim-row" style="border:none;padding:2px 0;"><span>Flat Tax estimée :</span> <b style="color:var(--red);">- '+fmtMontant(flatTaxEstimee)+' €</b></div>' +
+      '<div class="sim-row" style="border:none;padding:2px 0;"><span class="info-tag" onclick="showInfo(\'assietteImposable\')">Assiette imposable<span class="info-ico">i</span></span> <b>'+(gainRealAbsoluCTO>0?fmtMontant(gainRealAbsoluCTO):'0,00')+' €</b></div>' +
+      '<div class="sim-row" style="border:none;padding:2px 0;"><span class="info-tag" onclick="showInfo(\'flatTax\')">Flat Tax estimée<span class="info-ico">i</span></span> <b style="color:var(--red);">- '+fmtMontant(flatTaxEstimee)+' €</b></div>' +
       '<div class="sim-row" style="border-top:1px dashed rgba(255,255,255,0.1);margin-top:6px;padding-top:6px;"><span>💰 Valeur nette après flat tax :</span> <b style="color:var(--eu);">'+fmtMontant(netApresFlatTax)+' €</b></div>' +
     '</div>';
 }
