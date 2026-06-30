@@ -31,12 +31,19 @@
   --nav-h: 70px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);margin:0;
-  padding:max(16px, env(safe-area-inset-top)) 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);font-size:15px;
+  background:var(--bg);color:var(--text);margin:0;font-size:15px;
   background-image:radial-gradient(ellipse at 50% -10%,rgba(99,102,241,.13) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(52,211,153,.04) 0%,transparent 40%);
   background-attachment:fixed;
+  height:100%;height:100dvh;overflow:hidden;
+}
+/* Conteneur interne unique pour le scroll : évite que la barre d'adresse mobile
+   apparaisse/disparaisse (et fasse "sauter" la bottom-nav fixe) quand on change d'onglet. */
+#scroll-area{
+  height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:max(16px, env(safe-area-inset-top)) 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);
 }
 .card{
   background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
@@ -245,7 +252,7 @@ button:active{transform:scale(.96);opacity:.85;}
 </style>
 </head>
 <body>
-<div style="max-width:600px;margin:auto;width:100%;">
+<div id="scroll-area" style="max-width:600px;margin:auto;width:100%;">
 
 <!-- ══════════════ ACCUEIL GLOBAL ══════════════ -->
 <div id="univers-home" class="universe-block" style="display:block;">
@@ -858,7 +865,8 @@ function initDatesFormulaires() {
 // ══════════════════════════════════════════════
 function switchUnivers(u, dir) {
   universActuel = u;
-  window.scrollTo(0, 0);
+  var scrollArea = document.getElementById('scroll-area');
+  if(scrollArea) scrollArea.scrollTop = 0; else window.scrollTo(0, 0);
   var anim = dir === 'left' ? 'slideInFromRight .32s cubic-bezier(.22,.61,.36,1)'
            : dir === 'right' ? 'slideInFromLeft .32s cubic-bezier(.22,.61,.36,1)'
            : 'fadeUp .22s ease-out';
