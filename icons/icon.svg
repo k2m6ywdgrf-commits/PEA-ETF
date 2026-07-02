@@ -1,0 +1,58 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#232059"/>
+      <stop offset="0.55" stop-color="#0e0d24"/>
+      <stop offset="1" stop-color="#070710"/>
+    </linearGradient>
+    <radialGradient id="glowTop" cx="0.28" cy="0.08" r="0.85">
+      <stop offset="0" stop-color="#6366f1" stop-opacity="0.50"/>
+      <stop offset="0.5" stop-color="#6366f1" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowDot" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#34d399" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#34d399" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="curve" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#34d399" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="euro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#b9bdf5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond plein (iOS/Android arrondissent eux-mêmes les coins) -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glowTop)"/>
+
+  <!-- Fine ligne pointillée "investi", en écho au graphique de l'app -->
+  <path d="M 74 332 C 160 322, 240 300, 300 282 C 360 264, 408 250, 442 242"
+        fill="none" stroke="#8890a4" stroke-opacity="0.45" stroke-width="7"
+        stroke-linecap="round" stroke-dasharray="1 26"/>
+
+  <!-- Aire sous la courbe de valeur -->
+  <path d="M 74 366 C 150 366, 158 302, 222 296 C 286 290, 286 236, 344 214 C 388 197, 418 181, 440 168
+           L 440 430 L 74 430 Z" fill="url(#area)"/>
+
+  <!-- Courbe de valeur (dégradé bleu → vert, comme dans l'app) -->
+  <path d="M 74 366 C 150 366, 158 302, 222 296 C 286 290, 286 236, 344 214 C 388 197, 418 181, 440 168"
+        fill="none" stroke="url(#curve)" stroke-width="26"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Point final avec halo -->
+  <circle cx="440" cy="168" r="64" fill="url(#glowDot)"/>
+  <circle cx="440" cy="168" r="22" fill="#34d399"/>
+  <circle cx="440" cy="168" r="22" fill="none" stroke="#0b0b16" stroke-width="7"/>
+
+  <!-- Symbole € -->
+  <text x="88" y="216" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold"
+        font-size="175" fill="url(#euro)">€</text>
+</svg>
