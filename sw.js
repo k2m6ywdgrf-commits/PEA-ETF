@@ -1,4 +1,4 @@
-var CACHE_NAME = 'patrimoine-cache-v2';
+var CACHE_NAME = 'patrimoine-cache-v3';
 var ASSETS = [
   './index.html',
   './manifest.json',
@@ -43,11 +43,14 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  // Assets statiques (icônes, manifest...) : cache d'abord, réseau en secours.
+  // Assets statiques (icônes, manifest, polices Google Fonts...) :
+  // cache d'abord, réseau en secours. Les réponses opaques (CSS des polices
+  // chargé en no-cors) sont cachées aussi, sinon la typographie disparaît
+  // hors ligne.
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       var network = fetch(e.request).then(function(resp) {
-        if(resp && resp.status === 200) {
+        if(resp && (resp.status === 200 || resp.type === 'opaque')) {
           var copy = resp.clone();
           caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, copy); });
         }
