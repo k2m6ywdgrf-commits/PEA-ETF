@@ -1,4 +1,4 @@
-var CACHE_NAME = 'patrimoine-cache-v3';
+var CACHE_NAME = 'patrimoine-cache-v4';
 var ASSETS = [
   './index.html',
   './manifest.json',
