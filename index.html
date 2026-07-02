@@ -32,7 +32,9 @@
   --nav-h: 70px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{background:var(--bg);}
+/* overflow-x sur html ET body : aucun élément positionné ne doit pouvoir
+   élargir la page, sinon iOS "dézoome" pour faire tenir le contenu. */
+html{background:var(--bg);overflow-x:hidden;}
 /* Pas de verrouillage de hauteur (height:100%/100dvh) ni d'overflow:hidden sur
    html/body : le document défile normalement, comme une page web classique.
    C'est ce qui évite les bugs de calcul de hauteur de viewport propres au
@@ -123,12 +125,15 @@ button:active{transform:scale(.96);opacity:.85;}
 
 /* ── Chart ── */
 .trend-chart-wrapper{position:relative;width:100%;height:150px;margin:15px 0 5px;background:rgba(255,255,255,.01);border-radius:12px;border:1px solid rgba(255,255,255,.04);}
-.trend-svg{width:100%;height:100%;display:block;overflow:visible;}
+.trend-svg{width:100%;height:100%;display:block;overflow:hidden;}
 .chart-interactive-zone{position:absolute;top:0;left:0;width:100%;height:100%;}
 .chart-node-col{position:absolute;top:0;height:100%;display:flex;justify-content:center;cursor:pointer;}
 .chart-node-col:hover .chart-tooltip-v2{display:block;}
 .chart-node-col:hover::before{content:"";position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.12);pointer-events:none;}
 .chart-tooltip-v2{display:none;position:absolute;bottom:105%;background:rgba(14,14,24,.97);color:#fff;padding:10px 14px;border-radius:12px;font-size:11px;white-space:nowrap;border:1px solid rgba(255,255,255,.1);z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.6);font-weight:500;text-align:left;line-height:1.5;backdrop-filter:blur(12px);}
+/* Près des bords, le tooltip s'ancre au bord de sa zone pour ne pas sortir du graphique */
+.chart-node-col.tt-left .chart-tooltip-v2{left:0;}
+.chart-node-col.tt-right .chart-tooltip-v2{right:0;}
 .chart-timeline-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);padding:0 4px;margin-top:4px;}
 .perf-up{background:rgba(52,211,153,.12);color:var(--eu);}
 .perf-down{background:rgba(251,113,133,.12);color:var(--red);}
@@ -250,8 +255,6 @@ button:active{transform:scale(.96);opacity:.85;}
 
 /* ── Fade-in animation ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideInFromRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideInFromLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
 </style>
 </head>
 <body>
@@ -738,6 +741,10 @@ function animateCounter(el, newVal, opts) {
 }
 
 // ── Smooth SVG curve (Catmull-Rom → Cubic Bezier) ──
+// Les points de contrôle verticaux sont bornés à l'enveloppe [y1, y2] de
+// chaque segment : une courbe de Bézier reste dans l'enveloppe convexe de
+// ses points de contrôle, la ligne ne peut donc plus dépasser les valeurs
+// réelles ni sortir du cadre quand deux points datés sont très rapprochés.
 function smoothPath(pts) {
   if(!pts || pts.length < 2) return '';
   if(pts.length === 2) return 'M ' + pts[0] + ' L ' + pts[1];
@@ -745,8 +752,11 @@ function smoothPath(pts) {
   var d = 'M ' + p[0][0].toFixed(1) + ',' + p[0][1].toFixed(1);
   for(var i = 0; i < p.length - 1; i++){
     var p0 = p[Math.max(0,i-1)], p1 = p[i], p2 = p[i+1], p3 = p[Math.min(p.length-1,i+2)];
+    var loY = Math.min(p1[1], p2[1]), hiY = Math.max(p1[1], p2[1]);
     var c1x = p1[0]+(p2[0]-p0[0])/6, c1y = p1[1]+(p2[1]-p0[1])/6;
     var c2x = p2[0]-(p3[0]-p1[0])/6, c2y = p2[1]-(p3[1]-p1[1])/6;
+    c1y = Math.min(hiY, Math.max(loY, c1y));
+    c2y = Math.min(hiY, Math.max(loY, c2y));
     d += ' C '+c1x.toFixed(1)+','+c1y.toFixed(1)+' '+c2x.toFixed(1)+','+c2y.toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1);
   }
   return d;
@@ -797,7 +807,6 @@ function loadData() {
 function saveData(d) { localStorage.setItem("patrimoine_multi_v6", JSON.stringify(d)); }
 
 var appData = loadData();
-var universActuel = 'home';
 var peaEditId = null;
 var ctoEditId = null;
 
@@ -894,12 +903,8 @@ function initDatesFormulaires() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-function switchUnivers(u, dir) {
-  universActuel = u;
+function switchUnivers(u) {
   window.scrollTo(0, 0);
-  var anim = dir === 'left' ? 'slideInFromRight .32s cubic-bezier(.22,.61,.36,1)'
-           : dir === 'right' ? 'slideInFromLeft .32s cubic-bezier(.22,.61,.36,1)'
-           : 'fadeUp .22s ease-out';
   ['home','pea','cto','cours'].forEach(function(id) {
     var btn = document.getElementById('btn-main-' + id);
     var el  = document.getElementById('univers-' + id);
@@ -907,7 +912,7 @@ function switchUnivers(u, dir) {
     if(el) {
       var show = id === u;
       el.style.display = show ? 'block' : 'none';
-      if(show) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = anim; }
+      if(show) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'fadeUp .22s ease-out'; }
     }
   });
   if(u === 'home') {
@@ -920,29 +925,6 @@ function switchUnivers(u, dir) {
     renderCoursPage();
   }
 }
-
-// ── Navigation par swipe tactile ──
-(function() {
-  var startX = 0, startY = 0, startTime = 0;
-  var order = ['home', 'pea', 'cto', 'cours'];
-  document.addEventListener('touchstart', function(e) {
-    if(e.touches.length !== 1) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    startTime = Date.now();
-  }, { passive: true });
-  document.addEventListener('touchend', function(e) {
-    if(!e.changedTouches || e.changedTouches.length !== 1) return;
-    var dx = e.changedTouches[0].clientX - startX;
-    var dy = e.changedTouches[0].clientY - startY;
-    if(Date.now() - startTime > 600) return;
-    if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    var idx = order.indexOf(universActuel);
-    if(idx === -1) return;
-    if(dx < 0 && idx < order.length - 1) switchUnivers(order[idx + 1], 'left');
-    else if(dx > 0 && idx > 0) switchUnivers(order[idx - 1], 'right');
-  }, { passive: true });
-})();
 
 function showSubTab(univ, section) {
   var tabs = ['portefeuille','historique','config'];
@@ -1327,14 +1309,20 @@ function renderGlobalTrendChartCurve() {
     var gapR = i < xPcts.length - 1 ? xPcts[i + 1] - xPcts[i] : Infinity;
     var zoneW = Math.min(gapL, gapR);
     if(!isFinite(zoneW)) zoneW = 100;
-    zoneW = Math.max(4, zoneW); // reste cliquable même si deux points sont très proches
+    zoneW = Math.max(4, Math.min(100, zoneW)); // reste cliquable même si deux points sont très proches
     var zoneL = xPcts[i] - zoneW / 2;
+    // Borné au cadre du graphique : une zone qui déborde élargit la page
+    // entière et provoque le "dézoom" de l'écran sur iOS.
+    if(zoneL < 0) zoneL = 0;
+    if(zoneL + zoneW > 100) zoneL = 100 - zoneW;
+    // Près des bords, le tooltip s'ancre au bord au lieu d'être centré
+    var ttClass = xPcts[i] < 18 ? ' tt-left' : (xPcts[i] > 82 ? ' tt-right' : '');
 
     var diff = p.brut - p.investi;
     var sign = diff >= 0 ? '+' : '';
     var diffPct = p.investi > 0 ? (diff / p.investi * 100).toFixed(2) : '0.00';
     interactiveZonesHtml +=
-      '<div class="chart-node-col" style="left:' + zoneL.toFixed(2) + '%;width:' + zoneW.toFixed(2) + '%;">' +
+      '<div class="chart-node-col' + ttClass + '" style="left:' + zoneL.toFixed(2) + '%;width:' + zoneW.toFixed(2) + '%;">' +
         '<div class="chart-tooltip-v2">' +
           '📅 ' + p.date + '<br>' +
           '<span style="color:#94a3b8;">⚪ Investi :</span> ' + fmtMontant(p.investi) + ' €<br>' +
